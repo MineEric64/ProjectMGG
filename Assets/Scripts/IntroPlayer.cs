@@ -93,10 +93,8 @@ public class IntroManager : MonoBehaviour
 
     void GoDay2_Demo1()
     {
-        bgm.mute = true;
-
-        var interpreter = new ScriptInterpreter(@$"{Application.dataPath}\Ingame\scripts\day\1.rpy");
-        
+        ParamManager.ScriptPath = @$"{Application.dataPath}\Ingame\scripts\day\1.rpy";
+        SceneManager.LoadScene("Ingame");
     }
 
     void GoDay2_Demo2()

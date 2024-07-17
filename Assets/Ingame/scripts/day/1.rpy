@@ -1,8 +1,17 @@
-define seah = Character("세아", color="#3a3e4a")
+# 캐릭터
 define player = Character("나", color="#000000")
+
+define seah = Character("세아", color="#3a3e4a")
+image seah = "$/images/chr_seah_demo.png"
+
 define hina = Character("히나", color="#f688a7")
+image hina = "$/images/chr_hina_demo.png"
+
+# 배경
+image classroom = "$/images/bg_classroom_demo.png"
 
 label start:
+	scene classroom
 	"2교시부터 쭉 겨울잠처럼 자던 몸이 무의식적으로 반응해 일어나게 되었다."
 	"일어나자마자 서둘러 시계를 보니, 시계의 초침은 지금이 점심시간이라고 알려주고 있었다."
 	"한창 점심시간이라 교실은 휑한 채 불만 켜져있고, 아무도 없었다."
@@ -14,7 +23,7 @@ label start:
 	"애초에 급식을 빨리 먹기엔 내가 너무 늦게 일어나기도 했고."
 	"…"
 	"드…르륵"
-	# Nemo Neko 브금 등장
+	play music "$/audio/Nemo Neko.mp3"
 	seah "저기이이.. 남주 맞으시죠..?"
 	player "네."
 	"어? 좀 낯이 익은 얼굴이다."
@@ -24,9 +33,9 @@ label start:
 	"솔직히 믿기지가 않았다."
 	"면접할 때 말을 절어서 중간에 반쯤 포기한 듯 아무말 대잔치했는데···."
 	seah "저… 그리고······."
+	reeverb
 	seah "저.. 저 방송부 선배인 한세아라고 하니깐 앞으로 잘 부탁해요!!!"
 	"선배의 쩌렁쩌렁한 목소리가 교실에 울려펴졌다."
-	# Nemo Neko 브금이 멈추며 리버브가 울려퍼진다
 	"소리가 얼마나 컸는지 그 뒤로는 평소에 들리던 소리도 들리지 않을 정도로."
 	"새가 창가에 앉아 편안하게 지저귀는 소리도, 더군다나 바람에 커튼이 흔들리는 소리도,"
 	"지금 이 순간만큼은 시간이 멈춰버린 것만 같이 몹시 조용했다."
@@ -36,8 +45,8 @@ label start:
 	"……"
 	"몇 초가 지났을까."
 	"서로 어색하게 흐르고 있던 침묵을 깰 무언가가 필요할 마침, 교실 문이 힘차게 열린다."
-	# Nemo Neko 브금이 다시 재생된다
-	# 드르륵… 쿵!
+	"드르륵… 쿵!"
+	play music "$/audio/Nemo Neko.mp3"
 	hina "남주야!!"
 	hina "너 방송부 합격했엉!!! 몰랐지?"
 	player "알고 있었는데."

@@ -1,0 +1,58 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+public class Character
+{
+    public string NameVar { get; set; }
+    public string Name { get; set; }
+    public Color Colour { get; set; }
+    public Dictionary<string, string> Images { get; set; }
+
+    public Character(string nameVar, string name, Color colour)
+    {
+        NameVar = nameVar;
+        Name = name;
+        Colour = colour;
+        Images = new Dictionary<string, string>();
+    }
+
+    public static Character Interpret(string code)
+    {
+        string[] args = code.Split(" ");
+        var chr = new Character("", "", new Color(1.0f, 1.0f, 1.0f));
+
+        if (args.Length >= 4)
+        {
+            chr.NameVar = args[1];
+            string[] characterRaw = code.Substring(code.IndexOf("Character") + 10).Replace(")", "").Split(",");
+
+            for (int i = 0; i <  characterRaw.Length; i++)
+            {
+                string text = characterRaw[i].Trim();
+
+                if (i == 0) chr.Name = text.Replace("\"", "");
+                else
+                {
+                    string[] subArgs = text.Split("=");
+
+                    if (subArgs.Length >= 2 && subArgs[0] == "color")
+                    {
+                        if (ColorUtility.TryParseHtmlString(subArgs[1].Replace("\"", ""), out Color colour))
+                        {
+                            chr.Colour = colour;
+                        }
+                    }
+                }
+            }
+        }
+
+        return chr;
+    }
+
+    public override string ToString()
+    {
+        return $"NameVar: {NameVar}\nName: {Name}";
+    }
+}
