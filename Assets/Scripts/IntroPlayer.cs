@@ -99,7 +99,7 @@ public class IntroManager : MonoBehaviour
 
     void GoDay2_Demo2()
     {
-        
+        Application.Quit();
     }
 
     void UseDynamicDLL()
