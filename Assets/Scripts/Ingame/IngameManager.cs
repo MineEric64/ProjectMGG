@@ -5,6 +5,10 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
 using System.IO;
+using System;
+using RpyTransform = transform;
+using UnityEditor;
+using UnityEngine.SceneManagement;
 
 public class IngameManager : MonoBehaviour
 {
@@ -14,6 +18,7 @@ public class IngameManager : MonoBehaviour
     public TextMeshProUGUI NameUI;
     public TextMeshProUGUI ContentUI;
     public AudioSource MusicPlayer;
+    public RawImage CharacterSample;
 
     private GraphicRaycaster _raycaster;
     private bool _goToNext = true;
@@ -77,6 +82,49 @@ public class IngameManager : MonoBehaviour
                         break;
 
                     case "show":
+                        Character chr2 = Interpreter.Characters[script.Arguments[0]];
+                        Texture2D texture2 = LoadResource<Texture2D>(chr2.Images["default"]);
+                        RawImage prefab = Instantiate(CharacterSample, this.transform);
+                        prefab.transform.SetSiblingIndex(1);
+
+                        if (texture2 != null)
+                        {
+                            prefab.texture = texture2;
+                            prefab.name = chr2.NameVar;
+                            prefab.rectTransform.sizeDelta = new Vector3(texture2.width, texture2.height);
+
+                            if (script.Arguments.Count == 1)
+                            {
+                                prefab.transform.localPosition = new Vector3(0f, -(720 - texture2.height / 2));
+                            }
+                            else if (script.Arguments.Count >= 2)
+                            {
+                                RpyTransform transform_ = null;
+
+                                for (int i = 1; i < script.Arguments.Count; i++)
+                                {
+                                    string arg = script.Arguments[i];
+
+                                    if (arg.StartsWith("at:")) transform_ = Interpreter.Transforms[arg.Substring(3)];
+                                }
+
+                                if (transform_ != null)
+                                {
+                                    float value = -1;
+
+                                    if (transform_.Options.TryGetValue("zoom", out value))
+                                    {
+                                        float width = texture2.width * value;
+                                        float height = texture2.height * value;
+
+                                        prefab.transform.localScale = new Vector3(value, value);
+                                        prefab.transform.localPosition = new Vector3(0f, -(720 - height / 2));
+                                    }
+                                    if (transform_.Options.TryGetValue("xalign", out value)) prefab.transform.localPosition = new Vector3(1280 * (value - 0.5f) * 2, prefab.transform.localPosition.y);
+                                    if (transform_.Options.TryGetValue("yalign", out value)) prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(720 * (value - 0.5f) * 2));
+                                }
+                            }
+                        }
                         break;
 
                     case "$narration":
@@ -107,8 +155,6 @@ public class IngameManager : MonoBehaviour
                     case "play":
                         if (script.Arguments[0] == "music")
                         {
-                            Debug.Log(_currentPlayingMusic);
-                            Debug.Log(script.Arguments[1]);
                             if (!string.IsNullOrWhiteSpace(_currentPlayingMusic) && _currentPlayingMusic == script.Arguments[1]) //reeverbed
                             {
                                 _reverbFilter.enabled = false;
@@ -129,6 +175,11 @@ public class IngameManager : MonoBehaviour
                         break;
                 }
             }
+            else
+            {
+                //Story End
+                SceneManager.LoadScene("MainMenu");
+            }
             if (scriptNext != null)
             {
                 if (scriptNext.EssentialSyntax == "reeverb")
@@ -139,7 +190,7 @@ public class IngameManager : MonoBehaviour
                 }
             }
         }
-
+        
         if (_isReeverb) Reeverb();
     }
 
@@ -165,7 +216,7 @@ public class IngameManager : MonoBehaviour
         return false;
     }
 
-    T LoadResource<T>(string pathRaw) where T : Object
+    T LoadResource<T>(string pathRaw) where T : UnityEngine.Object
     {
         string path = pathRaw.Replace("/", @"\");
         string fileName = Path.GetFileName(path);

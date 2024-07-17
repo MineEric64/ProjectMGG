@@ -8,6 +8,7 @@ public class ScriptInterpreter
     public List<ScriptSyntax> Scripts;
     public Dictionary<string, Character> Characters;
     public Dictionary<string, string> Images;
+    public Dictionary<string, transform> Transforms;
     
     private int _index = 0;
 
@@ -16,11 +17,12 @@ public class ScriptInterpreter
         Scripts = new List<ScriptSyntax>();
         Characters = new Dictionary<string, Character>();
         Images = new Dictionary<string, string>();
+        Transforms = new Dictionary<string, transform>();
 
-        ConvertInternal(path, ref Scripts, ref Characters, ref Images);
+        ConvertInternal(path, ref Scripts, ref Characters, ref Images, ref Transforms);
     }
 
-    private static void ConvertInternal(string path, ref List<ScriptSyntax> scripts, ref Dictionary<string, Character> characters, ref Dictionary<string, string> images)
+    private static void ConvertInternal(string path, ref List<ScriptSyntax> scripts, ref Dictionary<string, Character> characters, ref Dictionary<string, string> images, ref Dictionary<string, transform> transforms)
     {
         if (!File.Exists(path))
         {
@@ -29,6 +31,7 @@ public class ScriptInterpreter
         }
 
         string essentialParent = "";
+        transform transform_ = null;
 
         foreach (string text in File.ReadAllLines(path))
         {
@@ -60,8 +63,13 @@ public class ScriptInterpreter
                     break;
 
                 case "transform":
+                    essentialParent = "transform";
+                    transform_ = new transform();
+                    transforms.Add(args[1].TrimEnd(':').TrimEnd(), transform_);
+                    break;
+
                 case "label":
-                    essentialParent = args[0];
+                    essentialParent = "label";
                     break;
             }
             if (text.Contains("\t"))
@@ -71,6 +79,13 @@ public class ScriptInterpreter
 
                 switch (essentialParent)
                 {
+                    case "transform":
+                        float value = -1;
+
+                        if (args.Length >= 2) float.TryParse(args[1], out value);
+                        transform_.Options.Add(argWithoutTab, value);
+                        break;
+
                     case "label":
                         switch (argWithoutTab)
                         {
@@ -87,6 +102,20 @@ public class ScriptInterpreter
                                 {
                                     script.EssentialSyntax = "show";
                                     script.Arguments.Add(args[1]);
+
+                                    for (int i = 2; i < args.Length; i++)
+                                    {
+                                        switch (args[i])
+                                        {
+                                            case "at":
+                                                script.Arguments.Add($"at:{args[i + 1]}");
+                                                break;
+
+                                            case "with":
+                                                script.Arguments.Add($"with:{args[i + 1]}");
+                                                break;
+                                        }
+                                    }
                                 }
                                 break;
 
@@ -124,21 +153,11 @@ public class ScriptInterpreter
                                 break;
                         }
                         break;
-
-                    case "transform":
-                        switch (argWithoutTab)
-                        {
-                            case "xalign":
-                                break;
-
-                            case "yalign":
-                                break;
-
-                            case "zoom":
-                                break;
-                        }
-                        break;
                 }
+            }
+            else
+            {
+
             }
 
             if (script.EssentialSyntax == "#" && script.Arguments.Count == 0) continue; //unsupported feature (TODO)

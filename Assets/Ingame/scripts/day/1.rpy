@@ -1,11 +1,21 @@
 # 캐릭터
 define player = Character("나", color="#000000")
 
-define seah = Character("세아", color="#3a3e4a")
+define seah = Character("한세아", color="#3a3e4a")
 image seah = "$/images/chr_seah_demo.png"
 
-define hina = Character("히나", color="#f688a7")
+define hina = Character("유히나", color="#f688a7")
 image hina = "$/images/chr_hina_demo.png"
+
+transform seah_t1:
+	zoom 1.6
+	xalign 0.7
+	yalign 0.65
+
+transform hina_t1:
+	zoom 1.5
+	xalign 0.3
+	yalign 0.65
 
 # 배경
 image classroom = "$/images/bg_classroom_demo.png"
@@ -24,6 +34,7 @@ label start:
 	"…"
 	"드…르륵"
 	play music "$/audio/Nemo Neko.mp3"
+	show seah at seah_t1
 	seah "저기이이.. 남주 맞으시죠..?"
 	player "네."
 	"어? 좀 낯이 익은 얼굴이다."
@@ -47,6 +58,7 @@ label start:
 	"서로 어색하게 흐르고 있던 침묵을 깰 무언가가 필요할 마침, 교실 문이 힘차게 열린다."
 	"드르륵… 쿵!"
 	play music "$/audio/Nemo Neko.mp3"
+	show hina at hina_t1
 	hina "남주야!!"
 	hina "너 방송부 합격했엉!!! 몰랐지?"
 	player "알고 있었는데."
