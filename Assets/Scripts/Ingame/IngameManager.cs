@@ -1,14 +1,18 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
-using TMPro;
-using System.IO;
-using System;
-using RpyTransform = transform;
-using UnityEditor;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using UnityEditor;
+
+using TMPro;
+using DG.Tweening;
+
+using RpyTransform = transform;
 
 public class IngameManager : MonoBehaviour
 {
@@ -19,6 +23,7 @@ public class IngameManager : MonoBehaviour
     public TextMeshProUGUI ContentUI;
     public AudioSource MusicPlayer;
     public RawImage CharacterSample;
+    public float TextAnimationMultiplier = 0.07f;
 
     private GraphicRaycaster _raycaster;
     private bool _goToNext = true;
@@ -130,6 +135,7 @@ public class IngameManager : MonoBehaviour
                     case "$narration":
                         NameUI.text = "";
                         ContentUI.text = script.Arguments[0];
+                        TMPDOText(ContentUI, TextAnimationMultiplier * ContentUI.text.Length);
 
                         _goToNext = false;
                         break;
@@ -140,6 +146,7 @@ public class IngameManager : MonoBehaviour
                         NameUI.text = chr.Name;
                         NameUI.color = chr.Colour;
                         ContentUI.text = script.Arguments[1];
+                        TMPDOText(ContentUI, TextAnimationMultiplier * ContentUI.text.Length);
 
                         _goToNext = false;
                         break;
@@ -247,5 +254,11 @@ public class IngameManager : MonoBehaviour
             _preservedMusicTime = MusicPlayer.time;
             _isReeverb = false;
         }
+    }
+
+    public static void TMPDOText(TextMeshProUGUI text, float duration)
+    {
+        text.maxVisibleCharacters = 0;
+        DOTween.To(x => text.maxVisibleCharacters = (int)x, 0f, text.text.Length, duration).SetEase(Ease.Linear);
     }
 }

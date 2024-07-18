@@ -1,8 +1,17 @@
-define seah = Character("세아", color="#3a3e4a")
 define player = Character("나", color="#000000")
 
+define seah = Character("세아", color="#3a3e4a")
+image seah = "$/images/chr_seah_demo.png"
+
+transform seah_t1:
+	zoom 1.6
+	xalign 0.5
+
+image homebase = "$/images/bg_homebease_demo.png"
+
 label start:
-	# 장소: 홈베이스
+	scene homebase
+	show seah at seah_t1
 	seah "여기가 홈베이스에요."
 	seah "홈베이스 벽면 쪽에 우리 포스터를 붙이면 될 것 같아요."
 	"세아 선배는 포스터를 붙이러 홈베이스 안으로 들어갔다."
@@ -48,7 +57,7 @@ label start:
 	seah "고마워요 남주씨!"
 	"세아 선배는 그동안 본 적이 없던 밝은 미소를 내게 처음 지었다."
 	"뭐랄까, 마음 속에서 뒤섞인 감정이 함께 우러나오는 기분이었다."
-	# 브금: Sweet Haru
+	play music "%/audio/Sweet Haru.mp3"
 	"세아 선배는 주머니에서 커터칼과 테이프를 꺼내 내게 건냈다."
 	player "제가 포스터를 들게요."
 	"포스터가 제법 무거워서 그냥 내가 포스터를 들고, 세아 선배는 커터칼과 테이프를 가지고 있는게 나아보였다."

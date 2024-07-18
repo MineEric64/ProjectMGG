@@ -99,7 +99,8 @@ public class IntroManager : MonoBehaviour
 
     void GoDay2_Demo2()
     {
-        Application.Quit();
+        ParamManager.ScriptPath = @$"{Application.dataPath}\Ingame\scripts\day\2.rpy";
+        SceneManager.LoadScene("Ingame");
     }
 
     void UseDynamicDLL()
