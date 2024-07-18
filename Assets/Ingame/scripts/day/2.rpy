@@ -7,7 +7,7 @@ transform seah_t1:
 	zoom 1.6
 	xalign 0.5
 
-image homebase = "$/images/bg_homebease_demo.png"
+image homebase = "$/images/bg_homebase_demo.png"
 
 label start:
 	scene homebase
