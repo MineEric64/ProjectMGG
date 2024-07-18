@@ -254,8 +254,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: _
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 1f523ae1cfbf9e740bf590c1d73010e5, type: 2}
-  m_sharedMaterial: {fileID: 5451347768182532972, guid: 1f523ae1cfbf9e740bf590c1d73010e5, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8ecf2f0ef790e144587bd9f5a332e1d5, type: 2}
+  m_sharedMaterial: {fileID: 2584791008833938492, guid: 8ecf2f0ef790e144587bd9f5a332e1d5, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -584,6 +584,7 @@ MonoBehaviour:
   ContentUI: {fileID: 310616674}
   MusicPlayer: {fileID: 605366159}
   CharacterSample: {fileID: 8649560694921746454, guid: 3daaf7c50de43a34e9f4654cd113a783, type: 3}
+  TextAnimationMultiplier: 0.03
 --- !u!1 &605366158
 GameObject:
   m_ObjectHideFlags: 0
