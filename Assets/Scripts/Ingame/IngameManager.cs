@@ -23,7 +23,7 @@ public class IngameManager : MonoBehaviour
     public TextMeshProUGUI ContentUI;
     public AudioSource MusicPlayer;
     public RawImage CharacterSample;
-    public float TextAnimationMultiplier = 0.03f;
+    public float TextAnimationMultiplier = 0.04f;
 
     private GraphicRaycaster _raycaster;
     private bool _goToNext = true;
