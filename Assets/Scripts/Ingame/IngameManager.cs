@@ -13,6 +13,7 @@ using TMPro;
 using DG.Tweening;
 
 using RpyTransform = transform;
+using Unity.Burst.Intrinsics;
 
 public class IngameManager : MonoBehaviour
 {
@@ -88,46 +89,45 @@ public class IngameManager : MonoBehaviour
 
                     case "show":
                         Character chr2 = Interpreter.Characters[script.Arguments[0]];
-                        Texture2D texture2 = LoadResource<Texture2D>(chr2.Images["default"]);
-                        RawImage prefab = Instantiate(CharacterSample, this.transform);
-                        prefab.transform.SetSiblingIndex(1);
+                        string resource = script.FindArgument("image:", "default");
+                        Texture2D texture2 = LoadResource<Texture2D>(chr2.Images[resource]);
+                        RawImage prefab = GameObject.Find(chr2.NameVar)?.GetComponent<RawImage>();
 
+                        if (prefab == null)
+                        {
+                            prefab = Instantiate(CharacterSample, this.transform);
+                            prefab.transform.SetSiblingIndex(1);
+                        }
+                        
                         if (texture2 != null)
                         {
                             prefab.texture = texture2;
                             prefab.name = chr2.NameVar;
                             prefab.rectTransform.sizeDelta = new Vector3(texture2.width, texture2.height);
 
-                            if (script.Arguments.Count == 1)
+                            RpyTransform transform_ = null;
+
+                            string at = script.FindArgument("at:");
+
+                            if (!string.IsNullOrEmpty(at))
+                            {
+                                transform_ = Interpreter.Transforms[at];
+                                float value = -1;
+
+                                if (transform_.Options.TryGetValue("zoom", out value))
+                                {
+                                    float width = texture2.width * value;
+                                    float height = texture2.height * value;
+
+                                    prefab.transform.localScale = new Vector3(value, value);
+                                    prefab.transform.localPosition = new Vector3(0f, -(720 - height / 2));
+                                }
+                                if (transform_.Options.TryGetValue("xalign", out value)) prefab.transform.localPosition = new Vector3(1280 * (value - 0.5f) * 2, prefab.transform.localPosition.y);
+                                if (transform_.Options.TryGetValue("yalign", out value)) prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(720 * (value - 0.5f) * 2));
+                            }
+                            else
                             {
                                 prefab.transform.localPosition = new Vector3(0f, -(720 - texture2.height / 2));
-                            }
-                            else if (script.Arguments.Count >= 2)
-                            {
-                                RpyTransform transform_ = null;
-
-                                for (int i = 1; i < script.Arguments.Count; i++)
-                                {
-                                    string arg = script.Arguments[i];
-
-                                    if (arg.StartsWith("at:")) transform_ = Interpreter.Transforms[arg.Substring(3)];
-                                }
-
-                                if (transform_ != null)
-                                {
-                                    float value = -1;
-
-                                    if (transform_.Options.TryGetValue("zoom", out value))
-                                    {
-                                        float width = texture2.width * value;
-                                        float height = texture2.height * value;
-
-                                        prefab.transform.localScale = new Vector3(value, value);
-                                        prefab.transform.localPosition = new Vector3(0f, -(720 - height / 2));
-                                    }
-                                    if (transform_.Options.TryGetValue("xalign", out value)) prefab.transform.localPosition = new Vector3(1280 * (value - 0.5f) * 2, prefab.transform.localPosition.y);
-                                    if (transform_.Options.TryGetValue("yalign", out value)) prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(720 * (value - 0.5f) * 2));
-                                }
                             }
                         }
                         break;

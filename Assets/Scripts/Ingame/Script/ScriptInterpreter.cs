@@ -56,7 +56,8 @@ public class ScriptInterpreter
                         string filePath = text.Substring(text.IndexOf("=") + 1).Trim().Replace("\"", "");
                         if (characters.TryGetValue(args[1], out var chr))
                         {
-                            chr.Images.Add("default", filePath);
+                            if (args[2] != "=") chr.Images.Add(args[2], filePath);
+                            else chr.Images.Add("default", filePath);
                         }
                         else images.Add(args[1], filePath);
                     }
@@ -113,6 +114,10 @@ public class ScriptInterpreter
 
                                             case "with":
                                                 script.Arguments.Add($"with:{args[i + 1]}");
+                                                break;
+
+                                            default:
+                                                if (i == 2) script.Arguments.Add($"image:{args[2]}");
                                                 break;
                                         }
                                     }

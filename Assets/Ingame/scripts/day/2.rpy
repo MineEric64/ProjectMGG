@@ -1,17 +1,28 @@
 define player = Character("나", color="#000000")
 
-define seah = Character("세아", color="#3a3e4a")
-image seah = "$/images/chr_seah_demo.png"
+define seah = Character("세아", color="#abb7db")
+image seah default = "$/images/chr_seah/1.png"
+image seah happy1 = "$/images/chr_seah/4.png"
+image seah happy2 = "$/images/chr_seah/5.png"
+image seah blush1 = "$/images/chr_seah/2-1-1.png"
+image seah blush2 = "$/images/chr_seah/2-1-2.png"
+image seah blush3 = "$/images/chr_seah/2-1-3.png"
+image seah blush4 = "$/images/chr_seah/2-2-1.png"
+image seah blush5 = "$/images/chr_seah/2-2-2.png"
+image seah blush6 = "$/images/chr_seah/2-2-3.png"
+image seah blush7 = "$/images/chr_seah/2extend.png"
+image seah blush8 = "$/images/chr_seah/3.png"
 
 transform seah_t1:
-	zoom 1.6
+	zoom 0.8
 	xalign 0.5
+	yalign 0.6
 
 image homebase = "$/images/bg_homebase_demo.png"
 
 label start:
 	scene homebase
-	show seah at seah_t1
+	show seah default at seah_t1
 	play music "$/audio/Adorkable Love v3.mp3"
 	seah "여기가 홈베이스에요."
 	seah "홈베이스 벽면 쪽에 우리 포스터를 붙이면 될 것 같아요."
@@ -26,9 +37,11 @@ label start:
 	"그럼 이제 포스터를 붙여볼까?"
 	"포스터 하나를 집자 세아 선배는 단호한 목소리로 반응했다."
 	seah "포스터 붙이는 건 제가 할게요."
+	show seah blush7 at seah_t1
 	seah "더군다나 아까 포스터를 다 들어준 건 고마웠어요···."
 	player "하하···"
 	"세아 선배에게 칭찬을 들으니 어깨가 조금이나마 으쓱해졌다."
+	show seah default at seah_t1
 	"선배는 곧바로 포스터 하나를 집어 ‘어디에 붙여야지 포스터가 제일 잘 보일까?’라는 듯이 망설이고 있었다."
 	"얼마 지나지 않아 세아 선배는 결심이 선 듯 자리를 약간 옆으로 옮겼다."
 	"그리고 선배는 포스터를 붙이기 위해 양손을 위로 쭉 뻗는다."
@@ -52,14 +65,19 @@ label start:
 	"아무래도 포스터를 다시 붙이려고 일어나려는 거겠지."
 	"아쉽다. 세아 선배와 계속 가까이 있고 싶었는데."
 	"세아 선배는 넘어지면서 내동댕이 친 포스터를 다시 주웠다."
+	show seah blush7 at seah_t1
 	"발을 동동 구르던 와중에 나를 물끄러미 바라본다."
 	"나에게 무슨 할 말이 있는 걸까?"
 	"세아 선배는 조심스러워 하는 기색으로 말을 꺼냈다."
+	show seah blush2 at seah_t1
 	seah "저··· 포스터 같이 붙이면 안될까요오···?"
+	show seah blush8 at seah_t1
 	seah "저 혼자 포스터를 붙이다가··· 아까처럼 넘어지며언······."
 	player "음.. 알겠어요 선배님. 그럼 이건 어때요?"
 	player "제가 포스터 위쪽을 붙일 테니, 선배님은 아래쪽을 붙이는 거죠."
+	show seah happy1 at seah_t1
 	seah "오! 그건 생각 못했네요 ㅎ.ㅎ"
+	show seah happy2 at seah_t1
 	seah "고마워요 남주씨!"
 	"세아 선배는 그동안 본 적이 없던 밝은 미소를 내게 처음 지었다."
 	"뭐랄까, 마음 속에서 뒤섞인 감정이 함께 우러나오는 이 기분···."

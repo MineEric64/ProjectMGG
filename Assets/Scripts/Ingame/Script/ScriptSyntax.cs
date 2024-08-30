@@ -13,4 +13,14 @@ public class ScriptSyntax
         EssentialSyntax = essentialSyntax;
         Arguments = new List<string>();
     }
+
+    public string FindArgument(string syntax, string strIfNotFound = "")
+    {
+        for (int i = 0; i < Arguments.Count; i++)
+        {
+            string arg = Arguments[i];
+            if (arg.StartsWith(syntax)) return arg.Substring(syntax.Length);
+        }
+        return strIfNotFound;
+    }
 }

@@ -2,15 +2,25 @@
 define player = Character("나", color="#000000")
 
 define seah = Character("한세아", color="#3a3e4a")
-image seah = "$/images/chr_seah_demo.png"
+image seah default = "$/images/chr_seah/1.png"
+image seah happy1 = "$/images/chr_seah/4.png"
+image seah happy2 = "$/images/chr_seah/5.png"
+image seah blush1 = "$/images/chr_seah/2-1-1.png"
+image seah blush2 = "$/images/chr_seah/2-1-2.png"
+image seah blush3 = "$/images/chr_seah/2-1-3.png"
+image seah blush4 = "$/images/chr_seah/2-2-1.png"
+image seah blush5 = "$/images/chr_seah/2-2-2.png"
+image seah blush6 = "$/images/chr_seah/2-2-3.png"
+image seah blush7 = "$/images/chr_seah/2extend.png"
+image seah blush8 = "$/images/chr_seah/3.png"
 
 define hina = Character("유히나", color="#f688a7")
 image hina = "$/images/chr_hina_demo.png"
 
 transform seah_t1:
-	zoom 1.6
+	zoom 0.7
 	xalign 0.7
-	yalign 0.65
+	yalign 0.6
 
 transform hina_t1:
 	zoom 1.5
@@ -31,9 +41,9 @@ label start:
 	"…"
 	"에이 그냥 안 먹어야겠다."
 	"애초에 급식을 빨리 먹기엔 내가 너무 늦게 일어나기도 했고."
-	"드…르륵"
+	"(드…르륵)"
 	play music "$/audio/Nemo Neko.mp3"
-	show seah at seah_t1
+	show seah blush7 at seah_t1
 	seah "저기이이,, 남주 맞으시죠···?"
 	player "네."
 	seah "… 방송부 합격하셨어요."
@@ -41,13 +51,17 @@ label start:
 	"방송부를 합격했다는 게 믿기지가 않는다."
 	"진심으로 방송하고 싶어서 지원한 게 아닌 사람인 내가 무려 방송부원이라니."
 	"무엇보다 면접할 때 말을 절어서 중간에 반쯤 포기한 듯 아무말 대잔치했는데···."
+	show seah blush8 at seah_t1
 	seah "저… 그리고······."
+	show seah blush4 at seah_t1
 	seah "저ㅡ저 방송부 선배인 한세아라고 하니깐 앞으로 잘 부탁해요오!!!"
 	reeverb
 	"선배의 쩌렁쩌렁한 목소리가 교실에 울려펴졌다."
+	show seah blush5 at seah_t1
 	"소리가 얼마나 컸는지 그 뒤로는 평소에 들리던 소리도 들리지 않을 정도로."
 	"새가 창가에 앉아 편안하게 지저귀는 소리도, 더군다나 바람에 커튼이 흔들리는 소리도,"
 	"지금 이 순간만큼은 시간이 멈춰버린 것만 같이 아주 조용했다."
+	show seah blush8 at seah_t1
 	"세아 선배는 이제 말을 어떻게 이어나가야 할지 모르겠다는 기색으로 내 눈을 힐끔 피하고 있는다."
 	"선배가 그러고 있으면 나ㅡ나는 어떻게 해야···."
 	"……"
@@ -78,8 +92,10 @@ label start:
 	"내 장난에 제대로 먹혔는지 히나의 얼굴은 점차 찌푸려진다."
 	"오히려 좋아."
 	hina "그런데 옆에는.. 누구?"
+	show seah blush7 at seah_t1
 	seah "아 저,, 저는······"
 	player "방송부 선배인 한세아 누나셔."
+	show seah blush2 at seah_t1
 	"뇌에 필터링을 거치지 않은 채 생각없이 누나라고 말이 나와버렸다."
 	"아무래도 히나가 있어서 히나의 평소 장난치는 성격을 의식한 듯하다."
 	"방금 말실수로 인해 세아 선배가 싫어하지는 않을까."
@@ -91,6 +107,7 @@ label start:
 	hina "남주야 뭐해!! 언능 인사드려야지!"
 	player "아.. 안녕하세요 세아 선배님! 저도 히나랑 같은 방송부 신입입니다."
 	player "잘 부탁드려요."
+	show seah default at seah_t1
 	seah "…"
 	# 눈은 보이지 않지만 웃는 표정인 세아의 캐릭터 CG
 	"세아 선배는 우리의 인삿말에도 잠자코 있었다."
@@ -108,7 +125,8 @@ label start:
 	hina "우와앙!!!"
 	hina "역시 선배님! 믿고 있었다구요!!"
 	"우리는 세컨드 차장을 그저 방송부원이라고 부르기로 했어요…"
-	# 꼬르륵… SFX
+	"(꼬르륵…)"
+	show seah blush7 at seah_t1
 	"귀가 빨개진 세아 선배."
 	hina "… 저희 일단 밥 먹으러 가시죠!"
 	"그렇게 셋이서 밥을 먹으러 급식실로 내려갔다."
