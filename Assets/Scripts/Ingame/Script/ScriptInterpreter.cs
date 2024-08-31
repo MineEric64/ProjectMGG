@@ -1,7 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+
 using UnityEngine;
+
+using SmartFormat;
 
 public class ScriptInterpreter
 {
@@ -46,6 +49,7 @@ public class ScriptInterpreter
                     if (text.Contains("Character"))
                     {
                         var chr = Character.Interpret(text);
+                        chr.Name = ConvertToSyntax(chr.Name);
                         characters.Add(chr.NameVar, chr);
                     }
                     break;
@@ -140,8 +144,10 @@ public class ScriptInterpreter
 
                             default:
                                 if (textWithoutTab.StartsWith("\"")) {
+                                    string textConverted = ConvertToSyntax(textWithoutTab.Replace("\"", ""));
+
                                     script.EssentialSyntax = "$narration";
-                                    script.Arguments.Add(textWithoutTab.Replace("\"", ""));
+                                    script.Arguments.Add(textConverted);
                                 }
                                 else if (textWithoutTab.StartsWith("#"))
                                 {
@@ -150,9 +156,11 @@ public class ScriptInterpreter
                                 }
                                 else if (characters.ContainsKey(argWithoutTab))
                                 {
+                                    string textConverted = ConvertToSyntax(textWithoutTab.Substring(argWithoutTab.Length + 2).TrimEnd('"'));
+
                                     script.EssentialSyntax = "$dialog";
                                     script.Arguments.Add(argWithoutTab);
-                                    script.Arguments.Add(textWithoutTab.Substring(argWithoutTab.Length + 2).TrimEnd('"'));
+                                    script.Arguments.Add(textConverted);
                                 }
                                 
                                 break;
@@ -183,5 +191,26 @@ public class ScriptInterpreter
     {
         if (_index == Scripts.Count) return null;
         return Scripts[_index];
+    }
+
+    private static string ConvertToSyntax(string text)
+    {
+        string text2 = text;
+
+        text2 = text2.Replace("[playername:은]", Smart.Format("{0:은}", ParamManager.PlayerName));
+        text2 = text2.Replace("[playername:는]", Smart.Format("{0:는}", ParamManager.PlayerName));
+        text2 = text2.Replace("[playername:이]", Smart.Format("{0:이}", ParamManager.PlayerName));
+        text2 = text2.Replace("[playername:가]", Smart.Format("{0:가}", ParamManager.PlayerName));
+
+        text2 = text2.Replace("[playername2:은]", Smart.Format("{0:은}", ParamManager.PlayerName2));
+        text2 = text2.Replace("[playername2:는]", Smart.Format("{0:는}", ParamManager.PlayerName2));
+        text2 = text2.Replace("[playername2:이]", Smart.Format("{0:이}", ParamManager.PlayerName2));
+        text2 = text2.Replace("[playername2:가]", Smart.Format("{0:가}", ParamManager.PlayerName2));
+        text2 = text2.Replace("[playername2:야]", Smart.Format("{0:야}", ParamManager.PlayerName2));
+
+        text2 = text2.Replace("[playername]", ParamManager.PlayerName);
+        text2 = text2.Replace("[playername2]", ParamManager.PlayerName2);
+
+        return text2;
     }
 }

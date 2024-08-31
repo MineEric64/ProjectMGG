@@ -1,5 +1,5 @@
 # 캐릭터
-define player = Character("나", color="#000000")
+define player = Character("[playername]", color="#000000")
 
 define seah = Character("한세아", color="#3a3e4a")
 image seah default = "$/images/chr_seah/1.png"
@@ -44,7 +44,7 @@ label start:
 	"(드…르륵)"
 	play music "$/audio/Nemo Neko.mp3"
 	show seah blush7 at seah_t1
-	seah "저기이이,, 남주 맞으시죠···?"
+	seah "저기이이,, [playername2] 맞으시죠···?"
 	player "네."
 	seah "… 방송부 합격하셨어요."
 	seah "알려드릴 게 있으니 밥 먹고 방송실로 와주세요···!"
@@ -70,7 +70,7 @@ label start:
 	"드르륵… 쿵!"
 	play music "$/audio/Nemo Neko.mp3"
 	show hina at hina_t1
-	hina "남주야!!"
+	hina "[playername2:야]!!"
 	hina "너 방송부 합격했엉!!! 몰랐지?"
 	player "알고 있었는데."
 	player "뒷북 치네 ㅋ"
@@ -104,7 +104,7 @@ label start:
 	hina "헉 세아 선배님 정말 안녕하세요!! 저 방송부 신입인 유히나라고 합니당!"
 	hina "잘 부탁드려요오~~!!"
 	"히나 특유의 열렬한 성격대로, 히나는 열정적으로 선배를 환영했다."
-	hina "남주야 뭐해!! 언능 인사드려야지!"
+	hina "[playername2:야] 뭐해!! 언능 인사드려야지!"
 	player "아.. 안녕하세요 세아 선배님! 저도 히나랑 같은 방송부 신입입니다."
 	player "잘 부탁드려요."
 	show seah default at seah_t1
@@ -119,7 +119,7 @@ label start:
 	"갑작스러운 건 둘째 치고, 너무 이른 시간에 정하는 거 아닌가 싶었지만 그것보다 더 중요한 문제가 있었다."
 	"내 자리는 도대체 어디 있는 거야."
 	player "나는···?"
-	hina "남주는 차장인 내가 특별히! 세컨드 차장으로 임명해줄게 ㅎㅎ"
+	hina "[playername2:는] 차장인 내가 특별히! 세컨드 차장으로 임명해줄게 ㅎㅎ"
 	seah ".. 고민은 좀 해봐야겠지만, 일단 임시로 그렇게 하는게 좋을 것 같아요···."
 	# 눈빛이 초롱초롱한 히나의 캐릭터 CG
 	hina "우와앙!!!"

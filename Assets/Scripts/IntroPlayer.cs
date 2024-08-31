@@ -1,12 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+
+using SmartFormat.Extensions;
+using SmartFormat;
 
 public class IntroManager : MonoBehaviour
 {
@@ -15,6 +20,7 @@ public class IntroManager : MonoBehaviour
     public Button day2_demo1;
     public Button day2_demo2;
     public AudioSource bgm;
+    public TMP_InputField nameInput;
 
     public bool needToFadeIn = false;
     public bool needToFadeOut = false;
@@ -28,6 +34,8 @@ public class IntroManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Smart.Default.AddExtensions(new KoreanFormatter(Smart.Default));
+
         canvasMain.GetComponent<CanvasGroup>().alpha = 0.0f;
         canvasGroup = gameObject.GetComponent<CanvasGroup>();
 
@@ -94,12 +102,14 @@ public class IntroManager : MonoBehaviour
     void GoDay2_Demo1()
     {
         ParamManager.ScriptPath = @$"{Application.dataPath}\Ingame\scripts\day\1.rpy";
+        ApplyPlayerName();
         SceneManager.LoadScene("Ingame");
     }
 
     void GoDay2_Demo2()
     {
         ParamManager.ScriptPath = @$"{Application.dataPath}\Ingame\scripts\day\2.rpy";
+        ApplyPlayerName();
         SceneManager.LoadScene("Ingame");
     }
 
@@ -111,5 +121,39 @@ public class IntroManager : MonoBehaviour
         var c = Activator.CreateInstance(theType);
         var method = theType.GetMethod("Test");
         method.Invoke(c, new object[] { @"Hello" });
+    }
+
+    void ApplyPlayerName()
+    {
+        const bool IS_DEBUGGING = true;
+        string defaultName = IS_DEBUGGING ? "남주" : "이주용";
+
+        ParamManager.PlayerName = string.IsNullOrWhiteSpace(nameInput.text) ? defaultName : nameInput.text;
+        ParamManager.PlayerName2 = GetPlayerName2(ParamManager.PlayerName);
+    }
+
+    string GetPlayerName2(string playerName)
+    {
+        string[] database = new string[] { "김", "이", "박", "최", "정", "강", "조", "윤", "장", "임", "한", "오", "서", "신", "권", "황", "안", "송", "전", "홍", "유", "고", "문", "양", "손", "배", "백", "허", "유", "남", "심", "노", "하", "곽", "성", "차", "주", "연", "방", "위", "표", "명", "기", "반", "라", "왕", "금", "옥", "육", "인", "맹", "제", "모", "장", "탁", "국", "여", "진", "어", "남궁", "독고", "선우", "제갈" };
+
+        if (playerName.Length == 2) //이름 or 성(1글자), 이름(1글자)
+        {
+            //select: [0]이 성인가요?
+        }
+        else if (playerName.Length == 3) //성(1글자), 이름(2글자) or 성(2글자), 이름(1글자)
+        {
+            string familyName = database.Where(x => playerName.StartsWith(x)).FirstOrDefault();
+
+            if (!string.IsNullOrEmpty(familyName))
+            {
+                if (familyName.Length == 1) return playerName.Substring(1);
+                else return playerName.Substring(2);
+            }
+        }
+        else if (playerName.Length == 4) //성(2글자), 이름(2글자)
+        {
+            return playerName.Substring(2);
+        }
+        return playerName;
     }
 }

@@ -1,6 +1,6 @@
-define player = Character("나", color="#000000")
+define player = Character("[playername]", color="#000000")
 
-define seah = Character("세아", color="#abb7db")
+define seah = Character("한세아", color="#abb7db")
 image seah default = "$/images/chr_seah/1.png"
 image seah happy1 = "$/images/chr_seah/4.png"
 image seah happy2 = "$/images/chr_seah/5.png"
@@ -78,12 +78,13 @@ label start:
 	show seah happy1 at seah_t1
 	seah "오! 그건 생각 못했네요 ㅎ.ㅎ"
 	show seah happy2 at seah_t1
-	seah "고마워요 남주씨!"
+	seah "고마워요 [playername2]씨!"
 	"세아 선배는 그동안 본 적이 없던 밝은 미소를 내게 처음 지었다."
 	"뭐랄까, 마음 속에서 뒤섞인 감정이 함께 우러나오는 이 기분···."
 	"이상하다."
 	play music "$/audio/Sweet Haru.mp3"
 	# 포스터를 잡으면서 세아가 나를 위로 쳐다보며 밝은 표정을 짓는 구도인 CG 등장
+	show seah default at seah_t1
 	"세아 선배는 주머니에서 커터칼과 테이프를 꺼내 내게 건냈다."
 	player "제가 포스터를 들게요."
 	"포스터가 제법 무거웠기에 그냥 내가 포스터를 드는 게 낫다고 생각했다."
@@ -93,13 +94,16 @@ label start:
 	player "… 이정도로요?"
 	seah "좀만 더···."
 	player "됐죠?"
+	show seah happy1 at seah_t1
 	seah "좋아요! 그대로 가만히 냅두면 돼요."
 	seah "제가 그동안 테이프로 붙이고 있을게요."
 	"세아 선배는 테이프를 쫘악 뜯다 문득 작은 목소리로 이야기를 꺼냈다."
-	seah "혹시 남주씨는, 취미가 뭐에요···?"
+	show seah blush7 at seah_t1
+	seah "혹시 [playername2]씨는, 취미가 뭐에요···?"
 	"첫 이야기 중에서도 하필 대답하기 어려운 질문이라니···."
 	player "아, 저 애니메이션을 보면서 감상···하는 게 제 취미에요."
 	"애니 본다는 게 부끄러운 건 아니잖아?"
+	show seah default at seah_t1
 	seah "오! 저 애니메이션 하나 본 거 있어요."
 	seah "아실려나···?"
 	"오!? 애니를 봤다고??"
@@ -108,18 +112,23 @@ label start:
 	seah "장구는 못말려라고, 최근에 나온 거 봤는데 재밌더라구요."
 	player "아······."
 	player "그럼 선배님은 취미가 뭐에요?"
+	show seah blush7 at seah_t1
 	seah "아, 저는 주로 꽃을 보러 나가요."
 	seah "방송실에 꽃이 있는 거 봤죠?"
 	player "네. 선배님이 다 꾸며놓으신 건가요?"
+	show seah happy1 at seah_t1
 	seah "네! 제가 꽃으로 방 꾸미는 걸 좋아해서···."
 	"아, 아까 방송실에 갔을 때 꽃이 여러 개 있는 이유가 그거였구나."
+	show seah blush5 at seah_t1
 	seah "그리고,, 그 중에 알스트로메리아란 꽃은······."
 	"그 뒤로 목소리가 작아지는 바람에 선배의 말이 들리지 않는다."
 	player "아! 알스트로메리아 꽃 되게 예쁘더라고요."
 	"아까 여러모로 눈에 띄던 그 꽃의 이름이다."
 	player "그나저나 아까 뭐라고 하셨어요? 잘 못 들어서···"
+	show seah blush8 at seah_t1
 	seah "아니에요오···."
 	# 세아가 바로 옆에서 테이프 붙여주는 CG 등장
+	show seah default at seah_t1
 	"세아 선배는 테이프를 다시 힘껏 뜯어, 내 옆으로 천천히 다가왔다."
 	"이번에는 테이프를 손에 건내지 않고 선배가 직접 붙여주었다."
 	"선배가 테이프를 한땀한땀 붙이는 동안 나는 그저 가만히 있을 수 밖에 없었다."
@@ -127,8 +136,10 @@ label start:
 	"세아 선배는 내가 이렇게 가까이 있다는 것조차 눈치 채지 못한 듯하다."
 	"여전히 테이프 하나하나를 고심 끝에 붙이고 있었다."
 	"잠시 후, 세아 선배는 테이프를 바닥에 놓고 포스터를 멀리서 보려고 뒷걸음질을 쳤다."
+	show seah happy1 at seah_t1
 	"선배는 붙인 포스터가 만족스러웠는지 표정에 환한 미소가 흘러넘치고 있었다."
 	"세아 선배의 눈부신 웃음에 나도 왠지 모르게 뿌듯해진다."
 	"이게 뭐라고. 고작 포스터 한 장일 뿐인데."
+	show seah happy2 at seah_t1
 	seah "이제 홈베이스에 다 붙였으니 계단 쪽 게시판으로 가볼까요?"
 	player "네 선배님!"
