@@ -6,5 +6,6 @@
 > 
 *Since* 2/13/2023
 
-## Library Used
+# Prerequisites
+- Unity 2022.3.11f1
 - [SmartFormat.NET-Korean](https://github.com/what-studio/SmartFormat.NET-Korean)
