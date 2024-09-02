@@ -14,6 +14,7 @@ using DG.Tweening;
 
 using RpyTransform = transform;
 using Unity.Burst.Intrinsics;
+using static System.Net.Mime.MediaTypeNames;
 
 public class IngameManager : MonoBehaviour
 {
@@ -28,6 +29,7 @@ public class IngameManager : MonoBehaviour
 
     private GraphicRaycaster _raycaster;
     private bool _goToNext = true;
+    private bool _readAll = false;
 
     private float _preservedMusicTime = 0.0f;
     private string _currentPlayingMusic = "";
@@ -54,14 +56,24 @@ public class IngameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!_readAll) _readAll = ContentUI.maxVisibleCharacters == ContentUI.text.Length;
+
         if (IsClickedDialogUI())
         {
-            //tempoary
-            _goToNext = true;
+            if (!_readAll)
+            {
+                _readAll = true;
+                ContentUI.maxVisibleCharacters = ContentUI.text.Length;
+            }
+            else
+            {
+                _goToNext = true;
+                _readAll = false;
+            }
         }
 
-        if (_goToNext)
-        {
+            if (_goToNext)
+            {
             //tempoary
             var script = Interpreter.GetNumerator();
             var scriptNext = Interpreter.Peek();
@@ -256,9 +268,13 @@ public class IngameManager : MonoBehaviour
         }
     }
 
-    public static void TMPDOText(TextMeshProUGUI text, float duration)
+    public void TMPDOText(TextMeshProUGUI text, float duration)
     {
+        _readAll = false;
         text.maxVisibleCharacters = 0;
-        DOTween.To(x => text.maxVisibleCharacters = (int)x, 0f, text.text.Length, duration).SetEase(Ease.Linear);
+
+        DOTween.To(x => {
+            if (!_readAll) text.maxVisibleCharacters = (int)x;
+        }, 0f, text.text.Length, duration).SetEase(Ease.Linear);
     }
 }
