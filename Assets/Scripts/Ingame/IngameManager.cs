@@ -90,6 +90,13 @@ public class IngameManager : MonoBehaviour
                             Debug.LogError($"IngameManager : Couldn't load the scene '{varName}'. the variable doesn't exists.");
                             break;
                         }
+
+                        //remove existing characters
+                        foreach (Character chr3 in Interpreter.Characters.Values)
+                        {
+                            GameObject.Destroy(GameObject.Find(chr3.NameVar));
+                        }
+
                         Texture2D texture = LoadResource<Texture2D>(pathRaw);
 
                         if (texture != null)
