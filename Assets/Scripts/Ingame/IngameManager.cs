@@ -16,6 +16,7 @@ using RpyTransform = transform;
 using Unity.Burst.Intrinsics;
 using static System.Net.Mime.MediaTypeNames;
 
+[Obsolete()]
 public class IngameManager : MonoBehaviour
 {
     public ScriptInterpreter Interpreter;
@@ -87,7 +88,7 @@ public class IngameManager : MonoBehaviour
 
                         if (!Interpreter.Images.TryGetValue(varName, out var pathRaw))
                         {
-                            Debug.LogError($"IngameManager : Couldn't load the scene '{varName}'. the variable doesn't exists.");
+                            ExceptionManager.Throw($"Couldn't load the scene '{varName}'. the variable doesn't exists.", "IngameManager");
                             break;
                         }
 

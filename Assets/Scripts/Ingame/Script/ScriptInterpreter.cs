@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -6,6 +7,7 @@ using UnityEngine;
 
 using SmartFormat;
 
+[Obsolete("This ScriptInterpreter class is deprecated. Please use other class 'ScriptInterpreterV2'.")]
 public class ScriptInterpreter
 {
     public List<ScriptSyntax> Scripts;

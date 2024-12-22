@@ -101,7 +101,7 @@ public class IntroManager : MonoBehaviour
 
     void GoDay2_Demo1()
     {
-        ParamManager.ScriptPath = @$"{Application.dataPath}\Ingame\scripts\day\1.rpy";
+        ParamManager.ScriptPath = @$"{Application.dataPath}\Ingame\scripts\day\0.rpy";
         ApplyPlayerName();
         SceneManager.LoadScene("Ingame");
     }
