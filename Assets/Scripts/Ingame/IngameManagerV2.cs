@@ -12,12 +12,12 @@ using UnityEditor;
 using TMPro;
 using DG.Tweening;
 
-using RpyTransform = transform;
-using Unity.Burst.Intrinsics;
-using static System.Net.Mime.MediaTypeNames;
-
 public class IngameManagerV2 : MonoBehaviour
 {
+    //public static IngameManagerV2 Instance { get; private set; } = null;
+    public static VariableCollection Local = new VariableCollection(); //TODO: every label (using stack)
+    public static VariableCollection Global = new VariableCollection();
+
     public Interpreter Interpreter;
 
     public RawImage Background;
@@ -41,6 +41,7 @@ public class IngameManagerV2 : MonoBehaviour
     {
         // Get both of the components we need to do this
         _raycaster = GetComponent<GraphicRaycaster>();
+        //Instance = this;
     }
 
     // Start is called before the first frame update
@@ -92,6 +93,8 @@ public class IngameManagerV2 : MonoBehaviour
                 Interpreter.CurrentPoint.Interpret();
                 
                 //TODO: Comparing to IngameManager source code, let's add apply code!
+                
+
                 _goToNext = false;
             }
             else

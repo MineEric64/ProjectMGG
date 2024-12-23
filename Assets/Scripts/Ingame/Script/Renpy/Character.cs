@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-[Obsolete()]
-public class Character
+public class Character : IStatement
 {
     public string NameVar { get; set; }
     public string Name { get; set; }
@@ -20,6 +19,17 @@ public class Character
         Images = new Dictionary<string, string>();
     }
 
+    public void Print(int depth)
+    {
+        return;
+    }
+
+    public void Interpret()
+    {
+        //???
+    }
+
+    [Obsolete()]
     public static Character Interpret(string code)
     {
         string[] args = code.Split(" ");

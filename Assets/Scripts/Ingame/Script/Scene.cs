@@ -20,8 +20,7 @@ public class Scene : IStatement
         if (Datatype.IsString(value)) {
             string path = Datatype.ToString(value);
 
-            Debug.Log("Script/Interpret: scene " + path);
-            ///???
+            
         }
     }
 }

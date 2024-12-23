@@ -65,6 +65,7 @@ public class Scanner
 
                 default:
                     ExceptionManager.Throw("Can't interpret the token.", "Script/Scanner", _line);
+                    //return result;
                     break;
             }
         }

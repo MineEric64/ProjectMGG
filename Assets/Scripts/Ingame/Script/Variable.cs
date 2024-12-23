@@ -17,6 +17,14 @@ public class Variable : IStatement
 
     public void Interpret()
     {
-        Interpreter.Local[Interpreter.Local.Count - 1][0][Name] = Expression.Interpret();
+        if (false)
+        {
+
+        }
+        else
+        {
+            
+            //Interpreter.Local[Interpreter.Local.Count - 1][0][Name] = Expression.Interpret();
+        }
     }
 }

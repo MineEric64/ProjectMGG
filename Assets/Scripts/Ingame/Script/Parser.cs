@@ -27,10 +27,8 @@ public class Parser
                     break;
 
                 default:
-                    ExceptionManager.Throw($"Invalid Argument - {_tokens[_index]}", "Script/Parser");
-                    _index++;
+                    result.Blocks.Add(ParseOneBlock());
                     break;
-                    //return null;
             }
         }
 
@@ -132,7 +130,6 @@ public class Parser
 
                 case ArgumentKind.Jump:
                     //result.Add(ParseJump());
-
                     break;
 
                 case ArgumentKind.Pass:
@@ -160,6 +157,26 @@ public class Parser
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// for Exterior Block
+    /// </summary>
+    private IStatement ParseOneBlock()
+    {
+        switch (_tokens[_index].Kind)
+        {
+            case ArgumentKind.Variable:
+                return ParseVariable();
+
+            case ArgumentKind.EndOfToken:
+                //ExceptionManager.Throw($"Invalid Argument - {_tokens[_index]}", "Script/Parser");
+                return null;
+
+            default:
+                ExceptionManager.Throw($"Invalid Argument - {_tokens[_index]}", "Script/Parser");
+                return null;
+        }
     }
 
     private Variable ParseVariable()
@@ -190,6 +207,7 @@ public class Parser
             if (condition == null)
             {
                 ExceptionManager.Throw("Doesn't have a condition in if statement.", "Script/Parser");
+                return null;
             }
             result.Conditions.Add(condition);
 
