@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.Windows;
 
 public class Scanner
 {
@@ -63,8 +64,13 @@ public class Scanner
                     result.Add(ScanOperatorAndPunctuator(sourceCode));
                     break;
 
+                case CharType.Comment:
+                    result.Add(ScanComment(sourceCode));
+                    break;
+
                 default:
                     ExceptionManager.Throw("Can't interpret the token.", "Script/Scanner", _line);
+                    _index++;
                     //return result;
                     break;
             }
@@ -89,6 +95,11 @@ public class Scanner
         if (ch == '\'' || ch == '"')
         {
             return CharType.StringLiteral;
+        }
+
+        if (ch == '#')
+        {
+            return CharType.Comment;
         }
 
         if ('a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z')
@@ -151,7 +162,7 @@ public class Scanner
         return new Token(ArgumentKind.StringLiteral, content);
     }
 
-    private Token ScanIdentifierAndKeyword(String sourceCode)
+    private Token ScanIdentifierAndKeyword(string sourceCode)
     {
         string content = string.Empty;
 
@@ -170,7 +181,7 @@ public class Scanner
         return new Token(kind, content);
     }
 
-    private Token ScanOperatorAndPunctuator(String sourceCode)
+    private Token ScanOperatorAndPunctuator(string sourceCode)
     {
         StringBuilder sb = new StringBuilder();
 
@@ -194,26 +205,49 @@ public class Scanner
         return new Token(ArgumentKinds.ToKind(content), content);
     }
 
+    private Token ScanComment(string sourceCode)
+    {
+        string content = string.Empty;
+        _index++;
+
+        while (sourceCode[_index] != '\n')
+        {
+            if (sourceCode[_index] == '\r')
+            {
+                _index++;
+                continue;
+            }
+
+            content += sourceCode[_index];
+            _index++;
+        }
+
+        return new Token(ArgumentKind.Comment, content);
+    }
+
     private bool IsCharType(char ch, CharType type)
     {
         switch (type)
         {
             case CharType.NumberLiteral:
-                    return '0' <= ch && ch <= '9';
+                return '0' <= ch && ch <= '9';
 
             case CharType.StringLiteral:
-                    return 32 <= ch && ch <= 126 && ch != '\'' && ch != '"';
+                bool condition = 32 <= ch && ch <= 126 && ch != '\'' && ch != '"';
+                if (!condition) condition = ch > 255; //Unicode support
+
+                return condition;
 
             case CharType.IdentifierAndKeyword:
-                    return '0' <= ch && ch <= '9' ||
-                            'a' <= ch && ch <= 'z' ||
-                            'A' <= ch && ch <= 'Z';
+                return '0' <= ch && ch <= '9' ||
+                        'a' <= ch && ch <= 'z' ||
+                        'A' <= ch && ch <= 'Z';
 
             case CharType.OperatorAndPunctuator:
-                    return 33 <= ch && ch <= 47 ||
-                            58 <= ch && ch <= 64 ||
-                            91 <= ch && ch <= 96 ||
-                            123 <= ch && ch <= 126;
+                return 33 <= ch && ch <= 47 ||
+                        58 <= ch && ch <= 64 ||
+                        91 <= ch && ch <= 96 ||
+                        123 <= ch && ch <= 126;
 
             default:
                 return false;

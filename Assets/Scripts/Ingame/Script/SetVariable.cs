@@ -17,17 +17,9 @@ public class SetVariable : IExpression
 
     public object Interpret()
     {
-        foreach (Dictionary<string, object> variables in Interpreter.Local[Interpreter.Local.Count - 1])
-        {
-            if (variables.ContainsKey(Name))
-            {
-                variables[Name] = Value.Interpret();
-                return variables[Name];
-            }
-        }
+        if (IngameManagerV2.Local.Others.ContainsKey(Name)) IngameManagerV2.Local.Others[Name] = Value.Interpret();
+        else if (IngameManagerV2.Global.Others.ContainsKey(Name)) IngameManagerV2.Global.Others[Name] = Value.Interpret();
 
-        Interpreter.Global[Name] = Value.Interpret();
-        return Interpreter.Global[Name];
+        return IngameManagerV2.GetVariable(Name, ref IngameManagerV2.Local.Others, ref IngameManagerV2.Global.Others);
     }
-
 }

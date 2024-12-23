@@ -11,12 +11,15 @@ using UnityEditor;
 
 using TMPro;
 using DG.Tweening;
+using DG.Tweening.Plugins.Core.PathCore;
+
+using Path = System.IO.Path;
 
 public class IngameManagerV2 : MonoBehaviour
 {
-    //public static IngameManagerV2 Instance { get; private set; } = null;
-    public static VariableCollection Local = new VariableCollection(); //TODO: every label (using stack)
-    public static VariableCollection Global = new VariableCollection();
+    public static IngameManagerV2 Instance { get; private set; } = null;
+    public static VariableCollection Local { get; private set; } = new VariableCollection(); //TODO: every label (using stack)
+    public static VariableCollection Global { get; private set; } = new VariableCollection();
 
     public Interpreter Interpreter;
 
@@ -41,24 +44,38 @@ public class IngameManagerV2 : MonoBehaviour
     {
         // Get both of the components we need to do this
         _raycaster = GetComponent<GraphicRaycaster>();
-        //Instance = this;
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        //Initialize
+        Instance = this;
+        Local = new VariableCollection();
+        Global = new VariableCollection();
+
+        //Script
         var scanner = new Scanner();
         Parser parser;
         Interpreter = new Interpreter();
+        
+        if (!File.Exists(ParamManager.ScriptPath))
+        {
+            ExceptionManager.Throw($"Can't read the script because file doesn't exists.\n(File Path: '{ParamManager.ScriptPath}')", "IngameManagerV2/Script");
+            return;
+        }
 
-        List<Token> tokenList = scanner.Scan(File.ReadAllText(ParamManager.ScriptPath));
+        string sourceCode = File.ReadAllText(ParamManager.ScriptPath);
+        List<Token> tokenList = scanner.Scan(sourceCode);
         parser = new Parser(ref tokenList);
 
         Program syntaxTree = parser.Parse();
         Interpreter.Interpret(syntaxTree);
 
+        //Audio
         _reverbFilter = MusicPlayer.GetComponent<AudioReverbFilter>();
 
+        //UI
         NameUI.text = "";
         ContentUI.text = "";
     }
@@ -85,17 +102,17 @@ public class IngameManagerV2 : MonoBehaviour
 
         if (_goToNext)
         {
-            var script = Interpreter.CurrentPoint.GetCurrentBlock();
-            var scriptNext = Interpreter.CurrentPoint.GetNextBlock();
+            if (Interpreter.CurrentPoint == null) //error occured while scanning-parsing-interpreting
+            {
+                ExceptionManager.Throw("Error occured while interpreting the script.", "IngameManagerV2/Script");
+            }
+
+            var script = Interpreter.CurrentPoint?.GetCurrentBlock();
+            var scriptNext = Interpreter.CurrentPoint?.GetNextBlock();
 
             if (script != null)
             {
                 Interpreter.CurrentPoint.Interpret();
-                
-                //TODO: Comparing to IngameManager source code, let's add apply code!
-                
-
-                _goToNext = false;
             }
             else
             {
@@ -140,7 +157,34 @@ public class IngameManagerV2 : MonoBehaviour
         return 0;
     }
 
-    T LoadResource<T>(string pathRaw) where T : UnityEngine.Object
+    public void LetsNarration(string content)
+    {
+        NameUI.text = "";
+        ContentUI.text = content;
+        TMPDOText(ContentUI, TextAnimationMultiplier * ContentUI.text.Length);
+
+        _goToNext = false;
+    }
+
+    public void LetsDialog(string chrName, string content)
+    {
+        var chr = GetVariable(chrName, ref Local.Characters, ref Global.Characters);
+
+        if (chr == null)
+        {
+            ExceptionManager.Throw($"Invalid character argument '{chrName}' on dialog.", "IngameManagerV2");
+            return;
+        }
+
+        NameUI.text = chr.Name;
+        NameUI.color = chr.Colour;
+        ContentUI.text = content;
+        TMPDOText(ContentUI, TextAnimationMultiplier * ContentUI.text.Length);
+
+        _goToNext = false;
+    }
+
+    public static T LoadResource<T>(string pathRaw) where T : UnityEngine.Object
     {
         string path = pathRaw.Replace("/", @"\");
         string fileName = Path.GetFileName(path);
@@ -149,13 +193,13 @@ public class IngameManagerV2 : MonoBehaviour
         if (pathRaw.StartsWith(@"$/"))
         {
             t = Resources.Load<T>(ToResourcePath(path, pathRaw));
-            if (t == null) Debug.LogError($"IngameManager : Couldn't load the file '{fileName}'. the file doesn't exists.");
+            if (t == null) ExceptionManager.Throw($"Couldn't load the file '{fileName}'. the file doesn't exists.", "IngameManagerV2");
         }
 
         return t;
     }
 
-    string ToResourcePath(string path, string pathRaw)
+    public static string ToResourcePath(string path, string pathRaw)
     {
         return @$"assets/{pathRaw.Substring(2, pathRaw.LastIndexOf(Path.GetExtension(path)) - 2)}";
     }
@@ -181,5 +225,27 @@ public class IngameManagerV2 : MonoBehaviour
         DOTween.To(x => {
             if (!_readAll) text.maxVisibleCharacters = (int)x;
         }, 0f, text.text.Length, duration).SetEase(Ease.Linear);
+    }
+
+    public static T GetVariable<T>(string name, ref Dictionary<string, T> local, ref Dictionary<string, T> global)
+    {
+        if (local.ContainsKey(name)) return local[name];
+        if (global.ContainsKey(name)) return global[name];
+        return default;
+    }
+
+    public static List<T> CombineValues<T>(ref Dictionary<string, T> local, ref Dictionary<string, T> global, Func<T, List<T>, bool> compare = null)
+    {
+        var list = new List<T>(local.Values);
+        
+        foreach (var g in global.Values)
+        {
+            if (compare == null || !compare(g, list))
+            {
+                list.Add(g);
+            }
+        }
+
+        return list;
     }
 }

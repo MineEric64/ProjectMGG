@@ -4,12 +4,17 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Character : IStatement
+public class Character : IExpression
 {
     public string NameVar { get; set; }
     public string Name { get; set; }
     public Color Colour { get; set; }
     public Dictionary<string, string> Images { get; set; }
+
+    public Character()
+    {
+        Images = new Dictionary<string, string>();
+    }
 
     public Character(string nameVar, string name, Color colour)
     {
@@ -24,9 +29,9 @@ public class Character : IStatement
         return;
     }
 
-    public void Interpret()
+    public object Interpret()
     {
-        //???
+        return this;
     }
 
     [Obsolete()]
@@ -65,6 +70,6 @@ public class Character : IStatement
 
     public override string ToString()
     {
-        return $"NameVar: {NameVar}\nName: {Name}";
+        return $"Character(name={Name}, color={Colour})";
     }
 }

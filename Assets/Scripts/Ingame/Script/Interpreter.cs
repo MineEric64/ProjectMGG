@@ -38,6 +38,11 @@ public class Interpreter
         EntryPoint = FunctionTable[ENTRY_POINT];
         CurrentPoint = EntryPoint;
 
+        foreach (var block in program.Blocks)
+        {
+            block.Interpret();
+        }
+
         //EntryPoint.Interpret();
         //Local.RemoveAt(Local.Count - 1);
     }

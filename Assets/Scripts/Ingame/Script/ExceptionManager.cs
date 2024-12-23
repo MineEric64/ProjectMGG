@@ -22,10 +22,19 @@ public class ExceptionManager : MonoBehaviour
     public static void Throw(string message, string scriptName = "", int lineCount = -1)
     {
         string message2 = $"{scriptName} : {message}";
-        if (lineCount > 0) message2 += $" : (Line {lineCount})";
+        //string message3 = $"Error occured!\n\nThe message:\n{message}";
+
+        if (lineCount > 0)
+        {
+            message2 += $" : (Line {lineCount})";
+            //message3 += $"\n(Line {lineCount})";
+        }
 
         Debug.LogError(message2);
 
-        //TODO: some UI interactions
+        //if (UnityEditor.EditorUtility.DisplayDialog(scriptName, message3, "OK"))
+        //{
+        //    return;
+        //}
     }
 }

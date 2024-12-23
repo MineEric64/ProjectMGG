@@ -1,7 +1,9 @@
+using SmartFormat;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using UnityEngine;
 
 public class Parser
 {
@@ -23,11 +25,27 @@ public class Parser
             switch (_tokens[_index].Kind)
             {
                 case ArgumentKind.Function:
-                    result.Functions.Add(ParseFunction());
+                    var function = ParseFunction();
+
+                    if (function == null)
+                    {
+                        EndOfToken();
+                        break;
+                    }
+
+                    result.Functions.Add(function);
                     break;
 
                 default:
-                    result.Blocks.Add(ParseOneBlock());
+                    var block = ParseOneBlock();
+
+                    if (block == null)
+                    {
+                        EndOfToken();
+                        break;
+                    }
+
+                    result.Blocks.Add(block);
                     break;
             }
         }
@@ -57,6 +75,11 @@ public class Parser
         }
         _index += 1;
         return true;
+    }
+
+    private void EndOfToken()
+    {
+        _index = _tokens.Count - 1;
     }
 
     //private Function ParseFunction()
@@ -112,6 +135,18 @@ public class Parser
                     result.Add(ParseVariable());
                     break;
 
+                case ArgumentKind.Image:
+                    result.Add(ParseImage());
+                    break;
+
+                case ArgumentKind.StringLiteral: //narration
+                    result.Add(ParseNarration());
+                    break;
+
+                case ArgumentKind.Identifier: //dialog
+                    result.Add(ParseDialog());
+                    break;
+
                 case ArgumentKind.If:
                     result.Add(ParseIf());
                     break;
@@ -140,8 +175,11 @@ public class Parser
                     //result.Add(ParseReturn());
                     break;
 
+                case ArgumentKind.Comment:
+                    result.Add(ParseComment());
+                    break;
+
                 case ArgumentKind.EndOfToken:
-                    //ExceptionManager.Throw($"Invalid Argument - {_tokens[_index]}", "Script/Parser");
                     return result;
 
                 default:
@@ -167,11 +205,16 @@ public class Parser
         switch (_tokens[_index].Kind)
         {
             case ArgumentKind.Variable:
-                return ParseVariable();
+                return ParseVariable(true);
+
+            case ArgumentKind.Image:
+                return ParseImage(true);
 
             case ArgumentKind.EndOfToken:
-                //ExceptionManager.Throw($"Invalid Argument - {_tokens[_index]}", "Script/Parser");
                 return null;
+
+            case ArgumentKind.Comment:
+                return ParseComment();
 
             default:
                 ExceptionManager.Throw($"Invalid Argument - {_tokens[_index]}", "Script/Parser");
@@ -179,7 +222,7 @@ public class Parser
         }
     }
 
-    private Variable ParseVariable()
+    private Variable ParseVariable(bool isGlobal = false)
     {
         Variable result = new Variable();
         SkipCurrent(ArgumentKind.Variable);
@@ -187,10 +230,28 @@ public class Parser
         SkipCurrent(ArgumentKind.Identifier);
         SkipCurrent(ArgumentKind.Assignment);
         result.Expression = ParseExpression();
+        result.IsGlobal = isGlobal;
 
         if (result.Expression == null)
         {
             ExceptionManager.Throw($"Variable '{result.Name}' is used before it has been assigned a value.", "Script/Parser");
+        }
+        return result;
+    }
+
+    private RpyImage ParseImage(bool isGlobal = false)
+    {
+        RpyImage result = new RpyImage();
+        SkipCurrent(ArgumentKind.Image);
+        result.Name = _tokens[_index].Content;
+        SkipCurrent(ArgumentKind.Identifier);
+        SkipCurrent(ArgumentKind.Assignment);
+        result.Argument = ParseStringLiteral();
+        result.IsGlobal = isGlobal;
+
+        if (result.Argument == null)
+        {
+            ExceptionManager.Throw($"Image '{result.Name}' is used before it has been assigned a value.", "Script/Parser");
         }
         return result;
     }
@@ -226,9 +287,40 @@ public class Parser
         return result;
     }
 
+    private Narration ParseNarration()
+    {
+        Narration result = new Narration();
+        result.Argument = ConvertToSyntax(_tokens[_index].Content);
+
+        SkipCurrent();
+        return result;
+    }
+
+    private RpyDialog ParseDialog()
+    {
+        RpyDialog result = new RpyDialog();
+
+        result.CharacterName = _tokens[_index].Content;
+        SkipCurrent(ArgumentKind.Identifier);
+
+        result.Content = ConvertToSyntax(_tokens[_index].Content);
+        SkipCurrent(ArgumentKind.StringLiteral);
+
+        return result;
+    }
+
     private Reeverb ParseReeverb()
     {
         Reeverb result = new Reeverb();
+        SkipCurrent();
+
+        return result;
+    }
+
+    private RpyComment ParseComment()
+    {
+        RpyComment result = new RpyComment();
+        result.Content = _tokens[_index].Content;
         SkipCurrent();
 
         return result;
@@ -239,7 +331,15 @@ public class Parser
         Scene result = new Scene();
         SkipCurrent();
 
-        result.Argument = ParseExpression();
+        if (_tokens[_index].Kind != ArgumentKind.Identifier)
+        {
+            ExceptionManager.Throw("Invalid argument on scene.", "Script/Parser");
+            return null;
+        }
+
+        result.Argument = _tokens[_index].Content;
+        SkipCurrent(ArgumentKind.Identifier);
+
         return result;
     }
 
@@ -434,6 +534,10 @@ public class Parser
                 result = ParseStringLiteral();
                 break;
 
+            case ArgumentKind.Character:
+                result = ParseCharacter();
+                break;
+
             case ArgumentKind.LeftBracket:
                 result = ParseListLiteral();
                 break;
@@ -474,12 +578,35 @@ public class Parser
         return result;
     }
 
-    private IExpression ParseStringLiteral()
+    private StringLiteral ParseStringLiteral()
     {
         StringLiteral result = new StringLiteral();
-        result.Value = _tokens[_index].Content;
+        result.Value = ConvertToSyntax(_tokens[_index].Content);
         SkipCurrent(ArgumentKind.StringLiteral);
         return result;
+    }
+
+    private static string ConvertToSyntax(string text)
+    {
+        string text2 = text;
+
+        text2 = text2.Replace("[playername:은]", Smart.Format("{0:은}", ParamManager.PlayerName));
+        text2 = text2.Replace("[playername:는]", Smart.Format("{0:는}", ParamManager.PlayerName));
+        text2 = text2.Replace("[playername:이]", Smart.Format("{0:이}", ParamManager.PlayerName));
+        text2 = text2.Replace("[playername:가]", Smart.Format("{0:가}", ParamManager.PlayerName));
+
+        text2 = text2.Replace("[playername2:은]", Smart.Format("{0:은}", ParamManager.PlayerName2));
+        text2 = text2.Replace("[playername2:는]", Smart.Format("{0:는}", ParamManager.PlayerName2));
+        text2 = text2.Replace("[playername2:이]", Smart.Format("{0:이}", ParamManager.PlayerName2));
+        text2 = text2.Replace("[playername2:가]", Smart.Format("{0:가}", ParamManager.PlayerName2));
+        text2 = text2.Replace("[playername2:야]", Smart.Format("{0:야}", ParamManager.PlayerName2));
+
+        text2 = text2.Replace("[playername]", ParamManager.PlayerName);
+        text2 = text2.Replace("[playername2]", ParamManager.PlayerName2);
+
+        text2 = text2.Replace("\\n", "\n");
+
+        return text2;
     }
 
     private IExpression ParseListLiteral()
@@ -562,6 +689,58 @@ public class Parser
         result.Index = ParseExpression();
         SkipCurrent(ArgumentKind.RightBracket);
 
+        return result;
+    }
+
+    private IExpression ParseCharacter()
+    {
+        Character result = new Character();
+        
+        SkipCurrent();
+        SkipCurrent(ArgumentKind.LeftParen);
+
+        if (_tokens[_index].Kind != ArgumentKind.StringLiteral)
+        {
+            ExceptionManager.Throw("Invalid argument 'name' on Character Class.", "Script/Parser");
+            return null;
+        }
+
+        result.Name = _tokens[_index].Content;
+        SkipCurrent();
+        SkipCurrentIf(ArgumentKind.Comma);
+
+        if (_tokens[_index].Kind != ArgumentKind.RightParen)
+        {
+            do
+            {
+                //var expression = ParseExpression();
+                var varName = _tokens[_index].Content;
+                SkipCurrent();
+                SkipCurrent(ArgumentKind.Assignment);
+
+                switch (varName)
+                {
+                    case "color":
+                        if (_tokens[_index].Kind != ArgumentKind.StringLiteral)
+                        {
+                            ExceptionManager.Throw("Invalid argument 'color' on Character Class.", "Script/Parser");
+                            SkipCurrent();
+                            break;
+                        }
+                        if (!ColorUtility.TryParseHtmlString(_tokens[_index].Content, out var color))
+                        {
+                            ExceptionManager.Throw("Invalid Color format on Character Class.", "Script/Parser");
+                            SkipCurrent();
+                            break;
+                        }
+                        result.Colour = color;
+                        SkipCurrent();
+                        break;
+                }
+
+            } while (SkipCurrentIf(ArgumentKind.Comma));
+        }
+        SkipCurrent(ArgumentKind.RightParen);
         return result;
     }
 }

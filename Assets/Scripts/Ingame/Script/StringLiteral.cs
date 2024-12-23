@@ -1,3 +1,4 @@
+using SmartFormat;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,7 @@ using UnityEngine;
 public class StringLiteral : IExpression
 {
     public string Value { get; set; }
+    public static implicit operator string(StringLiteral s) => s.Value;
 
     public void Print(int depth)
     {

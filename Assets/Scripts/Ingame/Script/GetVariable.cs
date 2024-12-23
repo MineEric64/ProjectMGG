@@ -14,17 +14,9 @@ public class GetVariable : IExpression
 
     public object Interpret()
     {
-        foreach (Dictionary<string, object> variables in Interpreter.Local[Interpreter.Local.Count - 1])
-        {
-            if (variables.ContainsKey(Name))
-            {
-                return variables[Name];
-            }
-        }
-        if (Interpreter.Global.ContainsKey(Name))
-        {
-            return Interpreter.Global[Name];
-        }
+        var glocal = IngameManagerV2.GetVariable(Name, ref IngameManagerV2.Local.Others, ref IngameManagerV2.Global.Others);
+
+        if (glocal != null) return glocal;
         if (Interpreter.FunctionTable.ContainsKey(Name))
         {
             return Interpreter.FunctionTable[Name];

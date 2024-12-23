@@ -10,4 +10,5 @@ public enum CharType
     StringLiteral,              // 문자열 리터럴
     IdentifierAndKeyword,       // 식별자, 키워드
     OperatorAndPunctuator,      // 연산자, 구분자
+    Comment //주석
 }
