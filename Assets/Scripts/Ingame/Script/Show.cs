@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Show : IStatement
 {
-    public string Argument { get; set; }
+    public string Tag { get; set; }
+    public string Attributes { get; set; } = string.Empty;
+    public string At { get; set; } = string.Empty; //Transform Name
 
     public void Print(int depth)
     {
@@ -14,6 +16,6 @@ public class Show : IStatement
 
     public void Interpret()
     {
-        
+        IngameManagerV2.Instance.LetsShow(Tag, Attributes, At);
     }
 }

@@ -356,7 +356,25 @@ public class Parser
         Show result = new Show();
         SkipCurrent();
 
-        result.ParseIdentifier(true);
+        result.Tag = ParseIdentifier();
+        result.Attributes = ParseIdentifier(true);
+
+        while (_tokens[_index].Kind == ArgumentKind.At || _tokens[_index].Kind == ArgumentKind.With)
+        {
+            switch (_tokens[_index].Kind)
+            {
+                case ArgumentKind.At:
+                    SkipCurrent();
+                    result.At = ParseIdentifier();
+                    break;
+
+                case ArgumentKind.With:
+                    SkipCurrent();
+                    break;
+            }
+        }
+
+        return result;
     }
 
     //private Return parseReturn()
@@ -367,7 +385,7 @@ public class Parser
 
     //    if (result.getExpression() == null)
     //    {
-    //        throw new RuntimeException("return ¹®¿¡ ½ÄÀÌ ¾ø½À´Ï´Ù.");
+    //        throw new RuntimeException("return ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
     //    }
     //    skipCurrent(tokens, Kind.Semicolon);
     //    return result;
@@ -606,16 +624,16 @@ public class Parser
     {
         string text2 = text;
 
-        text2 = text2.Replace("[playername:Àº]", Smart.Format("{0:Àº}", ParamManager.PlayerName));
-        text2 = text2.Replace("[playername:´Â]", Smart.Format("{0:´Â}", ParamManager.PlayerName));
-        text2 = text2.Replace("[playername:ÀÌ]", Smart.Format("{0:ÀÌ}", ParamManager.PlayerName));
-        text2 = text2.Replace("[playername:°¡]", Smart.Format("{0:°¡}", ParamManager.PlayerName));
+        text2 = text2.Replace("[playername:ï¿½ï¿½]", Smart.Format("{0:ï¿½ï¿½}", ParamManager.PlayerName));
+        text2 = text2.Replace("[playername:ï¿½ï¿½]", Smart.Format("{0:ï¿½ï¿½}", ParamManager.PlayerName));
+        text2 = text2.Replace("[playername:ï¿½ï¿½]", Smart.Format("{0:ï¿½ï¿½}", ParamManager.PlayerName));
+        text2 = text2.Replace("[playername:ï¿½ï¿½]", Smart.Format("{0:ï¿½ï¿½}", ParamManager.PlayerName));
 
-        text2 = text2.Replace("[playername2:Àº]", Smart.Format("{0:Àº}", ParamManager.PlayerName2));
-        text2 = text2.Replace("[playername2:´Â]", Smart.Format("{0:´Â}", ParamManager.PlayerName2));
-        text2 = text2.Replace("[playername2:ÀÌ]", Smart.Format("{0:ÀÌ}", ParamManager.PlayerName2));
-        text2 = text2.Replace("[playername2:°¡]", Smart.Format("{0:°¡}", ParamManager.PlayerName2));
-        text2 = text2.Replace("[playername2:¾ß]", Smart.Format("{0:¾ß}", ParamManager.PlayerName2));
+        text2 = text2.Replace("[playername2:ï¿½ï¿½]", Smart.Format("{0:ï¿½ï¿½}", ParamManager.PlayerName2));
+        text2 = text2.Replace("[playername2:ï¿½ï¿½]", Smart.Format("{0:ï¿½ï¿½}", ParamManager.PlayerName2));
+        text2 = text2.Replace("[playername2:ï¿½ï¿½]", Smart.Format("{0:ï¿½ï¿½}", ParamManager.PlayerName2));
+        text2 = text2.Replace("[playername2:ï¿½ï¿½]", Smart.Format("{0:ï¿½ï¿½}", ParamManager.PlayerName2));
+        text2 = text2.Replace("[playername2:ï¿½ï¿½]", Smart.Format("{0:ï¿½ï¿½}", ParamManager.PlayerName2));
 
         text2 = text2.Replace("[playername]", ParamManager.PlayerName);
         text2 = text2.Replace("[playername2]", ParamManager.PlayerName2);
@@ -739,7 +757,7 @@ public class Parser
         SkipCurrent();
         SkipCurrent(ArgumentKind.LeftParen);
 
-        if (_tokens[_index].Kind != ArgumentKind.StringLiteral)
+        if (_tokens[_index].Kind != ArgumentKind.StringLiteral) //TODO: support variable
         {
             ExceptionManager.Throw("Invalid argument 'name' on Character Class.", "Script/Parser");
             return null;
@@ -761,7 +779,7 @@ public class Parser
                 switch (varName)
                 {
                     case "color":
-                        if (_tokens[_index].Kind != ArgumentKind.StringLiteral)
+                        if (_tokens[_index].Kind != ArgumentKind.StringLiteral) //TODO: support variable
                         {
                             ExceptionManager.Throw("Invalid argument 'color' on Character Class.", "Script/Parser");
                             SkipCurrent();

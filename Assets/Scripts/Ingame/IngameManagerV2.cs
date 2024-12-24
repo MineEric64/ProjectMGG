@@ -14,13 +14,14 @@ using DG.Tweening;
 using DG.Tweening.Plugins.Core.PathCore;
 
 using Path = System.IO.Path;
-using System.Xml.Linq;
+using RpyTransform = transform;
 
 public class IngameManagerV2 : MonoBehaviour
 {
     public static IngameManagerV2 Instance { get; private set; } = null;
     public static VariableCollection Local { get; private set; } = new VariableCollection(); //TODO: every label (using stack)
     public static VariableCollection Global { get; private set; } = new VariableCollection();
+    public static Dictionary<string, RpyTransform> Transforms { get; private set; } = new Dictionary<string, RpyTransform>();
 
     public Interpreter Interpreter;
 
@@ -185,20 +186,20 @@ public class IngameManagerV2 : MonoBehaviour
         _goToNext = false;
     }
 
-    public void LetsShow(string variableName, string attributes = "")
+    public void LetsShow(string variableName, string attributes = "", string transformName = "")
     {
-        var images = GetVariable(variableName, ref Local.Images, ref Global.Images);
+        var image = GetVariable(variableName, ref Local.Images, ref Global.Images);
         string resource = "";
 
-        if (images == null)
+        if (image == null)
         {
             ExceptionManager.Throw($"The image '{variableName}' variable doesn't exists while interpreting 'show' statement.", "IngameManagerV2");
             return;
         }
-        if (string.IsNullOrEmpty(attributes)) resource = images.MainImage;
+        if (string.IsNullOrEmpty(attributes)) resource = image.MainImage;
         else
         {
-            if (!images.SubImages.TryGetValue(attributes, out var subPath))
+            if (!image.SubImages.TryGetValue(attributes, out var subPath))
             {
                 ExceptionManager.Throw($"The image '{variableName}' that has a attribute '{attributes}' variable doesn't exists.", "IngameManagerV2");
                 return;
@@ -207,9 +208,7 @@ public class IngameManagerV2 : MonoBehaviour
         }
 
         Texture2D texture = LoadResource<Texture2D>(resource);
-
-        //어트리뷰트 속성 있으면 이미지도 메인 변수에서 갈아 끼워지는겨? ex) show seah -> show seah happy 하면 seah는 그냥에서 happy로 대체되는겨? 아니면 seah와 seah happy 따로?
-        RawImage prefab = GameObject.Find(chr.NameVar)?.GetComponent<RawImage>();
+        RawImage prefab = GameObject.Find(variableName)?.GetComponent<RawImage>();
 
         if (prefab == null)
         {
@@ -220,19 +219,17 @@ public class IngameManagerV2 : MonoBehaviour
         if (texture != null)
         {
             prefab.texture = texture;
-            prefab.name = chr.NameVar;
+            prefab.name = variableName;
             prefab.rectTransform.sizeDelta = new Vector3(texture.width, texture.height);
 
-            RpyTransform transform_ = null;
+            RpyTransform transform = null;
 
-            string at = script.FindArgument("at:");
-
-            if (!string.IsNullOrEmpty(at))
+            if (!string.IsNullOrEmpty(transformName))
             {
-                transform_ = Interpreter.Transforms[at];
+                transform = Transforms[transformName];
                 float value = -1;
 
-                if (transform_.Options.TryGetValue("zoom", out value))
+                if (transform.zoom != 1f)
                 {
                     float width = texture.width * value;
                     float height = texture.height * value;
@@ -240,8 +237,8 @@ public class IngameManagerV2 : MonoBehaviour
                     prefab.transform.localScale = new Vector3(value, value);
                     prefab.transform.localPosition = new Vector3(0f, -(720 - height / 2));
                 }
-                if (transform_.Options.TryGetValue("xalign", out value)) prefab.transform.localPosition = new Vector3(1280 * (value - 0.5f) * 2, prefab.transform.localPosition.y);
-                if (transform_.Options.TryGetValue("yalign", out value)) prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(720 * (value - 0.5f) * 2));
+                if (transform.xalign != 0.5f) prefab.transform.localPosition = new Vector3(1280 * (value - 0.5f) * 2, prefab.transform.localPosition.y);
+                if (transform.yalign != 0.5f) prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(720 * (value - 0.5f) * 2));
             }
             else
             {

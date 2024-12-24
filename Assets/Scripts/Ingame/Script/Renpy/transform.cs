@@ -5,10 +5,15 @@ using UnityEngine;
 
 public class transform
 {
-    public Dictionary<string, float> Options { get; set; }
+    //deprecated
+    [Obsolete()] public Dictionary<string, float> Options = new Dictionary<string, float>();
+
+    public float xalign = 0.5f;
+    public float yalign = 0.5f;
+    public float zoom  = 1f;
 
     public transform()
     {
-        Options = new Dictionary<string, float>();
+        
     }
 }
