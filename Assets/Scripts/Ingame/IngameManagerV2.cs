@@ -14,6 +14,7 @@ using DG.Tweening;
 using DG.Tweening.Plugins.Core.PathCore;
 
 using Path = System.IO.Path;
+using System.Xml.Linq;
 
 public class IngameManagerV2 : MonoBehaviour
 {
@@ -104,7 +105,7 @@ public class IngameManagerV2 : MonoBehaviour
         {
             if (Interpreter.CurrentPoint == null) //error occured while scanning-parsing-interpreting
             {
-                ExceptionManager.Throw("Error occured while interpreting the script.", "IngameManagerV2/Script");
+                ExceptionManager.Throw("The error has occured while interpreting the script.", "IngameManagerV2/Script");
             }
 
             var script = Interpreter.CurrentPoint?.GetCurrentBlock();
@@ -182,6 +183,71 @@ public class IngameManagerV2 : MonoBehaviour
         TMPDOText(ContentUI, TextAnimationMultiplier * ContentUI.text.Length);
 
         _goToNext = false;
+    }
+
+    public void LetsShow(string variableName, string attributes = "")
+    {
+        var images = GetVariable(variableName, ref Local.Images, ref Global.Images);
+        string resource = "";
+
+        if (images == null)
+        {
+            ExceptionManager.Throw($"The image '{variableName}' variable doesn't exists while interpreting 'show' statement.", "IngameManagerV2");
+            return;
+        }
+        if (string.IsNullOrEmpty(attributes)) resource = images.MainImage;
+        else
+        {
+            if (!images.SubImages.TryGetValue(attributes, out var subPath))
+            {
+                ExceptionManager.Throw($"The image '{variableName}' that has a attribute '{attributes}' variable doesn't exists.", "IngameManagerV2");
+                return;
+            }
+            resource = subPath;
+        }
+
+        Texture2D texture = LoadResource<Texture2D>(resource);
+
+        //어트리뷰트 속성 있으면 이미지도 메인 변수에서 갈아 끼워지는겨? ex) show seah -> show seah happy 하면 seah는 그냥에서 happy로 대체되는겨? 아니면 seah와 seah happy 따로?
+        RawImage prefab = GameObject.Find(chr.NameVar)?.GetComponent<RawImage>();
+
+        if (prefab == null)
+        {
+            prefab = Instantiate(CharacterSample, this.transform);
+            prefab.transform.SetSiblingIndex(1);
+        }
+
+        if (texture != null)
+        {
+            prefab.texture = texture;
+            prefab.name = chr.NameVar;
+            prefab.rectTransform.sizeDelta = new Vector3(texture.width, texture.height);
+
+            RpyTransform transform_ = null;
+
+            string at = script.FindArgument("at:");
+
+            if (!string.IsNullOrEmpty(at))
+            {
+                transform_ = Interpreter.Transforms[at];
+                float value = -1;
+
+                if (transform_.Options.TryGetValue("zoom", out value))
+                {
+                    float width = texture.width * value;
+                    float height = texture.height * value;
+
+                    prefab.transform.localScale = new Vector3(value, value);
+                    prefab.transform.localPosition = new Vector3(0f, -(720 - height / 2));
+                }
+                if (transform_.Options.TryGetValue("xalign", out value)) prefab.transform.localPosition = new Vector3(1280 * (value - 0.5f) * 2, prefab.transform.localPosition.y);
+                if (transform_.Options.TryGetValue("yalign", out value)) prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(720 * (value - 0.5f) * 2));
+            }
+            else
+            {
+                prefab.transform.localPosition = new Vector3(0f, -(720 - texture.height / 2));
+            }
+        }
     }
 
     public static T LoadResource<T>(string pathRaw) where T : UnityEngine.Object

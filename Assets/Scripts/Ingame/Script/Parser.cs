@@ -1,9 +1,11 @@
-using SmartFormat;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
+
 using UnityEngine;
+using SmartFormat;
 
 public class Parser
 {
@@ -57,7 +59,7 @@ public class Parser
     {
         if (_tokens[_index].Kind != kind)
         {
-            ExceptionManager.Throw($"Need a token '{kind}'.", "Script/Parser");
+            ExceptionManager.Throw($"Expected a token '{kind}', but got a token '{_tokens[_index].Kind}'.", "Script/Parser");
         }
         _index += 1;
     }
@@ -155,6 +157,10 @@ public class Parser
                     result.Add(ParseScene());
                     break;
 
+                case ArgumentKind.Show:
+                    result.Add(ParseShow());
+                    break;
+
                 case ArgumentKind.Reeverb:
                     result.Add(ParseReeverb());
                     break;
@@ -226,8 +232,10 @@ public class Parser
     {
         Variable result = new Variable();
         SkipCurrent(ArgumentKind.Variable);
+
         result.Name = _tokens[_index].Content;
-        SkipCurrent(ArgumentKind.Identifier);
+        SkipCurrent();
+
         SkipCurrent(ArgumentKind.Assignment);
         result.Expression = ParseExpression();
         result.IsGlobal = isGlobal;
@@ -243,15 +251,17 @@ public class Parser
     {
         RpyImage result = new RpyImage();
         SkipCurrent(ArgumentKind.Image);
-        result.Name = _tokens[_index].Content;
-        SkipCurrent(ArgumentKind.Identifier);
+
+        result.Tag = ParseIdentifier();
+        result.Attributes = ParseIdentifier(true);
         SkipCurrent(ArgumentKind.Assignment);
-        result.Argument = ParseStringLiteral();
+
+        result.Path = ParseStringLiteral();
         result.IsGlobal = isGlobal;
 
-        if (result.Argument == null)
+        if (result.Path == null)
         {
-            ExceptionManager.Throw($"Image '{result.Name}' is used before it has been assigned a value.", "Script/Parser");
+            ExceptionManager.Throw($"Image '{result.Tag}' is used before it has been assigned a value.", "Script/Parser");
         }
         return result;
     }
@@ -331,16 +341,22 @@ public class Parser
         Scene result = new Scene();
         SkipCurrent();
 
-        if (_tokens[_index].Kind != ArgumentKind.Identifier)
+        if (_tokens[_index].Kind != ArgumentKind.Identifier || _tokens[_index].Kind != ArgumentKind.NumberLiteral)
         {
             ExceptionManager.Throw("Invalid argument on scene.", "Script/Parser");
             return null;
         }
-
-        result.Argument = _tokens[_index].Content;
-        SkipCurrent(ArgumentKind.Identifier);
+        result.Argument = ParseIdentifier(true);
 
         return result;
+    }
+
+    private Show ParseShow()
+    {
+        Show result = new Show();
+        SkipCurrent();
+
+        result.ParseIdentifier(true);
     }
 
     //private Return parseReturn()
@@ -645,11 +661,35 @@ public class Parser
         return result;
     }
 
-    private IExpression ParseIdentifier()
+    private GetVariable ParseIdentifier(bool allowWhiteSpace = false, bool allowKeyword = true)
     {
         GetVariable result = new GetVariable();
-        result.Name = _tokens[_index].Content;
-        SkipCurrent(ArgumentKind.Identifier);
+
+        if (allowWhiteSpace)
+        {
+            var sb = new StringBuilder();
+
+            while (true)
+            {
+                if (!allowKeyword && _tokens[_index].Kind != ArgumentKind.Identifier) break;
+                if (_tokens[_index].Kind == ArgumentKind.Assignment) break; //define
+                if (_tokens[_index].Kind == ArgumentKind.At || _tokens[_index].Kind == ArgumentKind.With) break; //show
+
+                sb.Append(_tokens[_index].Content);
+                SkipCurrent();
+            }
+
+            result.Name = sb.ToString();
+        }
+        else
+        {
+            result.Name = _tokens[_index].Content;
+
+            if (allowKeyword) SkipCurrent();
+            else SkipCurrent(ArgumentKind.Identifier);
+        }
+
+        
         return result;
     }
 

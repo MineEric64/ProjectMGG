@@ -84,13 +84,19 @@ public enum ArgumentKind
     [KindAttr("#")] Comment,
     [KindAttr("jump")] Jump,
 
+    [KindAttr("Character")] Character,
+
     [KindAttr("transform")] Transform,
-    [KindAttr("play")] Play,
+    
     [KindAttr("show")] Show,
+    [KindAttr("at")] At,
+    [KindAttr("with")] With,
     [KindAttr("scene")] Scene,
+
+    [KindAttr("play")] Play,
     [KindAttr("reeverb")] Reeverb,
     
-    [KindAttr("Character")] Character,
+    
 
     [KindAttr("and")] LogicalAnd,
     [KindAttr("or")] LogicalOr,

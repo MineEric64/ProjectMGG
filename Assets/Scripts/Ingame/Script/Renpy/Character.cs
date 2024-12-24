@@ -9,11 +9,11 @@ public class Character : IExpression
     public string NameVar { get; set; }
     public string Name { get; set; }
     public Color Colour { get; set; }
-    public Dictionary<string, string> Images { get; set; }
+    [Obsolete()] public Dictionary<string, string> Images { get; set; }
 
     public Character()
     {
-        Images = new Dictionary<string, string>();
+
     }
 
     public Character(string nameVar, string name, Color colour)
@@ -21,7 +21,6 @@ public class Character : IExpression
         NameVar = nameVar;
         Name = name;
         Colour = colour;
-        Images = new Dictionary<string, string>();
     }
 
     public void Print(int depth)

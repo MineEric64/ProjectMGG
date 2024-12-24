@@ -5,6 +5,7 @@ using UnityEngine;
 public class GetVariable : IExpression
 {
     public string Name { get; set; }
+    public static implicit operator string(GetVariable s) => s.Name;
 
     public void Print(int depth)
     {

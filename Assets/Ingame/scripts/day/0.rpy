@@ -1,9 +1,11 @@
 define seah = Character("한세아", color="#3a3e4a")
+image seah default = "$/images/chr_seah/1.png"
 image classroom = "$/images/bg_classroom_demo.png"
 
 label start:
 	scene classroom
 	"어떡하면 좋을까."
+	show seah default
 	seah "ㄱㅡ그냥 제가 할게요오..."
 
 	define hina = Character("유히나", color="#f688a7")

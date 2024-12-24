@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.Windows;
@@ -57,7 +59,7 @@ public class Scanner
                         _tabPrev = _tab;
                     }
 
-                    result.Add(ScanIdentifierAndKeyword(sourceCode));
+                    result.Add(ScanIdentifierAndKeyword(sourceCode, result.LastOrDefault()));
                     break;
 
                 case CharType.OperatorAndPunctuator:
@@ -162,9 +164,22 @@ public class Scanner
         return new Token(ArgumentKind.StringLiteral, content);
     }
 
-    private Token ScanIdentifierAndKeyword(string sourceCode)
+    private Token ScanIdentifierAndKeyword(string sourceCode, Token last)
     {
         string content = string.Empty;
+
+        //if (last != null && last.Kind == ArgumentKind.Show)
+        //{
+        //    while (sourceCode[_index] != '\n')
+        //    {
+        //        if (IsCharType(sourceCode[_index], CharType.WhiteSpace)) continue;
+
+        //        content += sourceCode[_index];
+        //        _index += 1;
+        //    }
+
+        //    return new Token(ArgumentKind.Identifier, content);
+        //}
 
         while (IsCharType(sourceCode[_index], CharType.IdentifierAndKeyword))
         {
