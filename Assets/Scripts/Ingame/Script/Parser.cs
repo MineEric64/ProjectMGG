@@ -7,6 +7,8 @@ using System.Text;
 using UnityEngine;
 using SmartFormat;
 
+using RpyTransform = transform;
+
 public class Parser
 {
     private int _index;
@@ -29,7 +31,7 @@ public class Parser
                 case ArgumentKind.Function:
                     var function = ParseFunction();
 
-                    if (function == null)
+                    if (function == null || function.Block == null)
                     {
                         EndOfToken();
                         break;
@@ -157,6 +159,13 @@ public class Parser
                     result.Add(ParseScene());
                     break;
 
+                case ArgumentKind.Transform:
+                    var t = ParseTransform();
+
+                    if (t == null) return null;
+                    result.Add(t);
+                    break;
+
                 case ArgumentKind.Show:
                     result.Add(ParseShow());
                     break;
@@ -215,6 +224,9 @@ public class Parser
 
             case ArgumentKind.Image:
                 return ParseImage(true);
+
+            case ArgumentKind.Transform:
+                return ParseTransform(true);
 
             case ArgumentKind.EndOfToken:
                 return null;
@@ -371,6 +383,46 @@ public class Parser
                 case ArgumentKind.With:
                     SkipCurrent();
                     break;
+            }
+        }
+
+        return result;
+    }
+
+    private IStatement ParseTransform(bool isGlobal = false)
+    {
+        RpyTransform result = new RpyTransform();
+
+        SkipCurrent(ArgumentKind.Transform);
+        result.Name = ParseIdentifier();
+        SkipCurrent(ArgumentKind.Colon);
+        SkipCurrent(ArgumentKind.LeftBrace);
+
+        while (_tokens[_index].Kind != ArgumentKind.RightBrace)
+        {
+            switch (_tokens[_index].Content)
+            {
+                case "xalign": //TODO: support variable
+                    SkipCurrent();
+                    result.xalign = float.Parse(_tokens[_index].Content);
+                    SkipCurrent();
+                    break;
+
+                case "yalign":
+                    SkipCurrent();
+                    result.yalign = float.Parse(_tokens[_index].Content);
+                    SkipCurrent();
+                    break;
+
+                case "zoom":
+                    SkipCurrent();
+                    result.zoom = float.Parse(_tokens[_index].Content);
+                    SkipCurrent();
+                    break;
+
+                default:
+                    ExceptionManager.Throw($"Invalid attribute '{_tokens[_index].Content}' on transform keyword.", "Script/Parser");
+                    return null;
             }
         }
 
@@ -772,7 +824,7 @@ public class Parser
             do
             {
                 //var expression = ParseExpression();
-                var varName = _tokens[_index].Content;
+                var varName = _tokens[_index].Content; //TODO: support variable in switch-case statement
                 SkipCurrent();
                 SkipCurrent(ArgumentKind.Assignment);
 

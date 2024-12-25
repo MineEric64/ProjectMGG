@@ -52,7 +52,7 @@ public class Scanner
                     break;
 
                 case CharType.IdentifierAndKeyword:
-                    if (_tab != _tabPrev)
+                    if (_tab != _tabPrev) //function block start & end
                     {
                         if (_tab > _tabPrev) result.Add(new Token(ArgumentKind.LeftBrace));
                         else result.Add(new Token(ArgumentKind.RightBrace));

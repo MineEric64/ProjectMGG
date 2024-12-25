@@ -87,7 +87,10 @@ public enum ArgumentKind
     [KindAttr("Character")] Character,
 
     [KindAttr("transform")] Transform,
-    
+    [KindAttr("xalign")] XAlign,
+    [KindAttr("yalign")] YAlign,
+    [KindAttr("zoom")] Zoom,
+
     [KindAttr("show")] Show,
     [KindAttr("at")] At,
     [KindAttr("with")] With,
@@ -95,8 +98,6 @@ public enum ArgumentKind
 
     [KindAttr("play")] Play,
     [KindAttr("reeverb")] Reeverb,
-    
-    
 
     [KindAttr("and")] LogicalAnd,
     [KindAttr("or")] LogicalOr,
