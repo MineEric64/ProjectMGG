@@ -395,6 +395,7 @@ public class Parser
 
         SkipCurrent(ArgumentKind.Transform);
         result.Name = ParseIdentifier();
+        result.IsGlobal = isGlobal;
         SkipCurrent(ArgumentKind.Colon);
         SkipCurrent(ArgumentKind.LeftBrace);
 
