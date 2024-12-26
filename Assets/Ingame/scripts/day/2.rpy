@@ -15,8 +15,8 @@ image seah blush8 = "$/images/chr_seah/3.png"
 
 transform seah_t1:
 	zoom 0.8
-	xalign 0.5
-	yalign 0.6
+	xcenter 0.5
+	ycenter 0.6
 
 image homebase = "$/images/bg_homebase_demo.png"
 

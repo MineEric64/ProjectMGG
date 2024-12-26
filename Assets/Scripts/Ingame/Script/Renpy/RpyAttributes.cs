@@ -10,10 +10,12 @@ public class RpyAttributes
     public RpyAttributes()
     {
         MainImage = string.Empty;
+        SubImages = new Dictionary<string, string>();
     }
 
     public RpyAttributes(string mainImage)
     {
         MainImage = mainImage;
+        SubImages = new Dictionary<string, string>();
     }
 }

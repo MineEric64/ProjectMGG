@@ -21,7 +21,6 @@ public class IngameManagerV2 : MonoBehaviour
     public static IngameManagerV2 Instance { get; private set; } = null;
     public static VariableCollection Local { get; private set; } = new VariableCollection(); //TODO: every label (using stack)
     public static VariableCollection Global { get; private set; } = new VariableCollection();
-    public static Dictionary<string, RpyTransform> Transforms { get; private set; } = new Dictionary<string, RpyTransform>();
 
     public Interpreter Interpreter;
 
@@ -212,7 +211,7 @@ public class IngameManagerV2 : MonoBehaviour
 
         if (prefab == null)
         {
-            prefab = Instantiate(CharacterSample, this.transform);
+            prefab = Instantiate(CharacterSample, this.transform.Find("CanvasImage"));
             prefab.transform.SetSiblingIndex(1);
         }
 
@@ -222,23 +221,26 @@ public class IngameManagerV2 : MonoBehaviour
             prefab.name = variableName;
             prefab.rectTransform.sizeDelta = new Vector3(texture.width, texture.height);
 
-            RpyTransform transform = null;
-
             if (!string.IsNullOrEmpty(transformName))
             {
-                transform = Transforms[transformName];
-                float value = -1;
+                var transform = GetVariable(transformName, ref Local.Transforms, ref Global.Transforms);
+                if (transform == null)
+                {
+                    ExceptionManager.Throw($"The transform '{transformName}' variable doesn't exists while interpreting 'show' statement.", "IngameManagerV2");
+                    return;
+                }
 
                 if (transform.zoom != 1f)
                 {
-                    float width = texture.width * value;
-                    float height = texture.height * value;
+                    float width = texture.width * transform.zoom;
+                    float height = texture.height * transform.zoom;
 
-                    prefab.transform.localScale = new Vector3(value, value);
+                    prefab.transform.localScale = new Vector3(transform.zoom, transform.zoom);
                     prefab.transform.localPosition = new Vector3(0f, -(720 - height / 2));
                 }
-                if (transform.xalign != 0.5f) prefab.transform.localPosition = new Vector3(1280 * (value - 0.5f) * 2, prefab.transform.localPosition.y);
-                if (transform.yalign != 0.5f) prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(720 * (value - 0.5f) * 2));
+                //TODO: xpos, ypos, xalign, yalign
+                if (transform.xcenter != -1f) prefab.transform.localPosition = new Vector3(1280 * (transform.xcenter - 0.5f) * 2, prefab.transform.localPosition.y); //TODO: 0~1: ratio, 1~: absolute value
+                if (transform.ycenter != -1f) prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(720 * (transform.ycenter - 0.5f) * 2));
             }
             else
             {

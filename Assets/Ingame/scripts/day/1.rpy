@@ -19,13 +19,13 @@ image hina = "$/images/chr_hina_demo.png"
 
 transform seah_t1:
 	zoom 0.7
-	xalign 0.7
-	yalign 0.6
+	xcenter 0.7
+	ycenter 0.6
 
 transform hina_t1:
 	zoom 1.5
-	xalign 0.3
-	yalign 0.65
+	xcenter 0.3
+	ycenter 0.65
 
 # 배경
 image classroom = "$/images/bg_classroom_demo.png"

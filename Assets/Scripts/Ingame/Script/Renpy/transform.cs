@@ -11,8 +11,13 @@ public class transform : IStatement
     public string Name { get; set; }
     public bool IsGlobal { get; set; } = false;
 
-    public float xalign = 0.5f;
-    public float yalign = 0.5f;
+    public float xpos = -1f;
+    public float ypos = -1f;
+    public float xalign = -1f;
+    public float yalign = -1f;
+    public float xcenter = -1f;
+    public float ycenter = -1f;
+
     public float zoom  = 1f;
 
     public transform()

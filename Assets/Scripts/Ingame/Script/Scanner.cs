@@ -14,6 +14,7 @@ public class Scanner
     private static int _line;
     private static int _tab;
     private static int _tabPrev;
+    private static bool _isShow = false;
 
     public List<Token> Scan(string sourceCode)
     {
@@ -23,6 +24,7 @@ public class Scanner
         _line = 1;
         _tab = 0;
         _tabPrev = 0;
+        _isShow = false;
 
         if (!ArgumentKinds.IsInitialized()) ArgumentKinds.Initialize();
 
@@ -52,14 +54,23 @@ public class Scanner
                     break;
 
                 case CharType.IdentifierAndKeyword:
-                    if (_tab != _tabPrev) //function block start & end
+                    if (_tab != _tabPrev) //function block end
                     {
-                        if (_tab > _tabPrev) result.Add(new Token(ArgumentKind.LeftBrace));
-                        else result.Add(new Token(ArgumentKind.RightBrace));
+                        if(_tab < _tabPrev) result.Add(new Token(ArgumentKind.RightBrace));
                         _tabPrev = _tab;
                     }
+                    Token token = ScanIdentifierAndKeyword(sourceCode, out bool forShow);
 
-                    result.Add(ScanIdentifierAndKeyword(sourceCode, result.LastOrDefault()));
+                    if (token == null)
+                    {
+                        _index++;
+                        break;
+                    }
+
+                    result.Add(token);
+                    if (token.Kind == ArgumentKind.Show || (token.Kind == ArgumentKind.Identifier && token.Content == "scene")) _isShow = true;
+                    else if (forShow) result.Add(new Token(ArgumentKind.Unknown)); //for distinguish new line
+                    
                     break;
 
                 case CharType.OperatorAndPunctuator:
@@ -71,7 +82,7 @@ public class Scanner
                     break;
 
                 default:
-                    ExceptionManager.Throw("Can't interpret the token.", "Script/Scanner", _line);
+                    ExceptionManager.Throw($"Invalid character for scanning token: '{sourceCode[_index]}'.", "Script/Scanner", _line);
                     _index++;
                     //return result;
                     break;
@@ -164,27 +175,26 @@ public class Scanner
         return new Token(ArgumentKind.StringLiteral, content);
     }
 
-    private Token ScanIdentifierAndKeyword(string sourceCode, Token last)
+    private Token ScanIdentifierAndKeyword(string sourceCode, out bool forShow)
     {
+        forShow = false;
         string content = string.Empty;
-
-        //if (last != null && last.Kind == ArgumentKind.Show)
-        //{
-        //    while (sourceCode[_index] != '\n')
-        //    {
-        //        if (IsCharType(sourceCode[_index], CharType.WhiteSpace)) continue;
-
-        //        content += sourceCode[_index];
-        //        _index += 1;
-        //    }
-
-        //    return new Token(ArgumentKind.Identifier, content);
-        //}
 
         while (IsCharType(sourceCode[_index], CharType.IdentifierAndKeyword))
         {
             content += sourceCode[_index];
             _index += 1;
+        }
+        if (_isShow && (sourceCode[_index] == '\r' || sourceCode[_index] == '\n'))
+        {
+            forShow = true;
+            _isShow = false;
+        }
+
+        if (string.IsNullOrEmpty(content))
+        {
+            ExceptionManager.Throw($"Invalid character for scanning token: '{sourceCode[_index]}'.", "Script/Scanner", _line);
+            return null;
         }
 
         ArgumentKind kind = ArgumentKinds.ToKind(content);
@@ -256,7 +266,7 @@ public class Scanner
             case CharType.IdentifierAndKeyword:
                 return '0' <= ch && ch <= '9' ||
                         'a' <= ch && ch <= 'z' ||
-                        'A' <= ch && ch <= 'Z';
+                        'A' <= ch && ch <= 'Z' || ch == '_';
 
             case CharType.OperatorAndPunctuator:
                 return 33 <= ch && ch <= 47 ||
