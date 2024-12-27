@@ -19,7 +19,10 @@ public class Scanner
     public List<Token> Scan(string sourceCode)
     {
         List<Token> result = new List<Token>();
+        
         sourceCode += '\0';
+        sourceCode = sourceCode.Replace("    ", "\t"); //indentation, TODO: is available for 3 space characters?
+
         _index = 0;
         _line = 1;
         _tab = 0;
@@ -258,10 +261,7 @@ public class Scanner
                 return '0' <= ch && ch <= '9';
 
             case CharType.StringLiteral:
-                bool condition = 32 <= ch && ch <= 126 && ch != '\'' && ch != '"';
-                if (!condition) condition = ch > 255; //Unicode support
-
-                return condition;
+                return ch != '\'' && ch != '"';
 
             case CharType.IdentifierAndKeyword:
                 return '0' <= ch && ch <= '9' ||

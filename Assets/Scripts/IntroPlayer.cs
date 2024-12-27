@@ -101,7 +101,7 @@ public class IntroManager : MonoBehaviour
 
     void GoDay2_Demo1()
     {
-        ParamManager.ScriptPath = @$"{Application.dataPath}\Ingame\scripts\day\0.rpy";
+        ParamManager.ScriptPath = @$"{Application.dataPath}\Ingame\scripts\day\1.rpy";
         ApplyPlayerName();
         SceneManager.LoadScene("Ingame");
     }
@@ -125,8 +125,7 @@ public class IntroManager : MonoBehaviour
 
     void ApplyPlayerName()
     {
-        const bool IS_DEBUGGING = true;
-        string defaultName = IS_DEBUGGING ? "남주" : "이주용";
+        string defaultName = IngameManagerV2.IS_DEBUGGING ? "남주" : "이주용";
 
         ParamManager.PlayerName = string.IsNullOrWhiteSpace(nameInput.text) ? defaultName : nameInput.text;
         ParamManager.PlayerName2 = GetPlayerName2(ParamManager.PlayerName);

@@ -172,6 +172,10 @@ public class Parser
                     result.Add(ParseShow());
                     break;
 
+                case ArgumentKind.Play:
+                    result.Add(ParsePlay());
+                    break;
+
                 case ArgumentKind.Reeverb:
                     result.Add(ParseReeverb());
                     break;
@@ -312,9 +316,7 @@ public class Parser
     private Narration ParseNarration()
     {
         Narration result = new Narration();
-        result.Argument = ConvertToSyntax(_tokens[_index].Content);
-
-        SkipCurrent();
+        result.Argument = ParseStringLiteral();
         return result;
     }
 
@@ -324,9 +326,7 @@ public class Parser
 
         result.CharacterName = _tokens[_index].Content;
         SkipCurrent(ArgumentKind.Identifier);
-
-        result.Content = ConvertToSyntax(_tokens[_index].Content);
-        SkipCurrent(ArgumentKind.StringLiteral);
+        result.Content = ParseStringLiteral();
 
         return result;
     }
@@ -387,6 +387,12 @@ public class Parser
 
         while (_tokens[_index].Kind != ArgumentKind.RightBrace)
         {
+            if (_tokens[_index].Kind == ArgumentKind.Comment)
+            {
+                ParseComment();
+                continue;
+            }
+
             switch (_tokens[_index].Content)
             {
                 case "xpos":
@@ -827,7 +833,7 @@ public class Parser
             return null;
         }
 
-        result.Name = _tokens[_index].Content;
+        result.Name = ParseStringLiteral();
         SkipCurrent();
         SkipCurrentIf(ArgumentKind.Comma);
 
@@ -863,6 +869,17 @@ public class Parser
             } while (SkipCurrentIf(ArgumentKind.Comma));
         }
         SkipCurrent(ArgumentKind.RightParen);
+        return result;
+    }
+
+    private IStatement ParsePlay()
+    {
+        var result = new RpyPlay();
+
+        SkipCurrent();
+        result.Channel = ParseIdentifier();
+        result.Path = ParseStringLiteral();
+
         return result;
     }
 }

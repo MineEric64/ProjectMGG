@@ -14,7 +14,7 @@ image seah blush7 = "$/images/chr_seah/2extend.png"
 image seah blush8 = "$/images/chr_seah/3.png"
 
 transform seah_t1:
-	zoom 0.8
+	zoom 0.41
 	xcenter 0.5
 	ycenter 0.6
 

@@ -12,7 +12,6 @@ public class Reeverb : IStatement
 
     public void Interpret()
     {
-        Debug.Log("Script/Interpret: I REEVERBED.");
-        //???
+        IngameManagerV2.Instance.IsReeverb = true;
     }
 }

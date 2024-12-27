@@ -18,6 +18,8 @@ using RpyTransform = transform;
 
 public class IngameManagerV2 : MonoBehaviour
 {
+    public const bool IS_DEBUGGING = true;
+
     public static IngameManagerV2 Instance { get; private set; } = null;
     public static VariableCollection Local { get; private set; } = new VariableCollection(); //TODO: every label (using stack)
     public static VariableCollection Global { get; private set; } = new VariableCollection();
@@ -27,9 +29,11 @@ public class IngameManagerV2 : MonoBehaviour
     public RawImage Background;
     public TextMeshProUGUI NameUI;
     public TextMeshProUGUI ContentUI;
-    public AudioSource MusicPlayer;
     public RawImage CharacterSample;
     public float TextAnimationMultiplier = 0.04f;
+
+    public AudioSource MusicPlayer;
+    public bool IsReeverb = false;
 
     private GraphicRaycaster _raycaster;
     private bool _goToNext = true;
@@ -38,7 +42,6 @@ public class IngameManagerV2 : MonoBehaviour
     private float _preservedMusicTime = 0.0f;
     private string _currentPlayingMusic = "";
     private AudioReverbFilter _reverbFilter;
-    private bool _isReeverb = false;
     private float _currentDecayTime = 0.1f;
 
     void Awake()
@@ -122,11 +125,16 @@ public class IngameManagerV2 : MonoBehaviour
             }
             if (scriptNext != null)
             {
-                //reeverb
+                if (script is Reeverb)
+                {
+                    _currentDecayTime = 0.1f;
+                    _reverbFilter.decayTime = 0.1f;
+                    _reverbFilter.enabled = true;
+                }
             }
         }
         
-        if (_isReeverb) Reeverb();
+        if (IsReeverb) Reeverb();
     }
 
     /// <summary>
@@ -249,6 +257,37 @@ public class IngameManagerV2 : MonoBehaviour
         }
     }
 
+    public void LetsPlay(string channel, string path)
+    {
+        switch (channel)
+        {
+            case "music":
+            {
+                    if (!string.IsNullOrWhiteSpace(_currentPlayingMusic) && _currentPlayingMusic == path) //reeverbed
+                    {
+                        _reverbFilter.enabled = false;
+                        MusicPlayer.time = _preservedMusicTime;
+                        MusicPlayer.mute = false;
+                    }
+                    else
+                    {
+                        AudioClip audio = LoadResource<AudioClip>(path);
+                        if (audio != null)
+                        {
+                            MusicPlayer.clip = audio;
+                            MusicPlayer.Play();
+                            _currentPlayingMusic = path;
+                        }
+                    }
+                    break;
+            }
+
+            default:
+                ExceptionManager.Throw("TODO: support channel on play keyword", "IngameManagerV2");
+                break;
+        }
+    }
+
     public static T LoadResource<T>(string pathRaw) where T : UnityEngine.Object
     {
         string path = pathRaw.Replace("/", @"\");
@@ -278,7 +317,7 @@ public class IngameManagerV2 : MonoBehaviour
         {
             MusicPlayer.mute = true;
             _preservedMusicTime = MusicPlayer.time;
-            _isReeverb = false;
+            IsReeverb = false;
         }
     }
 
