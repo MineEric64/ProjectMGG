@@ -10,4 +10,5 @@
 - Unity 2022.3.11f1
 
 # Library Used
+- [MessagePack-CSharp](https://github.com/MessagePack-CSharp/MessagePack-CSharp)
 - [SmartFormat.NET-Korean](https://github.com/what-studio/SmartFormat.NET-Korean)
