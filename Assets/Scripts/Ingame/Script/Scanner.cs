@@ -23,6 +23,7 @@ public class Scanner
         sourceCode += '\0';
         sourceCode = sourceCode.Replace("    ", "\t"); //indentation, TODO: is available for 3 space characters?
 
+        bool needToExit = false;
         _index = 0;
         _line = 1;
         _tab = 0;
@@ -33,6 +34,7 @@ public class Scanner
 
         while (sourceCode[_index] != '\0')
         {
+            if (needToExit) break;
             char ch = sourceCode[_index];
 
             if (ch == '\n')
@@ -67,6 +69,7 @@ public class Scanner
                     if (token == null)
                     {
                         _index++;
+                        //needToExit = true; //uncomment this if the game is stopped
                         break;
                     }
 
@@ -86,8 +89,7 @@ public class Scanner
 
                 default:
                     ExceptionManager.Throw($"Invalid character for scanning token: '{sourceCode[_index]}'.", "Script/Scanner", _line);
-                    _index++;
-                    //return result;
+                    needToExit = true;
                     break;
             }
         }
