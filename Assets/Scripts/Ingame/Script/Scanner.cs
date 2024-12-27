@@ -57,15 +57,12 @@ public class Scanner
                     break;
 
                 case CharType.StringLiteral:
+                    ProcessBlockEnd(ref result);
                     result.Add(ScanStringLiteral(sourceCode));
                     break;
 
                 case CharType.IdentifierAndKeyword:
-                    if (_tab != _tabPrev) //function block end
-                    {
-                        if(_tab < _tabPrev) result.Add(new Token(ArgumentKind.RightBrace));
-                        _tabPrev = _tab;
-                    }
+                    ProcessBlockEnd(ref result);
                     Token token = ScanIdentifierAndKeyword(sourceCode, out bool forShow);
 
                     if (token == null)
@@ -88,6 +85,7 @@ public class Scanner
                     break;
 
                 case CharType.Comment:
+                    ProcessBlockEnd(ref result);
                     result.Add(ScanComment(sourceCode));
                     break;
 
@@ -287,6 +285,15 @@ public class Scanner
 
             default:
                 return false;
+        }
+    }
+
+    private void ProcessBlockEnd(ref List<Token> result)
+    {
+        if (_tab != _tabPrev)
+        {
+            if (_tab < _tabPrev) result.Add(new Token(ArgumentKind.RightBrace));
+            _tabPrev = _tab;
         }
     }
 }

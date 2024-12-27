@@ -1,4 +1,3 @@
-
 define seah = Character("한세아", color="#3a3e4a")
 image seah default = "$/images/chr_seah/1.png"
 image classroom = "$/images/bg_classroom_demo.png"

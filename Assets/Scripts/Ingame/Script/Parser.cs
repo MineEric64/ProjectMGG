@@ -335,6 +335,7 @@ public class Parser
     {
         Reeverb result = new Reeverb();
         SkipCurrent();
+        result.Intervals = ParseExpression();
 
         return result;
     }

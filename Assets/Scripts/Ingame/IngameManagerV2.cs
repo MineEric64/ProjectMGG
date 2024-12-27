@@ -15,11 +15,10 @@ using DG.Tweening.Plugins.Core.PathCore;
 
 using Path = System.IO.Path;
 using RpyTransform = transform;
+using System.Linq;
 
 public class IngameManagerV2 : MonoBehaviour
 {
-    public const bool IS_DEBUGGING = true;
-
     public static IngameManagerV2 Instance { get; private set; } = null;
     public static VariableCollection Local { get; private set; } = new VariableCollection(); //TODO: every label (using stack)
     public static VariableCollection Global { get; private set; } = new VariableCollection();
@@ -34,15 +33,17 @@ public class IngameManagerV2 : MonoBehaviour
 
     public AudioSource MusicPlayer;
     public bool IsReeverb = false;
-
-    private GraphicRaycaster _raycaster;
-    private bool _goToNext = true;
-    private bool _readAll = false;
+    public List<double> ReeverbIntervals = new List<double>();
+    public float EndReverbTime = 0.0f;
 
     private float _preservedMusicTime = 0.0f;
     private string _currentPlayingMusic = "";
     private AudioReverbFilter _reverbFilter;
     private float _currentDecayTime = 0.1f;
+
+    private GraphicRaycaster _raycaster;
+    private bool _goToNext = true;
+    private bool _readAll = false;
 
     void Awake()
     {
@@ -310,10 +311,15 @@ public class IngameManagerV2 : MonoBehaviour
 
     void Reeverb()
     {
-        _currentDecayTime = Mathf.MoveTowards(_currentDecayTime, 7.0f, 3f * Time.deltaTime);
+        _currentDecayTime = Mathf.MoveTowards(_currentDecayTime, 7.0f, 2f * Time.deltaTime);
         _reverbFilter.decayTime = _currentDecayTime;
 
-        if (_currentDecayTime == 7.0f)
+        bool available = ReeverbIntervals.Count > 0;
+
+        if (available) available = MusicPlayer.time >= EndReverbTime;
+        else available = _currentDecayTime == 7.0f;
+
+        if (available)
         {
             MusicPlayer.mute = true;
             _preservedMusicTime = MusicPlayer.time;
@@ -326,9 +332,12 @@ public class IngameManagerV2 : MonoBehaviour
         _readAll = false;
         text.maxVisibleCharacters = 0;
 
+        var ease = Ease.Linear;
+        Enum.TryParse(SettingsManager.Settings.UI.TextEase, out ease);
+
         DOTween.To(x => {
             if (!_readAll) text.maxVisibleCharacters = (int)x;
-        }, 0f, text.text.Length, duration).SetEase(Ease.Linear);
+        }, 0f, text.text.Length, duration).SetEase(ease);
     }
 
     public static T GetVariable<T>(string name, ref Dictionary<string, T> local, ref Dictionary<string, T> global)

@@ -30,6 +30,9 @@ transform hina_t1:
 # 배경
 image classroom = "$/images/bg_classroom_demo.png"
 
+# 효과음: Reverb Time
+define nemo_neko = [0.7, 2.17, 3, 4.26, 5, 6.45, 7.15, 8.5, 9.23, 11.42, 13.61, 15, 16.35, 17.14, 18, 20, 21.46, 22.15, 24.46, 25.73, 26.76, 28.9, 30, 30.8, 32.1, 34.3, 35.5, 39.5, 42.8, 44.6, 46.88, 48.7, 51.4, 52.7, 55.7, 59.4, 63.2, 70, 72.7, 77.5, 82.7]
+
 label start:
     scene classroom
     "2교시부터 쭉 겨울잠처럼 자던 몸이 무의식적으로 반응해 일어나게 되었다."
@@ -55,7 +58,7 @@ label start:
     seah "저… 그리고······."
     show seah blush4 at seah_t1
     seah "저ㅡ저 방송부 선배인 한세아라고 하니깐 앞으로 잘 부탁해요오!!!"
-    reeverb
+    reeverb nemo_neko
     "선배의 쩌렁쩌렁한 목소리가 교실에 울려펴졌다."
     show seah blush5 at seah_t1
     "소리가 얼마나 컸는지 그 뒤로는 평소에 들리던 소리도 들리지 않을 정도로."

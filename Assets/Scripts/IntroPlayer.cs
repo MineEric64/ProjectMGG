@@ -35,6 +35,7 @@ public class IntroManager : MonoBehaviour
     void Start()
     {
         Smart.Default.AddExtensions(new KoreanFormatter(Smart.Default));
+        SettingsManager.ApplySettings();
 
         canvasMain.GetComponent<CanvasGroup>().alpha = 0.0f;
         canvasGroup = gameObject.GetComponent<CanvasGroup>();
@@ -125,7 +126,7 @@ public class IntroManager : MonoBehaviour
 
     void ApplyPlayerName()
     {
-        string defaultName = IngameManagerV2.IS_DEBUGGING ? "남주" : "이주용";
+        string defaultName = SettingsManager.Settings.IsDebug ? "남주" : "이주용";
 
         ParamManager.PlayerName = string.IsNullOrWhiteSpace(nameInput.text) ? defaultName : nameInput.text;
         ParamManager.PlayerName2 = GetPlayerName2(ParamManager.PlayerName);
