@@ -10,6 +10,8 @@ using UnityEngine.Windows;
 
 public class Scanner
 {
+    private bool Loop(string s) => _index < s.Length; //check if the current index is not out of range
+
     private static int _index;
     private static int _line;
     private static int _tab;
@@ -32,7 +34,7 @@ public class Scanner
 
         if (!ArgumentKinds.IsInitialized()) ArgumentKinds.Initialize();
 
-        while (sourceCode[_index] != '\0')
+        while (Loop(sourceCode) && sourceCode[_index] != '\0')
         {
             if (needToExit) break;
             char ch = sourceCode[_index];
@@ -74,7 +76,9 @@ public class Scanner
                     }
 
                     result.Add(token);
-                    if (token.Kind == ArgumentKind.Show || (token.Kind == ArgumentKind.Identifier && token.Content == "scene")) _isShow = true;
+                    if (token.Kind == ArgumentKind.Show ||
+                        (token.Kind == ArgumentKind.Identifier &&
+                        token.Content == "scene")) _isShow = true;
                     else if (forShow) result.Add(new Token(ArgumentKind.Unknown)); //for distinguish new line
                     
                     break;
@@ -88,10 +92,15 @@ public class Scanner
                     break;
 
                 default:
-                    ExceptionManager.Throw($"Invalid character for scanning token: '{sourceCode[_index]}'.", "Script/Scanner", _line);
+                    ExceptionManager.Throw($"Invalid character for scanning token: '{sourceCode[_index]}'.",
+                        "Script/Scanner", _line);
                     needToExit = true;
                     break;
             }
+        }
+        if (!Loop(sourceCode)) //the code is already ended without EndOfToken (\0)
+        {
+            ExceptionManager.Throw("Something went wrong. The script is ended abnormally before end of token is processed. (Script Out of Range)", "Script/Scanner", _line);
         }
 
         result.Add(new Token(ArgumentKind.EndOfToken));
@@ -140,17 +149,17 @@ public class Scanner
     {
         string content = string.Empty;
 
-        while (IsCharType(sourceCode[_index], CharType.NumberLiteral))
+        while (Loop(sourceCode) && IsCharType(sourceCode[_index], CharType.NumberLiteral))
         {
             content += sourceCode[_index];
-            _index += 1;
+            _index += 1;        
         }
-        if (sourceCode[_index] == '.') //구분자 (seperator)
+        if (Loop(sourceCode) && sourceCode[_index] == '.') //구분자 (seperator)
         {
             content += sourceCode[_index];
             _index += 1;
 
-            while (IsCharType(sourceCode[_index], CharType.NumberLiteral))
+            while (Loop(sourceCode) && IsCharType(sourceCode[_index], CharType.NumberLiteral))
             {
                 content += sourceCode[_index];
                 _index += 1;
@@ -165,13 +174,13 @@ public class Scanner
         string content = string.Empty;
         _index += 1;
 
-        while (IsCharType(sourceCode[_index], CharType.StringLiteral))
+        while (Loop(sourceCode) && IsCharType(sourceCode[_index], CharType.StringLiteral))
         {
             content += sourceCode[_index];
             _index += 1;
         }
 
-        if (sourceCode[_index] != '\'' && sourceCode[_index] != '"')
+        if (Loop(sourceCode) && sourceCode[_index] != '\'' && sourceCode[_index] != '"')
         {
             ExceptionManager.Throw("Didn't close string properly.", "Script/Scanner", _line);
         }
@@ -185,18 +194,18 @@ public class Scanner
         forShow = false;
         string content = string.Empty;
 
-        while (IsCharType(sourceCode[_index], CharType.IdentifierAndKeyword))
+        while (Loop(sourceCode) && IsCharType(sourceCode[_index], CharType.IdentifierAndKeyword))
         {
             content += sourceCode[_index];
             _index += 1;
         }
-        if (_isShow && (sourceCode[_index] == '\r' || sourceCode[_index] == '\n'))
+        if (Loop(sourceCode) && _isShow && (sourceCode[_index] == '\r' || sourceCode[_index] == '\n'))
         {
             forShow = true;
             _isShow = false;
         }
 
-        if (string.IsNullOrEmpty(content))
+        if (Loop(sourceCode) && string.IsNullOrEmpty(content))
         {
             ExceptionManager.Throw($"Invalid character for scanning token: '{sourceCode[_index]}'.", "Script/Scanner", _line);
             return null;
@@ -215,7 +224,7 @@ public class Scanner
     {
         StringBuilder sb = new StringBuilder();
 
-        while (IsCharType(sourceCode[_index], CharType.OperatorAndPunctuator))
+        while (Loop(sourceCode) && IsCharType(sourceCode[_index], CharType.OperatorAndPunctuator))
         {
             sb.Append(sourceCode[_index]);
             _index += 1;
@@ -240,7 +249,7 @@ public class Scanner
         string content = string.Empty;
         _index++;
 
-        while (sourceCode[_index] != '\n')
+        while (Loop(sourceCode) && sourceCode[_index] != '\n')
         {
             if (sourceCode[_index] == '\r')
             {
