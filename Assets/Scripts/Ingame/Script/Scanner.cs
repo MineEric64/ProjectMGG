@@ -68,7 +68,7 @@ public class Scanner
 
                     if (token == null)
                     {
-                        _index++;
+                        _index++; //comment this if the game is stopped
                         //needToExit = true; //uncomment this if the game is stopped
                         break;
                     }
