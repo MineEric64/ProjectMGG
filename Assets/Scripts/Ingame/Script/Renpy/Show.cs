@@ -24,6 +24,12 @@ public class Show : IStatement
 
             foreach (Transform child in canvasImage)
             {
+                if (child.gameObject.name == Tag)
+                {
+                    GameObject.DestroyImmediate(child.gameObject);
+                    continue;
+                }
+
                 GameObject.Destroy(child.gameObject);
             }
         }

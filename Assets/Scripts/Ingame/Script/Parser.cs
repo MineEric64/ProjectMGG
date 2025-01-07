@@ -797,7 +797,7 @@ public class Parser
             switch (_tokens[_index].Kind)
             {
                 case ArgumentKind.LeftParen:
-                    //sub = ParseCall(sub); //function call
+                    sub = ParseCall(sub); //function call
                     break;
 
                 case ArgumentKind.LeftBracket:
@@ -808,6 +808,23 @@ public class Parser
                     return sub;
             }
         }
+    }
+
+    private IExpression ParseCall(IExpression sub)
+    {
+        Call result = new Call();
+        result.Sub = sub;
+        SkipCurrent(ArgumentKind.LeftParen);
+
+        if (_tokens[_index].Kind != ArgumentKind.RightParen)
+        {
+            do
+            {
+                result.Arguments.Add(ParseExpression());
+            } while (SkipCurrentIf(ArgumentKind.Comma));
+        }
+        SkipCurrent(ArgumentKind.RightParen);
+        return result;
     }
 
     private IExpression ParseElement(IExpression sub)

@@ -12,8 +12,9 @@ using UnityEngine.UI;
 
 using SmartFormat.Extensions;
 using SmartFormat;
+using System.IO;
 
-public class IntroManager : MonoBehaviour
+public class IntroPlayer : MonoBehaviour
 {
     CanvasGroup canvasGroup;
     public GameObject canvasMain;
@@ -21,6 +22,9 @@ public class IntroManager : MonoBehaviour
     public Button day2_demo2;
     public AudioSource bgm;
     public TMP_InputField nameInput;
+    public TMP_InputField commandInput;
+
+    public static IntroPlayer Instance { get; private set; } = null;
 
     public bool needToFadeIn = false;
     public bool needToFadeOut = false;
@@ -34,14 +38,15 @@ public class IntroManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Instance = this;
         Smart.Default.AddExtensions(new KoreanFormatter(Smart.Default));
         SettingsManager.ApplySettings();
 
         canvasMain.GetComponent<CanvasGroup>().alpha = 0.0f;
         canvasGroup = gameObject.GetComponent<CanvasGroup>();
 
-        day2_demo1.onClick.AddListener(GoDay2_Demo1);
-        day2_demo2.onClick.AddListener(GoDay2_Demo2);
+        day2_demo1.onClick.AddListener(() => GoDay("demo1.rpy"));
+        day2_demo2.onClick.AddListener(() => GoDay("demo2.rpy"));
     }
 
     // Update is called once per frame
@@ -80,6 +85,13 @@ public class IntroManager : MonoBehaviour
             _intensity = 2.4f;
             _isSkipped = true;
         }
+        if (SettingsManager.Settings.Debug && Input.GetKeyDown(KeyCode.Slash))
+        {
+            bool active = commandInput.gameObject.activeSelf;
+            
+            commandInput.gameObject.SetActive(!active);
+            if (!active) commandInput.ActivateInputField();
+        }
 
         _currentTime += Time.deltaTime;
     }
@@ -100,16 +112,9 @@ public class IntroManager : MonoBehaviour
         if (_currentAlpha == 0.0f) action();
     }
 
-    void GoDay2_Demo1()
+    public void GoDay(string fileName)
     {
-        ParamManager.ScriptPath = @$"{Application.dataPath}\Ingame\scripts\day\1.rpy";
-        ApplyPlayerName();
-        SceneManager.LoadScene("Ingame");
-    }
-
-    void GoDay2_Demo2()
-    {
-        ParamManager.ScriptPath = @$"{Application.dataPath}\Ingame\scripts\day\2.rpy";
+        ParamManager.ScriptPath = @$"{Application.dataPath}/Ingame/scripts/day/{fileName}";
         ApplyPlayerName();
         SceneManager.LoadScene("Ingame");
     }
@@ -126,7 +131,7 @@ public class IntroManager : MonoBehaviour
 
     void ApplyPlayerName()
     {
-        string defaultName = SettingsManager.Settings.IsDebug ? "남주" : "이주용";
+        string defaultName = SettingsManager.Settings.Debug ? "남주" : "이주용";
 
         ParamManager.PlayerName = string.IsNullOrWhiteSpace(nameInput.text) ? defaultName : nameInput.text;
         ParamManager.PlayerName2 = GetPlayerName2(ParamManager.PlayerName);
@@ -155,5 +160,20 @@ public class IntroManager : MonoBehaviour
             return playerName.Substring(2);
         }
         return playerName;
+    }
+
+    public void ProcessCommand(TMP_InputField inputField)
+    {
+        string input = inputField.text;
+        if (string.IsNullOrWhiteSpace(input)) return;
+
+        var scanner = new CmdScanner();
+        List<CmdToken> tokenList = scanner.Scan(input);
+
+        CmdParser parser = new CmdParser(ref tokenList);
+        Program syntaxTree = parser.Parse();
+
+        CmdInterpreter interpreter = new CmdInterpreter();
+        interpreter.Interpret(syntaxTree);
     }
 }
