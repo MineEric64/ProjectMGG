@@ -246,4 +246,16 @@ public class IntroPlayer : MonoBehaviour
             repeater.ApplyOffsetChanges();
         }, Ease.OutSine);
     }
+
+    public void ButtonHoverAnimation(TextMeshProUGUI obj)
+    {
+        Tween.LocalPositionX(obj.transform, obj.transform.localPosition.x - 20f, 0.2f, Ease.OutQuart);
+        //Tween.Scale(obj.transform, 1.05f, 0.2f, Ease.OutQuart); //uncomment this if you want to make a game design more intuitive
+    }
+
+    public void ButtonExitAnimation(TextMeshProUGUI obj)
+    {
+        Tween.LocalPositionX(obj.transform, obj.transform.localPosition.x + 20f, 0.2f, Ease.OutQuart);
+        //Tween.Scale(obj.transform, 1.0f, 0.2f, Ease.OutQuart); //uncomment this if you want to make a game design more intuitive
+    }
 }

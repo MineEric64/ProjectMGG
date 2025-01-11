@@ -28,8 +28,8 @@ public class ButtonEvent : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     public bool haveToTextGlow = true;
 
     public UnityEvent onClick;
-    public UnityEvent onHover;
-    public UnityEvent onExit;
+    public UnityEvent<TextMeshProUGUI> onHover;
+    public UnityEvent<TextMeshProUGUI> onExit;
 
     public CanvasGroup canvas;
     TextMeshProUGUI buttonText;
@@ -60,7 +60,7 @@ public class ButtonEvent : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         }
 
         needToUpdate = true;
-        onHover?.Invoke();
+        onHover?.Invoke(buttonText);
     }
 
     public void OnPointerExit(PointerEventData eventData)
@@ -73,7 +73,7 @@ public class ButtonEvent : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
         desiredColor = exit;
         needToUpdate = true;
-        onExit?.Invoke();
+        onExit?.Invoke(buttonText);
     }
 
     public void OnPointerClick(PointerEventData eventData)
