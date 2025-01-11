@@ -4,25 +4,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
+using PrimeTween;
 using SmartFormat.Extensions;
 using SmartFormat;
-using System.IO;
 
 public class IntroPlayer : MonoBehaviour
 {
     CanvasGroup canvasGroup;
     public GameObject canvasMain;
-    public Button day2_demo1;
-    public Button day2_demo2;
     public AudioSource bgm;
     public TMP_InputField nameInput;
     public TMP_InputField commandInput;
+    public GameObject menu;
+    public GameObject textMenu;
+    public GameObject seperators;
 
     public static IntroPlayer Instance { get; private set; } = null;
 
@@ -44,9 +45,6 @@ public class IntroPlayer : MonoBehaviour
 
         canvasMain.GetComponent<CanvasGroup>().alpha = 0.0f;
         canvasGroup = gameObject.GetComponent<CanvasGroup>();
-
-        day2_demo1.onClick.AddListener(() => GoDay("demo1.rpy"));
-        day2_demo2.onClick.AddListener(() => GoDay("demo2.rpy"));
     }
 
     // Update is called once per frame
@@ -67,6 +65,8 @@ public class IntroPlayer : MonoBehaviour
                     canvasGroup = canvasMain.GetComponent<CanvasGroup>();
                     changeToMainAfterFadeOut = false;
                     _intensity = 2.4f;
+
+                    AnimateUI();
                 }
             });
         }
@@ -79,11 +79,14 @@ public class IntroPlayer : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.BackQuote))
         {
             canvasGroup.alpha = 0f;
+            _currentAlpha = 0f;
             needToFadeIn = true;
             needToFadeOut = false;
             canvasGroup = canvasMain.GetComponent<CanvasGroup>();
             _intensity = 2.4f;
             _isSkipped = true;
+
+            AnimateUI();
         }
         if (SettingsManager.Settings.Debug && Input.GetKeyDown(KeyCode.Slash))
         {
@@ -175,5 +178,72 @@ public class IntroPlayer : MonoBehaviour
 
         CmdInterpreter interpreter = new CmdInterpreter();
         interpreter.Interpret(syntaxTree);
+    }
+
+    public void Play()
+    {
+        GoDay("1.rpy");
+    }
+
+    public void Load()
+    {
+        Debug.Log("Load");
+    }
+
+    public void Gallery()
+    {
+        Debug.Log("Gallery");
+    }
+
+    public void Settings()
+    {
+        Debug.Log("Settings");
+    }
+
+    public void Exit()
+    {
+        Application.Quit();
+    }
+
+    void AnimateUI()
+    {
+        //Initialize
+        textMenu.GetComponent<CanvasGroup>().alpha = 0f;
+        menu.transform.localPosition = new Vector3(1740f, 0f, 0f);
+
+        var repeater = seperators.GetComponent<ObjectRepeater>();
+        repeater.Prefab.transform.localPosition = new Vector3(678f, 0f, 0f);
+        repeater.ApplyOffsetChanges();
+
+        //Animation
+        Invoke("FadeInMainMenu1", 0.26f);
+        Invoke("FadeInMainMenu2", 0.18f);
+    }
+
+    void FadeInMainMenu1()
+    {
+        var canvas = textMenu.GetComponent<CanvasGroup>();
+
+        //TextMenu: Opacity
+        Tween.Custom(0f, 1f, 1.67f, x =>
+        {
+            canvas.alpha = x;
+        }, Ease.OutSine);
+    }
+
+    void FadeInMainMenu2()
+    {
+        //Menu: Position
+        Tween.PositionX(menu.transform, 2188.46f, 1f, Ease.OutQuart);
+
+        //Seperator: Position 66.53
+        var repeater = seperators.GetComponent<ObjectRepeater>();
+
+        Tween.LocalPositionX(repeater.Prefab.transform, 66.53f, 1.3f, Ease.OutQuart);
+        Tween.Custom(237f, 0f, 1.3f, x =>
+        {
+            repeater.Offset = new Vector3(x, repeater.Offset.y, repeater.Offset.z);
+            repeater.ApplyOffsetChanges();
+        }, Ease.OutSine);
     }
 }

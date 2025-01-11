@@ -75,7 +75,7 @@ public class Scanner
                     result.Add(token);
                     if (token.Kind == ArgumentKind.Show ||
                         (token.Kind == ArgumentKind.Identifier &&
-                        token.Content == "scene")) _isShow = true;
+                        token.Content == "scene") || token.Kind == ArgumentKind.Reeverb) _isShow = true;
                     else if (forShow) result.Add(new Token(ArgumentKind.Unknown)); //for distinguish new line
                     
                     break;

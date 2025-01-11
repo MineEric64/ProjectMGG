@@ -335,7 +335,10 @@ public class Parser
     {
         Reeverb result = new Reeverb();
         SkipCurrent();
-        result.Intervals = ParseExpression();
+        
+        if (_tokens[_index].Kind == ArgumentKind.Identifier || _tokens[_index].Kind == ArgumentKind.LeftBracket)
+            result.Intervals = ParseExpression();
+        SkipCurrentIf(ArgumentKind.Unknown); //new line
 
         return result;
     }

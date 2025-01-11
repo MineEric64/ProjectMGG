@@ -10,7 +10,6 @@ using UnityEngine.UI;
 using UnityEditor;
 
 using TMPro;
-using DG.Tweening;
 
 using RpyTransform = transform;
 using Unity.Burst.Intrinsics;
@@ -281,8 +280,8 @@ public class IngameManager : MonoBehaviour
         _readAll = false;
         text.maxVisibleCharacters = 0;
 
-        DOTween.To(x => {
-            if (!_readAll) text.maxVisibleCharacters = (int)x;
-        }, 0f, text.text.Length, duration).SetEase(Ease.Linear);
+        //DOTween.To(x => {
+        //    if (!_readAll) text.maxVisibleCharacters = (int)x;
+        //}, 0f, text.text.Length, duration).SetEase(Ease.Linear);
     }
 }

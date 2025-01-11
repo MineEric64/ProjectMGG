@@ -10,11 +10,11 @@ using UnityEngine.UI;
 using UnityEditor;
 
 using TMPro;
-using DG.Tweening;
-using DG.Tweening.Plugins.Core.PathCore;
+using PrimeTween;
 
 using Path = System.IO.Path;
 using RpyTransform = transform;
+using System.Linq;
 
 public class IngameManagerV2 : MonoBehaviour
 {
@@ -22,6 +22,8 @@ public class IngameManagerV2 : MonoBehaviour
     public static VariableCollection Local { get; private set; } = new VariableCollection(); //TODO: every label (using stack)
     public static VariableCollection Global { get; private set; } = new VariableCollection();
 
+    private List<Token> _tokens;
+    [SerializeField] private List<string> _tokensDebug;
     public Interpreter Interpreter;
 
     public RawImage Background;
@@ -70,8 +72,9 @@ public class IngameManagerV2 : MonoBehaviour
         }
 
         string sourceCode = File.ReadAllText(ParamManager.ScriptPath);
-        List<Token> tokenList = scanner.Scan(sourceCode);
-        parser = new Parser(ref tokenList);
+        _tokens = scanner.Scan(sourceCode);
+        //_tokensDebug = _tokens.Select(x => x.ToString()).ToList();
+        parser = new Parser(ref _tokens);
 
         Program syntaxTree = parser.Parse();
         Interpreter.Interpret(syntaxTree);
@@ -112,25 +115,23 @@ public class IngameManagerV2 : MonoBehaviour
             }
 
             var script = Interpreter.CurrentPoint?.GetCurrentBlock();
-            var scriptNext = Interpreter.CurrentPoint?.GetNextBlock();
+            //var scriptNext = Interpreter.CurrentPoint?.GetNextBlock();
 
             if (script != null)
             {
                 Interpreter.CurrentPoint.Interpret();
-            }
-            else
-            {
-                //Story End
-                SceneManager.LoadScene("MainMenu");
-            }
-            if (scriptNext != null)
-            {
+
                 if (script is Reeverb)
                 {
                     _currentDecayTime = 0.1f;
                     _reverbFilter.decayTime = 0.1f;
                     _reverbFilter.enabled = true;
                 }
+            }
+            else
+            {
+                //Story End
+                SceneManager.LoadScene("MainMenu");
             }
         }
         
@@ -334,9 +335,9 @@ public class IngameManagerV2 : MonoBehaviour
         var ease = Ease.Linear;
         Enum.TryParse(SettingsManager.Settings.UI.TextEase, out ease);
 
-        DOTween.To(x => {
+        Tween.Custom(0f, text.text.Length, duration, x => {
             if (!_readAll) text.maxVisibleCharacters = (int)x;
-        }, 0f, text.text.Length, duration).SetEase(ease);
+        }, ease);
     }
 
     public static T GetVariable<T>(string name, ref Dictionary<string, T> local, ref Dictionary<string, T> global)
