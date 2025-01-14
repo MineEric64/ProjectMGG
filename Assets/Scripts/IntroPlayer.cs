@@ -181,7 +181,7 @@ namespace ProjectMGG
             List<CmdToken> tokenList = scanner.Scan(input);
 
             CmdParser parser = new CmdParser(ref tokenList);
-            Ingame.Script.Keywords.Program syntaxTree = parser.Parse();
+            var syntaxTree = parser.Parse();
 
             CmdInterpreter interpreter = new CmdInterpreter();
             interpreter.Interpret(syntaxTree);

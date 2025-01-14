@@ -87,7 +87,7 @@ namespace ProjectMGG.Ingame
             //_tokensDebug = _tokens.Select(x => x.ToString()).ToList();
             parser = new Parser(ref _tokens);
 
-            Script.Keywords.Program syntaxTree = parser.Parse();
+            var syntaxTree = parser.Parse();
             Interpreter.Interpret(syntaxTree);
 
             //Audio
