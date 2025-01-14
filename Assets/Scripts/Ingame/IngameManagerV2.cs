@@ -17,6 +17,7 @@ using ProjectMGG.Ingame.Script.Keywords.Renpy;
 using ProjectMGG.Settings;
 
 using Path = System.IO.Path;
+using Unity.VisualScripting;
 
 namespace ProjectMGG.Ingame
 {
@@ -105,21 +106,35 @@ namespace ProjectMGG.Ingame
         // Update is called once per frame
         void Update()
         {
+            #region Hotkeys
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                GoHome();
+            }
+            #endregion
+
             if (ContentUI.text.Length == 0) _readAll = true;
             else if (!_readAll) _readAll = ContentUI.maxVisibleCharacters == ContentUI.text.Length;
 
-            if (IsClickedDialogUI() == 1)
+            switch (GetMouseDownType())
             {
-                if (!_readAll)
-                {
-                    _readAll = true;
-                    ContentUI.maxVisibleCharacters = ContentUI.text.Length;
-                }
-                else
-                {
-                    _goToNext = true;
-                    _readAll = false;
-                }
+                case 1: //Dialog
+                    {
+                        if (!_readAll)
+                        {
+                            _readAll = true;
+                            ContentUI.maxVisibleCharacters = ContentUI.text.Length;
+                        }
+                        else
+                        {
+                            _goToNext = true;
+                            _readAll = false;
+                        }
+                        break;
+                    }
+
+                default:
+                    break;
             }
 
             if (_goToNext)
@@ -146,7 +161,7 @@ namespace ProjectMGG.Ingame
                 else
                 {
                     //Story End
-                    SceneManager.LoadScene("MainMenu");
+                    GoHome();
                 }
             }
 
@@ -154,10 +169,11 @@ namespace ProjectMGG.Ingame
         }
 
         /// <summary>
-        /// 1: DialogUI
+        /// 0: Not Mouse Clicked
+        /// 1: Dialog
         /// 2: other (TODO)
         /// </summary>
-        int IsClickedDialogUI()
+        int GetMouseDownType()
         {
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
@@ -177,11 +193,28 @@ namespace ProjectMGG.Ingame
                     //TODO: if other button is touched, return 2~
                     //if (result.gameObject.name == "DialogUI") return true;
                 }
+
+                return 1;
             }
 
             return 0;
         }
 
+        public void TMPDOText(TextMeshProUGUI text, float duration)
+        {
+            _readAll = false;
+            text.maxVisibleCharacters = 0;
+
+            var ease = Ease.Linear;
+            Enum.TryParse(SettingsManager.Settings.UI.TextEase, out ease);
+
+            Tween.Custom(0f, text.text.Length, duration, x =>
+            {
+                if (!_readAll) text.maxVisibleCharacters = (int)x;
+            }, ease);
+        }
+
+        #region Keywords: Renpy
         public void LetsNarration(string content)
         {
             NameUI.text = "";
@@ -303,7 +336,34 @@ namespace ProjectMGG.Ingame
                     break;
             }
         }
+        #endregion
+        #region Keywords: Custom
+        void Reeverb()
+        {
+            _currentDecayTime = Mathf.MoveTowards(_currentDecayTime, 7.0f, 2f * Time.deltaTime);
+            _reverbFilter.decayTime = _currentDecayTime;
 
+            bool available = ReeverbIntervals.Count > 0;
+
+            if (available) available = MusicPlayer.time >= EndReverbTime;
+            else available = _currentDecayTime == 7.0f;
+
+            if (available)
+            {
+                MusicPlayer.mute = true;
+                _preservedMusicTime = MusicPlayer.time;
+                IsReeverb = false;
+            }
+        }
+        #endregion
+        #region UI: Button Events
+        public void GoHome()
+        {
+            SceneManager.LoadScene("MainMenu");
+        }
+        #endregion
+
+        #region Etc Methods
         public static T LoadResource<T>(string pathRaw) where T : UnityEngine.Object
         {
             string path = pathRaw.Replace("/", @"\");
@@ -322,38 +382,6 @@ namespace ProjectMGG.Ingame
         public static string ToResourcePath(string path, string pathRaw)
         {
             return @$"assets/{pathRaw.Substring(2, pathRaw.LastIndexOf(Path.GetExtension(path)) - 2)}";
-        }
-
-        void Reeverb()
-        {
-            _currentDecayTime = Mathf.MoveTowards(_currentDecayTime, 7.0f, 2f * Time.deltaTime);
-            _reverbFilter.decayTime = _currentDecayTime;
-
-            bool available = ReeverbIntervals.Count > 0;
-
-            if (available) available = MusicPlayer.time >= EndReverbTime;
-            else available = _currentDecayTime == 7.0f;
-
-            if (available)
-            {
-                MusicPlayer.mute = true;
-                _preservedMusicTime = MusicPlayer.time;
-                IsReeverb = false;
-            }
-        }
-
-        public void TMPDOText(TextMeshProUGUI text, float duration)
-        {
-            _readAll = false;
-            text.maxVisibleCharacters = 0;
-
-            var ease = Ease.Linear;
-            Enum.TryParse(SettingsManager.Settings.UI.TextEase, out ease);
-
-            Tween.Custom(0f, text.text.Length, duration, x =>
-            {
-                if (!_readAll) text.maxVisibleCharacters = (int)x;
-            }, ease);
         }
 
         public static T GetVariable<T>(string name, ref Dictionary<string, T> local, ref Dictionary<string, T> global)
@@ -377,5 +405,6 @@ namespace ProjectMGG.Ingame
 
             return list;
         }
+        #endregion
     }
 }

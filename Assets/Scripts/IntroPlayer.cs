@@ -187,6 +187,7 @@ namespace ProjectMGG
             interpreter.Interpret(syntaxTree);
         }
 
+        #region UI: Button Events
         public void Play()
         {
             var lowpass = bgm.GetComponent<AudioLowPassFilter>();
@@ -221,7 +222,8 @@ namespace ProjectMGG
         {
             Application.Quit();
         }
-
+        #endregion
+        #region UI: Animation
         void AnimateUI()
         {
             //Initialize
@@ -275,5 +277,6 @@ namespace ProjectMGG
             Tween.LocalPositionX(obj.transform, obj.transform.localPosition.x + 20f, 0.2f, Ease.OutQuart);
             //Tween.Scale(obj.transform, 1.0f, 0.2f, Ease.OutQuart); //uncomment this if you want to make a game design more intuitive
         }
+        #endregion
     }
 }
