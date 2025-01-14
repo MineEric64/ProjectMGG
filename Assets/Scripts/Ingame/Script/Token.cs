@@ -3,24 +3,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Token
+namespace ProjectMGG.Ingame.Script
 {
-    public ArgumentKind Kind { get; set; } = ArgumentKind.Unknown;
-    public string Content { get; set; }
-
-    public Token(ArgumentKind kind)
+    public class Token
     {
-        this.Kind = kind;
-    }
+        public ArgumentKind Kind { get; set; } = ArgumentKind.Unknown;
+        public string Content { get; set; }
 
-    public Token(ArgumentKind kind, string content)
-    {
-        this.Kind = kind;
-        this.Content = content;
-    }
+        public Token(ArgumentKind kind)
+        {
+            this.Kind = kind;
+        }
 
-    public override string ToString()
-    {
-        return $"Token(kind={Kind}, content='{Content}')";
+        public Token(ArgumentKind kind, string content)
+        {
+            this.Kind = kind;
+            this.Content = content;
+        }
+
+        public override string ToString()
+        {
+            return $"Token(kind={Kind}, content='{Content}')";
+        }
     }
 }

@@ -4,9 +4,12 @@ using UnityEngine;
 
 using MessagePack;
 
-[MessagePackObject]
-public class SettingUI
+namespace ProjectMGG.Settings
 {
-    [Key("text_ease")]
-    public string TextEase { get; set; } = "Linear";
+    [MessagePackObject]
+    public class SettingUI
+    {
+        [Key("text_ease")]
+        public string TextEase { get; set; } = "Linear";
+    }
 }

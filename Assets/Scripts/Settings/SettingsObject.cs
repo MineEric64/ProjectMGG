@@ -4,12 +4,15 @@ using UnityEngine;
 
 using MessagePack;
 
-[MessagePackObject]
-public class SettingsObject
+namespace ProjectMGG.Settings
 {
-    [Key("ui")]
-    public SettingUI UI { get; set; }
+    [MessagePackObject]
+    public class SettingsObject
+    {
+        [Key("ui")]
+        public SettingUI UI { get; set; }
 
-    [Key("debug")]
-    public bool Debug { get; set; } = false;
+        [Key("debug")]
+        public bool Debug { get; set; } = false;
+    }
 }
