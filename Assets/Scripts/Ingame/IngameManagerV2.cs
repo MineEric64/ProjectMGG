@@ -22,6 +22,8 @@ public class IngameManagerV2 : MonoBehaviour
     public static VariableCollection Local { get; private set; } = new VariableCollection(); //TODO: every label (using stack)
     public static VariableCollection Global { get; private set; } = new VariableCollection();
 
+    public CanvasGroup CanvasDefault;
+
     private List<Token> _tokens;
     [SerializeField] private List<string> _tokensDebug;
     public Interpreter Interpreter;
@@ -85,6 +87,10 @@ public class IngameManagerV2 : MonoBehaviour
         //UI
         NameUI.text = "";
         ContentUI.text = "";
+
+        CanvasDefault = GetComponent<CanvasGroup>();
+        CanvasDefault.alpha = 0f;
+        Tween.Custom(0f, 1f, 1f, x => CanvasDefault.alpha = x, Ease.InSine);
     }
 
     // Update is called once per frame

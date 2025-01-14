@@ -44,7 +44,7 @@ public class IntroPlayer : MonoBehaviour
         SettingsManager.ApplySettings();
 
         canvasMain.GetComponent<CanvasGroup>().alpha = 0.0f;
-        canvasGroup = gameObject.GetComponent<CanvasGroup>();
+        canvasGroup = GetComponent<CanvasGroup>();
     }
 
     // Update is called once per frame
@@ -182,7 +182,17 @@ public class IntroPlayer : MonoBehaviour
 
     public void Play()
     {
-        GoDay("1.rpy");
+        var lowpass = bgm.GetComponent<AudioLowPassFilter>();
+
+        Tween.Custom(1f, 0f, 3f, x => canvasGroup.alpha = x, Ease.OutQuad).OnComplete(this, x =>
+        {
+            x.GoDay("1.rpy");
+        });
+        //TODO: Blur?
+
+        lowpass.enabled = true;
+        Tween.AudioVolume(bgm, 1f, 0f, 3f, Ease.InSine);
+        Tween.Custom(15000f, 300f, 3f, x => lowpass.cutoffFrequency = x, Ease.OutQuart);
     }
 
     public void Load()

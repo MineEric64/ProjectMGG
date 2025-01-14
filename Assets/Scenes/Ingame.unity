@@ -404,6 +404,7 @@ GameObject:
   - component: {fileID: 525807510}
   - component: {fileID: 525807509}
   - component: {fileID: 525807513}
+  - component: {fileID: 525807514}
   m_Layer: 5
   m_Name: CanvasDefault
   m_TagString: Untagged
@@ -507,12 +508,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5088209550339784cbc313caef006a93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CanvasDefault: {fileID: 0}
+  _tokensDebug: []
   Background: {fileID: 0}
   NameUI: {fileID: 265009907}
   ContentUI: {fileID: 310616674}
-  MusicPlayer: {fileID: 605366159}
   CharacterSample: {fileID: 8649560694921746454, guid: 3daaf7c50de43a34e9f4654cd113a783, type: 3}
   TextAnimationMultiplier: 0.03
+  MusicPlayer: {fileID: 605366159}
+  IsReeverb: 0
+  ReeverbIntervals: []
+  EndReverbTime: 0
+--- !u!225 &525807514
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 525807508}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &605366158
 GameObject:
   m_ObjectHideFlags: 0
@@ -957,7 +975,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
