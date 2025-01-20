@@ -12,6 +12,17 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
         public float Delay { get; set; }
         public bool Hard { get; set; } = false;
 
+        public Pause()
+        {
+
+        }
+
+        public Pause(float delay, bool hard = false)
+        {
+            Delay = delay;
+            Hard = hard;
+        }
+
         public void Interpret()
         {
             

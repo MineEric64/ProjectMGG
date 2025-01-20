@@ -7,7 +7,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEditor;
 
 using TMPro;
 using PrimeTween;
@@ -364,32 +363,45 @@ namespace ProjectMGG.Ingame
                 }
             }
 
+            Pause pause = new Pause();
+            pause.Delay = 0f;
+            pause.Hard = true;
+
             if (result is Dissolve dissolve)
             {
                 float start = isShow ? 0f : 1f;
                 float end = isShow ? 1f : 0f;
+                float time = (float)dissolve.Time.Interpret();
+                pause.Delay = time;
 
-                Tween.Custom(start, end, (float)dissolve.Time.Interpret(), x =>
+                Tween.Custom(start, end, time, x =>
                 {
                     image.color = new Color(image.color.r, image.color.g, image.color.b, x);
                 }, Ease.Linear);
             }
             else if (result is Fade fade)
             {
-                Tween.Custom(1f, 0f, (float)fade.OutTime.Interpret(), x =>
+                float endTime = (float)fade.OutTime.Interpret();
+                float holdTime = (float)fade.HoldTime.Interpret();
+                float inTime = (float)fade.InTime.Interpret();
+                pause.Delay = endTime + holdTime + inTime;
+                
+                Tween.Custom(1f, 0f, endTime, x =>
                 {
                     CanvasDefault.alpha = x;
                 }, Ease.OutCubic).OnComplete(() =>
                 {
-                    Tween.Custom(0f, 1f, (float)fade.HoldTime.Interpret(), _ => { }).OnComplete(() =>
+                    Tween.Custom(0f, 1f, holdTime, _ => { }).OnComplete(() =>
                     {
-                        Tween.Custom(0f, 1f, (float)fade.InTime.Interpret(), x =>
+                        Tween.Custom(0f, 1f, inTime, x =>
                         {
                             CanvasDefault.alpha = x;
                         }, Ease.InCubic);
                     });
                 });
             }
+
+            if (pause.Delay > 0f) StartCoroutine(LetsPause(pause));
         }
 
         public void LetsPlay(string channel, string path)
