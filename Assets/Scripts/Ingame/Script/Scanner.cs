@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 
 using ProjectMGG.Ingame.Script.Keywords;
@@ -38,6 +39,7 @@ namespace ProjectMGG.Ingame.Script
             {
                 if (needToExit) break;
                 char ch = sourceCode[_index];
+                CharType charType = GetCharType(ch);
 
                 if (ch == '\n')
                 {
@@ -45,7 +47,13 @@ namespace ProjectMGG.Ingame.Script
                     _tab = 0;
                 }
 
-                switch (GetCharType(ch))
+                if (ch == '.' && _index + 1 < sourceCode.Length) //ex: .2
+                {
+                    char next = sourceCode[_index + 1];
+                    if (GetCharType(next) == CharType.NumberLiteral) charType = CharType.NumberLiteral;
+                }
+
+                switch (charType)
                 {
                     case CharType.WhiteSpace:
                         if (ch == '\t') _tab++;

@@ -10,8 +10,9 @@ transform half_size:
 label start:
     scene classroom
     "어떡하면 좋을까."
-    show seah default at half_size
+    show seah default at half_size with Fade(0.5, 0, 0.5)
     play music "$/audio/Nemo Neko.mp3"
+    pause 1
     seah "ㄱㅡ그냥 제가 할게요오..."
 
     define hina = Character("유히나", color="#f688a7")

@@ -8,11 +8,6 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
     {
         public string Content { get; set; } = string.Empty;
 
-        public void Print(int depth)
-        {
-
-        }
-
         public void Interpret()
         {
             Debug.Log("Script/Interpret: # " + Content);

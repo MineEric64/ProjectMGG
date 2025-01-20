@@ -175,7 +175,7 @@ namespace ProjectMGG
         public void ProcessCommand(TMP_InputField inputField)
         {
             string input = inputField.text;
-            if (string.IsNullOrWhiteSpace(input)) return;
+            if (string.IsNullOrWhiteSpace(input) || input == "/") return;
 
             var scanner = new CmdScanner();
             List<CmdToken> tokenList = scanner.Scan(input);

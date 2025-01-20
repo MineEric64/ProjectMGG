@@ -13,13 +13,6 @@ namespace ProjectMGG.Ingame.Script.Keywords
         public IExpression Expression { get; set; }
         public bool IsGlobal { get; set; } = false;
 
-        public void Print(int depth)
-        {
-            Debug.Log("Script/Print: " + new string(' ', depth * 2));
-            Debug.Log("Script/Print: VAR " + Name + ":");
-            Expression.Print(depth + 1);
-        }
-
         public void Interpret()
         {
             var vars = IsGlobal ? IngameManagerV2.Global : IngameManagerV2.Local;

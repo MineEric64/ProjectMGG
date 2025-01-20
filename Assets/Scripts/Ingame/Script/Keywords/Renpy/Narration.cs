@@ -8,13 +8,9 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
     {
         public string Argument { get; set; }
 
-        public void Print(int depth)
-        {
-            return;
-        }
-
         public void Interpret()
         {
+            Argument = StringLiteral.ApplyVariable(Argument);
             IngameManagerV2.Instance.LetsNarration(Argument);
         }
     }

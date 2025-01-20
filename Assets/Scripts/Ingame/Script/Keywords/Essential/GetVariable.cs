@@ -10,12 +10,6 @@ namespace ProjectMGG.Ingame.Script.Keywords
         public bool IsCommand { get; set; } = false;
         public static implicit operator string(GetVariable s) => s.Name;
 
-        public void Print(int depth)
-        {
-            Debug.Log("Script/Print: " + new string(' ', depth * 2));
-            Debug.Log("Script/Print: GET_VARIABLE: " + Name);
-        }
-
         public object Interpret()
         {
             var glocal1 = IngameManagerV2.GetVariable(Name, ref IngameManagerV2.Local.Others, ref IngameManagerV2.Global.Others);

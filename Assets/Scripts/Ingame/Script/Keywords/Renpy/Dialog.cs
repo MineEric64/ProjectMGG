@@ -9,13 +9,10 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
         public string CharacterName { get; set; }
         public string Content { get; set; }
 
-        public void Print(int depth)
-        {
-            return;
-        }
-
         public void Interpret()
         {
+            CharacterName = StringLiteral.ApplyVariable(CharacterName);
+            Content = StringLiteral.ApplyVariable(Content);
             IngameManagerV2.Instance.LetsDialog(CharacterName, Content);
         }
     }

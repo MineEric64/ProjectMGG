@@ -14,10 +14,10 @@ using PrimeTween;
 
 using ProjectMGG.Ingame.Script;
 using ProjectMGG.Ingame.Script.Keywords.Renpy;
+using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
 using ProjectMGG.Settings;
 
 using Path = System.IO.Path;
-using Unity.VisualScripting;
 
 namespace ProjectMGG.Ingame
 {
@@ -38,15 +38,15 @@ namespace ProjectMGG.Ingame
         [SerializeField] private List<string> _tokensDebug;
         public Interpreter Interpreter;
 
-        public RawImage Background;
         public TextMeshProUGUI NameUI;
         public TextMeshProUGUI ContentUI;
         public RawImage CharacterSample;
         public float TextAnimationMultiplier = 0.04f;
+        public bool NoWait = false;
 
         public AudioSource MusicPlayer;
         public bool IsReeverb = false;
-        public List<double> ReeverbIntervals = new List<double>();
+        public List<float> ReeverbIntervals = new List<float>();
         public float EndReverbTime = 0.0f;
 
         private float _preservedMusicTime = 0.0f;
@@ -57,6 +57,8 @@ namespace ProjectMGG.Ingame
         private GraphicRaycaster _raycaster;
         private bool _goToNext = true;
         private bool _readAll = false;
+        private bool _paused = false;
+        private bool _pausedHard = false;
 
         void Awake()
         {
@@ -98,7 +100,7 @@ namespace ProjectMGG.Ingame
             NameUI.text = "";
             ContentUI.text = "";
 
-            CanvasDefault = GetComponent<CanvasGroup>();
+            CanvasDefault = GetComponent<CanvasGroup>(); //Fade In
             CanvasDefault.alpha = 0f;
             Tween.Custom(0f, 1f, 1f, x => CanvasDefault.alpha = x, Ease.InSine);
         }
@@ -115,11 +117,23 @@ namespace ProjectMGG.Ingame
 
             if (ContentUI.text.Length == 0) _readAll = true;
             else if (!_readAll) _readAll = ContentUI.maxVisibleCharacters == ContentUI.text.Length;
+            if (_readAll && NoWait)
+            {
+                _goToNext = true;
+                NoWait = false;
+            }
 
             switch (GetMouseDownType())
             {
                 case 1: //Dialog
                     {
+                        if (_paused && !_pausedHard)
+                        {
+                            _goToNext = true;
+                            _paused = false;
+                            break;
+                        }
+
                         if (!_readAll)
                         {
                             _readAll = true;
@@ -137,7 +151,7 @@ namespace ProjectMGG.Ingame
                     break;
             }
 
-            if (_goToNext)
+            if (_goToNext && !_paused)
             {
                 if (Interpreter.CurrentPoint == null) //error occured while scanning-parsing-interpreting
                 {
@@ -156,6 +170,11 @@ namespace ProjectMGG.Ingame
                         _currentDecayTime = 0.1f;
                         _reverbFilter.decayTime = 0.1f;
                         _reverbFilter.enabled = true;
+                    }
+                    else if (script is Pause pause)
+                    {
+                        LetsNarration(string.Empty);
+                        StartCoroutine(LetsPause(pause));
                     }
                 }
                 else
@@ -202,6 +221,12 @@ namespace ProjectMGG.Ingame
 
         public void TMPDOText(TextMeshProUGUI text, float duration)
         {
+            if (text.text.Length == 0)
+            {
+                _readAll = true;
+                return;
+            }
+
             _readAll = false;
             text.maxVisibleCharacters = 0;
 
@@ -234,7 +259,7 @@ namespace ProjectMGG.Ingame
                 return;
             }
 
-            NameUI.text = chr.Name;
+            NameUI.text = chr.Name.Interpret() as string;
             NameUI.color = chr.Colour;
             ContentUI.text = content;
             TMPDOText(ContentUI, TextAnimationMultiplier * ContentUI.text.Length);
@@ -242,29 +267,29 @@ namespace ProjectMGG.Ingame
             _goToNext = false;
         }
 
-        public void LetsShow(string variableName, string attributes = "", string transformName = "")
+        public void LetsShow(Show show)
         {
-            var image = GetVariable(variableName, ref Local.Images, ref Global.Images);
+            var image = GetVariable(show.Tag, ref Local.Images, ref Global.Images);
             string resource = "";
 
             if (image == null)
             {
-                ExceptionManager.Throw($"The image '{variableName}' variable doesn't exists while interpreting 'show' statement.", "IngameManagerV2");
+                ExceptionManager.Throw($"The image '{show.Tag}' variable doesn't exists while interpreting 'show' statement.", "IngameManagerV2");
                 return;
             }
-            if (string.IsNullOrEmpty(attributes)) resource = image.MainImage;
+            if (string.IsNullOrEmpty(show.Attributes)) resource = image.MainImage;
             else
             {
-                if (!image.SubImages.TryGetValue(attributes, out var subPath))
+                if (!image.SubImages.TryGetValue(show.Attributes, out var subPath))
                 {
-                    ExceptionManager.Throw($"The image '{variableName}' that has a attribute '{attributes}' variable doesn't exists.", "IngameManagerV2");
+                    ExceptionManager.Throw($"The image '{show.Tag}' that has a attribute '{show.Attributes}' variable doesn't exists.", "IngameManagerV2");
                     return;
                 }
                 resource = subPath;
             }
 
             Texture2D texture = LoadResource<Texture2D>(resource);
-            RawImage prefab = GameObject.Find(variableName)?.GetComponent<RawImage>();
+            RawImage prefab = GameObject.Find(show.Tag)?.GetComponent<RawImage>();
 
             if (prefab == null)
             {
@@ -275,15 +300,15 @@ namespace ProjectMGG.Ingame
             if (texture != null)
             {
                 prefab.texture = texture;
-                prefab.name = variableName;
+                prefab.name = show.Tag;
                 prefab.rectTransform.sizeDelta = new Vector3(texture.width, texture.height);
 
-                if (!string.IsNullOrEmpty(transformName))
+                if (!string.IsNullOrEmpty(show.At))
                 {
-                    var transform = GetVariable(transformName, ref Local.Transforms, ref Global.Transforms);
+                    var transform = GetVariable(show.At, ref Local.Transforms, ref Global.Transforms);
                     if (transform == null)
                     {
-                        ExceptionManager.Throw($"The transform '{transformName}' variable doesn't exists while interpreting 'show' statement.", "IngameManagerV2");
+                        ExceptionManager.Throw($"The transform '{show.At}' variable doesn't exists while interpreting 'show' statement.", "IngameManagerV2");
                         return;
                     }
 
@@ -303,6 +328,56 @@ namespace ProjectMGG.Ingame
                 {
                     prefab.transform.localPosition = new Vector3(0f, -(720 - texture.height / 2));
                 }
+
+                LetsWith(show.With, true, prefab);
+            }
+        }
+
+        public void LetsWith(With with, bool isShow, RawImage image = null)
+        {
+            if (with == null) return;
+
+            var result = with.Transition.Interpret();
+
+            if (with.Transition is Script.Keywords.GetVariable identifier)
+            {
+                switch ((string)identifier)
+                {
+                    case "dissolve":
+                        result = new Dissolve(0.5f);
+                        break;
+
+                    case "fade":
+                        result = new Fade(0.5f, 0.0f, 0.5f);
+                        break;
+                }
+            }
+
+            if (result is Dissolve dissolve)
+            {
+                float start = isShow ? 0f : 1f;
+                float end = isShow ? 1f : 0f;
+
+                Tween.Custom(start, end, (float)dissolve.Time.Interpret(), x =>
+                {
+                    image.color = new Color(image.color.r, image.color.g, image.color.b, x);
+                }, Ease.Linear);
+            }
+            else if (result is Fade fade)
+            {
+                Tween.Custom(1f, 0f, (float)fade.OutTime.Interpret(), x =>
+                {
+                    CanvasDefault.alpha = x;
+                }, Ease.OutCubic).OnComplete(() =>
+                {
+                    Tween.Custom(0f, 1f, (float)fade.HoldTime.Interpret(), _ => { }).OnComplete(() =>
+                    {
+                        Tween.Custom(0f, 1f, (float)fade.InTime.Interpret(), x =>
+                        {
+                            CanvasDefault.alpha = x;
+                        }, Ease.InCubic);
+                    });
+                });
             }
         }
 
@@ -334,6 +409,19 @@ namespace ProjectMGG.Ingame
                 default:
                     ExceptionManager.Throw("TODO: support channel on play keyword", "IngameManagerV2");
                     break;
+            }
+        }
+
+        public IEnumerator LetsPause(Pause pause)
+        {
+            _paused = true;
+            _pausedHard = pause.Hard;
+            yield return new WaitForSeconds((float)pause.Delay);
+
+            if (_paused) //if not paused already (for hard)
+            {
+                _paused = false;
+                _goToNext = true;
             }
         }
         #endregion

@@ -16,32 +16,6 @@ namespace ProjectMGG.Ingame.Script.Keywords
             Parameters.Add(parameter);
         }
 
-        public void Print(int depth)
-        {
-            Debug.Log("Script/Print: " + new string(' ', depth * 2));
-            Debug.Log("Script/Print: FUNCTION " + Name + ": ");
-
-            if (Parameters.Count > 0)
-            {
-                Debug.Log("Script/Print: " + new string(' ', (depth + 1) * 2));
-                Debug.Log("Script/Print: PARAMETERS:");
-
-                foreach (string name in Parameters)
-                {
-                    Debug.Log("Script/Print: " + name + " ");
-                }
-                Debug.Log("Script/Print: ");
-            }
-
-            Debug.Log("Script/Print: " + new string(' ', (depth + 1) * 2));
-            Debug.Log("Script/Print: BLOCK:");
-
-            foreach (IStatement node in Block)
-            {
-                node.Print(depth + 2);
-            }
-        }
-
         public void Interpret()
         {
             if (_index == Block.Count) return;

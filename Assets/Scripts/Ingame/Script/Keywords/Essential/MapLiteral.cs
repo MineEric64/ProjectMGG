@@ -9,20 +9,6 @@ namespace ProjectMGG.Ingame.Script.Keywords
     {
         public Dictionary<string, IExpression> Values { get; set; } = new Dictionary<string, IExpression>();
 
-        public void Print(int depth)
-        {
-            Debug.Log("Script/Print: " + new string(' ', depth * 2));
-            Debug.Log("Script/Print: {");
-
-            foreach (string key in Values.Keys)
-            {
-                Debug.Log("Script/Print: " + key + ": ");
-                Values[key].Print(depth + 1);
-            }
-            Debug.Log("Script/Print: " + new string(' ', depth * 2));
-            Debug.Log("Script/Print: }");
-        }
-
         public object Interpret()
         {
             Dictionary<string, object> result = new Dictionary<string, object>();

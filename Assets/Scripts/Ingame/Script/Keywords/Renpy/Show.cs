@@ -10,13 +10,10 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
         public string Tag { get; set; }
         public string Attributes { get; set; } = string.Empty;
         public string At { get; set; } = string.Empty; //Transform Name
-        public bool IsScene { get; set; } = false;
+        public With With { get; set; } = null;
 
-        public void Print(int depth)
-        {
-            Debug.Log("Script/Print: " + new string(' ', depth * 2));
-            Debug.Log("Script/Print: SHOW");
-        }
+        public bool IsScene { get; set; } = false;
+        public bool IsHide { get; set; } = false;
 
         public void Interpret()
         {
@@ -24,7 +21,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
             {
                 var canvasImage = IngameManagerV2.Instance.transform.Find("CanvasImage");
 
-                foreach (UnityEngine.Transform child in canvasImage)
+                foreach (Transform child in canvasImage)
                 {
                     if (child.gameObject.name == Tag)
                     {
@@ -35,7 +32,8 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
                     GameObject.Destroy(child.gameObject);
                 }
             }
-            IngameManagerV2.Instance.LetsShow(Tag, Attributes, At);
+
+            IngameManagerV2.Instance.LetsShow(this);
         }
     }
 }

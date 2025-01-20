@@ -9,6 +9,7 @@ using SmartFormat;
 
 using ProjectMGG.Ingame.Script.Keywords;
 using ProjectMGG.Ingame.Script.Keywords.Renpy;
+using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
 
 namespace ProjectMGG.Ingame.Script
 {
@@ -146,6 +147,12 @@ namespace ProjectMGG.Ingame.Script
                         break;
 
                     case ArgumentKind.StringLiteral: //narration
+                        if (_index + 1 < _tokens.Count && _tokens[_index + 1].Kind == ArgumentKind.StringLiteral) //it's dialog
+                        {
+                            result.Add(ParseDialog());
+                            break;
+                        }
+
                         result.Add(ParseNarration());
                         break;
 
@@ -175,12 +182,20 @@ namespace ProjectMGG.Ingame.Script
                         result.Add(ParseShow());
                         break;
 
+                    case ArgumentKind.With:
+                        result.Add(ParseWith(true));
+                        break;
+
                     case ArgumentKind.Play:
                         result.Add(ParsePlay());
                         break;
 
                     case ArgumentKind.Reeverb:
                         result.Add(ParseReeverb());
+                        break;
+
+                    case ArgumentKind.Pause:
+                        result.Add(ParsePause());
                         break;
 
                     case ArgumentKind.While:
@@ -346,6 +361,15 @@ namespace ProjectMGG.Ingame.Script
             return result;
         }
 
+        private Pause ParsePause()
+        {
+            Pause result = new Pause();
+            SkipCurrent();
+
+            result.Delay = ParseNumberLiteral();
+            return result;
+        }
+
         private Comment ParseComment()
         {
             Comment result = new Comment();
@@ -355,7 +379,7 @@ namespace ProjectMGG.Ingame.Script
             return result;
         }
 
-        private Show ParseShow(bool isScene = false)
+        private Show ParseShow(bool isScene = false, bool isHide = false)
         {
             Show result = new Show();
             SkipCurrent();
@@ -363,6 +387,7 @@ namespace ProjectMGG.Ingame.Script
             result.Tag = ParseIdentifier();
             result.Attributes = ParseIdentifier(true);
             result.IsScene = isScene;
+            result.IsHide = isHide;
 
             while (_tokens[_index].Kind == ArgumentKind.At || _tokens[_index].Kind == ArgumentKind.With)
             {
@@ -374,11 +399,21 @@ namespace ProjectMGG.Ingame.Script
                         break;
 
                     case ArgumentKind.With:
-                        SkipCurrent();
+                        result.With = ParseWith(false);
                         break;
                 }
             }
             SkipCurrentIf(ArgumentKind.Unknown);
+
+            return result;
+        }
+
+        private With ParseWith(bool alone)
+        {
+            With result = new With(alone);
+
+            SkipCurrent();
+            result.Transition = ParseExpression();
 
             return result;
         }
@@ -639,6 +674,11 @@ namespace ProjectMGG.Ingame.Script
                     result = ParseBooleanLiteral();
                     break;
 
+                case ArgumentKind.NullLiteral:
+                    result = new NullLiteral();
+                    SkipCurrent();
+                    break;
+
                 case ArgumentKind.NumberLiteral:
                     result = ParseNumberLiteral();
                     break;
@@ -649,6 +689,14 @@ namespace ProjectMGG.Ingame.Script
 
                 case ArgumentKind.Character:
                     result = ParseCharacter();
+                    break;
+
+                case ArgumentKind.Dissolve:
+                    result = ParseDissolve();
+                    break;
+
+                case ArgumentKind.Fade:
+                    result = ParseFade();
                     break;
 
                 case ArgumentKind.LeftBracket:
@@ -683,10 +731,10 @@ namespace ProjectMGG.Ingame.Script
             return result;
         }
 
-        private IExpression ParseNumberLiteral()
+        private NumberLiteral ParseNumberLiteral()
         {
             NumberLiteral result = new NumberLiteral();
-            result.Value = double.Parse(_tokens[_index].Content);
+            result.Value = float.Parse(_tokens[_index].Content);
             SkipCurrent(ArgumentKind.NumberLiteral);
             return result;
         }
@@ -853,47 +901,95 @@ namespace ProjectMGG.Ingame.Script
             SkipCurrent();
             SkipCurrent(ArgumentKind.LeftParen);
 
-            if (_tokens[_index].Kind != ArgumentKind.StringLiteral) //TODO: support variable
-            {
-                ExceptionManager.Throw("Invalid argument 'name' on Character Class.", "Script/Parser");
-                return null;
-            }
-
-            result.Name = ParseStringLiteral();
-            SkipCurrent();
+            result.Name = ParseExpression();
             SkipCurrentIf(ArgumentKind.Comma);
 
             if (_tokens[_index].Kind != ArgumentKind.RightParen)
             {
                 do
                 {
-                    //var expression = ParseExpression();
-                    var varName = _tokens[_index].Content; //TODO: support variable in switch-case statement
+                    var varName = _tokens[_index].Content;
                     SkipCurrent();
                     SkipCurrent(ArgumentKind.Assignment);
 
                     switch (varName)
                     {
                         case "color":
-                            if (_tokens[_index].Kind != ArgumentKind.StringLiteral) //TODO: support variable
                             {
-                                ExceptionManager.Throw("Invalid argument 'color' on Character Class.", "Script/Parser");
-                                SkipCurrent();
+                                string content = ParseExpression()?.Interpret() as string;
+
+                                if (!ColorUtility.TryParseHtmlString(content, out var color))
+                                {
+                                    ExceptionManager.Throw("Invalid Color format on Character Class.", "Script/Parser");
+                                    SkipCurrent();
+                                    break;
+                                }
+                                result.Colour = color;
                                 break;
                             }
-                            if (!ColorUtility.TryParseHtmlString(_tokens[_index].Content, out var color))
-                            {
-                                ExceptionManager.Throw("Invalid Color format on Character Class.", "Script/Parser");
-                                SkipCurrent();
-                                break;
-                            }
-                            result.Colour = color;
-                            SkipCurrent();
-                            break;
                     }
 
                 } while (SkipCurrentIf(ArgumentKind.Comma));
             }
+            SkipCurrent(ArgumentKind.RightParen);
+            return result;
+        }
+
+        private IExpression ParseDissolve()
+        {
+            Dissolve result = new Dissolve();
+
+            SkipCurrent();
+            SkipCurrent(ArgumentKind.LeftParen);
+            
+            result.Time = ParseExpression();
+            
+            SkipCurrent(ArgumentKind.RightParen);
+            return result;
+        }
+
+        private IExpression ParseFade()
+        {
+            Fade result = new Fade();
+
+            SkipCurrent();
+            SkipCurrent(ArgumentKind.LeftParen);
+
+            result.OutTime = ParseExpression();
+            SkipCurrent(ArgumentKind.Comma);
+            result.HoldTime = ParseExpression();
+            SkipCurrent(ArgumentKind.Comma);
+            result.InTime = ParseExpression();
+            SkipCurrentIf(ArgumentKind.Comma);
+
+            if (_tokens[_index].Kind != ArgumentKind.RightParen)
+            {
+                do
+                {
+                    var varName = _tokens[_index].Content;
+                    SkipCurrent();
+                    SkipCurrent(ArgumentKind.Assignment);
+
+                    switch (varName)
+                    {
+                        case "color":
+                            {
+                                string content = ParseExpression()?.Interpret() as string;
+
+                                if (!ColorUtility.TryParseHtmlString(content, out var color))
+                                {
+                                    ExceptionManager.Throw("Invalid Color format on Character Class.", "Script/Parser");
+                                    SkipCurrent();
+                                    break;
+                                }
+                                result.Colour = color;
+                                break;
+                            }
+                    }
+
+                } while (SkipCurrentIf(ArgumentKind.Comma));
+            }
+
             SkipCurrent(ArgumentKind.RightParen);
             return result;
         }

@@ -27,11 +27,6 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 
         }
 
-        public void Print(int depth)
-        {
-
-        }
-
         public void Interpret()
         {
             var vars = IsGlobal ? IngameManagerV2.Global : IngameManagerV2.Local;

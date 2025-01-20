@@ -10,39 +10,6 @@ namespace ProjectMGG.Ingame.Script.Keywords
         public List<List<IStatement>> Blocks { get; set; } = new List<List<IStatement>>();
         public List<IStatement> ElseBlock { get; set; } = new List<IStatement>();
 
-        public void Print(int depth)
-        {
-            for (int i = 0; i < Conditions.Count; i++)
-            {
-                Debug.Log("Script/Print: " + new string(' ', depth * 2));
-                Debug.Log("Script/Print: " + (i == 0 ? "IF:" : "ELIF:"));
-
-                Debug.Log("Script/Print: " + new string(' ', (depth + 1) * 2));
-                Debug.Log("Script/Print: CONDITION:");
-                Conditions[i].Print(depth + 2);
-                Debug.Log("Script/Print: " + new string(' ', (depth + 1) * 2));
-
-                Debug.Log("Script/Print: BLOCK:");
-
-                foreach (IStatement node in Blocks[i])
-                {
-                    node.Print(depth + 2);
-                }
-            }
-
-            if (ElseBlock == null || ElseBlock.Count == 0)
-            {
-                return;
-            }
-
-            Debug.Log("Script/Print: " + new string(' ', depth * 2));
-            Debug.Log("Script/Print: ELSE:");
-            foreach (IStatement node in ElseBlock)
-            {
-                node.Print(depth + 1);
-            }
-        }
-
         public void Interpret()
         {
             for (int i = 0; i < Conditions.Count; i++)

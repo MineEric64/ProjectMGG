@@ -6,13 +6,9 @@ namespace ProjectMGG.Ingame.Script.Keywords
 {
     public class NumberLiteral : IExpression
     {
-        public double Value { get; set; } = 0.0;
-
-        public void Print(int depth)
-        {
-            Debug.Log("Script/Print: " + new string(' ', depth * 2));
-            Debug.Log("Script/Print: " + Value.ToString());
-        }
+        public float Value { get; set; } = 0.0f;
+        public static implicit operator double(NumberLiteral s) => s.Value;
+        public static implicit operator float(NumberLiteral s) => s.Value;
 
         public object Interpret()
         {

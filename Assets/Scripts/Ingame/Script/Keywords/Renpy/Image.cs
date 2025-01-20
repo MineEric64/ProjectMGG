@@ -12,12 +12,6 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
         public string Path { get; set; }
         public bool IsGlobal { get; set; } = false;
 
-        public void Print(int depth)
-        {
-            Debug.Log("Script/Print: " + new string(' ', depth * 2));
-            Debug.Log("Script/Print: IMAGE " + Path);
-        }
-
         public void Interpret()
         {
             var vars = IsGlobal ? IngameManagerV2.Global : IngameManagerV2.Local;

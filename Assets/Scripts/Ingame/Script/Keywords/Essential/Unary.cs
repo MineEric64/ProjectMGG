@@ -10,13 +10,6 @@ namespace ProjectMGG.Ingame.Script.Keywords
         public ArgumentKind Kind { get; set; }
         public IExpression Sub { get; set; }
 
-        public void Print(int depth)
-        {
-            Debug.Log("Script/Print: " + new string(' ', depth * 2));
-            Debug.Log("Script/Print: " + Kind.GetContent());
-            Sub.Print(depth + 1);
-        }
-
         public object Interpret()
         {
             object value = Sub.Interpret();

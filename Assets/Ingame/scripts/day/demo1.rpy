@@ -44,9 +44,9 @@ label start:
     "…"
     "에이 그냥 안 먹어야겠다."
     "애초에 급식을 빨리 먹기엔 내가 너무 늦게 일어나기도 했고."
-    "(드…르륵)"
+    "(드…르륵) {nw}"
     play music "$/audio/Nemo Neko.mp3"
-    show seah blush7 at seah_t1
+    show seah blush7 at seah_t1 with dissolve
     seah "저기이이,, [playername2] 맞으시죠···?"
     player "네."
     seah "… 방송부 합격하셨어요."
@@ -57,7 +57,7 @@ label start:
     show seah blush8 at seah_t1
     seah "저… 그리고······."
     show seah blush4 at seah_t1
-    seah "저ㅡ저 방송부 선배인 한세아라고 하니깐 앞으로 잘 부탁해요오!!!"
+    seah "저ㅡ저 방송부 선배인 한세아라고 하니깐 앞으로 잘 부탁해요오!!!" #TODO: vpunch? (refers to issue #4: character dynamic animation)
     reeverb nemo_neko
     "선배의 쩌렁쩌렁한 목소리가 교실에 울려펴졌다."
     show seah blush5 at seah_t1
@@ -70,9 +70,9 @@ label start:
     "……"
     "몇 초가 지났을까."
     "서로 어색하게 흐르고 있던 침묵을 깰 무언가가 필요할 마침, 교실 문이 힘차게 열린다."
-    "드르륵… 쿵!"
+    "드르륵… 쿵! {nw}"
     play music "$/audio/Nemo Neko.mp3"
-    show hina at hina_t1
+    show hina at hina_t1 with Dissolve(0.3)
     hina "[playername2:야]!!"
     hina "너 방송부 합격했엉!!! 몰랐지?"
     player "알고 있었는데."

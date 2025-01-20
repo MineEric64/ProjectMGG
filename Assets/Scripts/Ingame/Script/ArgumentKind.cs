@@ -19,7 +19,7 @@ namespace ProjectMGG.Ingame.Script
         [KindAttr("#unknown")] Unknown,
         [KindAttr("#EndOfToken")] EndOfToken,
 
-        [KindAttr("null")] NullLiteral,
+        [KindAttr("None")] NullLiteral,
         [KindAttr("true")] TrueLiteral,
         [KindAttr("false")] FalseLiteral,
         [KindAttr("#Number")] NumberLiteral,
@@ -37,6 +37,7 @@ namespace ProjectMGG.Ingame.Script
         [KindAttr("else")] Else,
         [KindAttr("#")] Comment,
         [KindAttr("jump")] Jump,
+        [KindAttr("pause")] Pause,
 
         [KindAttr("Character")] Character,
 
@@ -47,7 +48,10 @@ namespace ProjectMGG.Ingame.Script
 
         [KindAttr("show")] Show,
         [KindAttr("at")] At,
+
         [KindAttr("with")] With,
+        [KindAttr("Dissolve")] Dissolve,
+        [KindAttr("Fade")] Fade,
 
         [KindAttr("play")] Play,
         [KindAttr("reeverb")] Reeverb,

@@ -4,14 +4,10 @@ using UnityEngine;
 
 namespace ProjectMGG.Ingame.Script.Keywords
 {
-    public class Call : IExpression
+    public class NullLiteral : IExpression
     {
-        public IExpression Sub { get; set; }
-        public List<IExpression> Arguments { get; set; } = new List<IExpression>();
-
         public object Interpret()
         {
-            Debug.Log("Call -Function TODO");
             return null;
         }
     }
