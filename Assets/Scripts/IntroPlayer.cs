@@ -48,6 +48,7 @@ namespace ProjectMGG
         {
             Instance = this;
             Smart.Default.AddExtensions(new KoreanFormatter(Smart.Default));
+            PrimeTweenConfig.warnZeroDuration = false;
             SettingsManager.ApplySettings();
 
             canvasMain.GetComponent<CanvasGroup>().alpha = 0.0f;

@@ -27,6 +27,8 @@ namespace ProjectMGG.Ingame.Script
             sourceCode = sourceCode.Replace("    ", "\t"); //indentation, TODO: is available for 3 space characters?
 
             bool needToExit = false;
+            bool firstKind = true; //for distinguish new line
+
             _index = 0;
             _line = 1;
             _tab = 0;
@@ -45,6 +47,7 @@ namespace ProjectMGG.Ingame.Script
                 {
                     _line++;
                     _tab = 0;
+                    firstKind = true;
                 }
 
                 if (ch == '.' && _index + 1 < sourceCode.Length) //ex: .2
@@ -69,8 +72,7 @@ namespace ProjectMGG.Ingame.Script
 
                         //for distinguish dialog (the issue about new line)
                         bool isPreviousString = result.Count > 0 && result.Last().Kind == ArgumentKind.StringLiteral;
-                        bool isPreviousNewLine = _index - 1 >= 0 && sourceCode[_index - 1] != '\n'; //wtf?
-                        if (isPreviousString && isPreviousNewLine) result.Add(new Token(ArgumentKind.Unknown));
+                        if (isPreviousString && !firstKind) result.Add(new Token(ArgumentKind.Unknown));
 
                         result.Add(ScanStringLiteral(sourceCode));
                         break;
@@ -109,6 +111,8 @@ namespace ProjectMGG.Ingame.Script
                         needToExit = true;
                         break;
                 }
+
+                if (charType != CharType.WhiteSpace) firstKind = false;
             }
             if (!Loop(sourceCode)) //the code is already ended without EndOfToken (\0)
             {

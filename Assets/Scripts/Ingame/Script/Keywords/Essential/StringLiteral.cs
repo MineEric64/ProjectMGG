@@ -169,6 +169,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
                         {
                             if (isAssignment)
                             {
+                                tag.TagArgument = token.Content; //maybe Parse?()
                                 //https://www.renpy.org/doc/html/text.html#dialogue-text-tags
                             }
                             break;
