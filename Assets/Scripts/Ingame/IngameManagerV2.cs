@@ -29,8 +29,8 @@ namespace ProjectMGG.Ingame
         public static VariableCollection Global { get; private set; } = new VariableCollection();
 
         public static string ScriptPath { get; set; }
-        public static string PlayerName { get; set; } //¼ºÀÌ¸§
-        public static string PlayerName2 { get; set; } //ÀÌ¸§
+        public static string PlayerName { get; set; } //ï¿½ï¿½ï¿½Ì¸ï¿½
+        public static string PlayerName2 { get; set; } //ï¿½Ì¸ï¿½
 
         public CanvasGroup CanvasDefault;
 
@@ -255,8 +255,19 @@ namespace ProjectMGG.Ingame
 
             if (chr == null)
             {
-                ExceptionManager.Throw($"Invalid character argument '{chrName}' on dialog.", "IngameManagerV2");
-                return;
+                if (string.IsNullOrWhiteSpace(content))
+                {
+                    ExceptionManager.Throw($"Invalid character argument '{chrName}' on dialog.", "IngameManagerV2");
+                    return;
+                }
+                else
+                {
+                    chr = new Character()
+                    {
+                        Name = new Script.Keywords.StringLiteral(chrName),
+                        Colour = new Color(0.553f, 0.129f, 0.1568f)
+                    };
+                }
             }
 
             NameUI.text = chr.Name.Interpret() as string;

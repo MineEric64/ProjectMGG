@@ -19,9 +19,9 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions
 
         public Fade(float outTime, float holdTime, float inTime)
         {
-            OutTime = new NumberLiteral() { Value = outTime };
-            HoldTime = new NumberLiteral() { Value = holdTime };
-            InTime = new NumberLiteral() { Value = inTime };
+            OutTime = new NumberLiteral(outTime);
+            HoldTime = new NumberLiteral(holdTime);
+            InTime = new NumberLiteral(inTime);
         }
 
         public object Interpret()

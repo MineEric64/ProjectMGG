@@ -66,6 +66,12 @@ namespace ProjectMGG.Ingame.Script
 
                     case CharType.StringLiteral:
                         ProcessBlockEnd(ref result);
+
+                        //for distinguish dialog (the issue about new line)
+                        bool isPreviousString = result.Count > 0 && result.Last().Kind == ArgumentKind.StringLiteral;
+                        bool isPreviousNewLine = _index - 1 >= 0 && sourceCode[_index - 1] != '\n'; //wtf?
+                        if (isPreviousString && isPreviousNewLine) result.Add(new Token(ArgumentKind.Unknown));
+
                         result.Add(ScanStringLiteral(sourceCode));
                         break;
 
@@ -160,7 +166,7 @@ namespace ProjectMGG.Ingame.Script
                 content += sourceCode[_index];
                 _index += 1;
             }
-            if (Loop(sourceCode) && sourceCode[_index] == '.') //±¸ºÐÀÚ (seperator)
+            if (Loop(sourceCode) && sourceCode[_index] == '.') //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (seperator)
             {
                 content += sourceCode[_index];
                 _index += 1;

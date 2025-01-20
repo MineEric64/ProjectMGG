@@ -12,6 +12,16 @@ namespace ProjectMGG.Ingame.Script.Keywords
         public string Value { get; set; }
         public static implicit operator string(StringLiteral s) => s.Value;
 
+        public StringLiteral()
+        {
+
+        }
+
+        public StringLiteral(string value)
+        {
+            Value = value;
+        }
+
         public object Interpret()
         {
             return Value;

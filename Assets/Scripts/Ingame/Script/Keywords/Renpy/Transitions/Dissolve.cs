@@ -16,7 +16,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions
 
         public Dissolve(float time)
         {
-            Time = new NumberLiteral() { Value = time };
+            Time = new NumberLiteral(time);
         }
 
         public object Interpret()

@@ -10,6 +10,16 @@ namespace ProjectMGG.Ingame.Script.Keywords
         public static implicit operator double(NumberLiteral s) => s.Value;
         public static implicit operator float(NumberLiteral s) => s.Value;
 
+        public NumberLiteral()
+        {
+
+        }
+
+        public NumberLiteral(float value)
+        {
+            Value = value;
+        }
+
         public object Interpret()
         {
             return Value;

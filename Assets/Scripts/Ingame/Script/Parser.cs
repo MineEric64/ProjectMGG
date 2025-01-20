@@ -147,7 +147,7 @@ namespace ProjectMGG.Ingame.Script
                         break;
 
                     case ArgumentKind.StringLiteral: //narration
-                        if (_index + 1 < _tokens.Count && _tokens[_index + 1].Kind == ArgumentKind.StringLiteral) //it's dialog
+                        if (_index + 1 < _tokens.Count && _tokens[_index + 1].Kind == ArgumentKind.Unknown) //it's dialog
                         {
                             result.Add(ParseDialog());
                             break;
@@ -342,8 +342,12 @@ namespace ProjectMGG.Ingame.Script
         {
             Dialog result = new Dialog();
 
-            result.CharacterName = _tokens[_index].Content;
-            SkipCurrent(ArgumentKind.Identifier);
+            string chrName = "";
+            if (_tokens[_index].Kind == ArgumentKind.StringLiteral) chrName = ParseStringLiteral();
+            else if (_tokens[_index].Kind == ArgumentKind.Identifier) chrName = ParseIdentifier();
+            result.CharacterName = chrName;
+
+            SkipCurrentIf(ArgumentKind.Unknown);
             result.Content = ParseStringLiteral();
 
             return result;
