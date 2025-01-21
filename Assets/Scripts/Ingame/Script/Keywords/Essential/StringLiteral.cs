@@ -169,6 +169,12 @@ namespace ProjectMGG.Ingame.Script.Keywords
                         {
                             if (isAssignment)
                             {
+                                if (isPredefined)
+                                {
+                                    tag.Text = string.Concat(string.Empty, text, "<", tag.Tag, "=", token.Content, ">");
+                                    tag.Tag = string.Empty;
+                                    break;
+                                }
                                 tag.TagArgument = token.Content; //maybe Parse?()
                                 //https://www.renpy.org/doc/html/text.html#dialogue-text-tags
                             }
