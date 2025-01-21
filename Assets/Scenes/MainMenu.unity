@@ -171,9 +171,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 30851d0d3e6cf824eac7875fa70d3fde, type: 3}
-  m_Resource: {fileID: 8300000, guid: 30851d0d3e6cf824eac7875fa70d3fde, type: 3}
-  m_PlayOnAwake: 1
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -2656,6 +2656,12 @@ MonoBehaviour:
   needToFadeIn: 1
   needToFadeOut: 0
   changeToMainAfterFadeOut: 1
+  _bgms:
+  - {fileID: 8300000, guid: 8afc874ce576d4042a0413973e9d85eb, type: 3}
+  - {fileID: 8300000, guid: 5dab9ca6aa2eea3499d6cdbd870aba7f, type: 3}
+  - {fileID: 8300000, guid: 30851d0d3e6cf824eac7875fa70d3fde, type: 3}
+  - {fileID: 8300000, guid: e3c3e11ed9aaa76429778651d7e4e19f, type: 3}
+  - {fileID: 8300000, guid: 8d663c1abab039b4f890fe26355e0fce, type: 3}
 --- !u!225 &1321855159
 CanvasGroup:
   m_ObjectHideFlags: 0

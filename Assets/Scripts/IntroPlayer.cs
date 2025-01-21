@@ -19,6 +19,8 @@ using ProjectMGG.Ingame.Script.Commands;
 using ProjectMGG.Settings;
 using ProjectMGG.UI;
 
+using Random = UnityEngine.Random;
+
 namespace ProjectMGG
 {
     public class IntroPlayer : MonoBehaviour
@@ -42,6 +44,7 @@ namespace ProjectMGG
         private float _currentAlpha = 0.00f;
         private float _intensity = 1.4f;
         private bool _isSkipped = false;
+        [SerializeField] private List<AudioClip> _bgms = new List<AudioClip>(); //this variable will be deleted after release (issue #14)
 
         // Start is called before the first frame update
         void Start()
@@ -53,6 +56,12 @@ namespace ProjectMGG
 
             canvasMain.GetComponent<CanvasGroup>().alpha = 0.0f;
             canvasGroup = GetComponent<CanvasGroup>();
+
+            if (_bgms.Count > 0)
+            {
+                bgm.clip = _bgms[Random.Range(0, _bgms.Count)];
+                bgm.Play();
+            }
         }
 
         // Update is called once per frame

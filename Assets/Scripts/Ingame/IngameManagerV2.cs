@@ -24,29 +24,23 @@ namespace ProjectMGG.Ingame
     {
         public static IngameManagerV2 Instance { get; private set; } = null;
 
-        public static VariableCollection Local { get; private set; } = new VariableCollection(); //TODO: every label (using stack)
-        public static VariableCollection Global { get; private set; } = new VariableCollection();
-
         public static string ScriptPath { get; set; }
         public static string PlayerName { get; set; } //성이름
         public static string PlayerName2 { get; set; } //이름
 
-        public CanvasGroup CanvasDefault;
-
+        #region Script & TextTag
         private List<Token> _tokens;
         [SerializeField] private List<string> _tokensDebug;
+        public static VariableCollection Local { get; private set; } = new VariableCollection(); //TODO: every label (using stack)
+        public static VariableCollection Global { get; private set; } = new VariableCollection();
         public Interpreter Interpreter;
 
         [SerializeField]
         private List<TextTag> _textTags;
         private int _tagIndex = 0;
-
-        public TextMeshProUGUI NameUI;
-        public TextMeshProUGUI ContentUI;
-        public RawImage CharacterSample;
-        public float TextAnimationMultiplier = 0.04f;
-        public bool NoWait = false;
-
+        private bool _noWait = false;
+        #endregion
+        #region Audio
         public AudioSource MusicPlayer;
         public bool IsReeverb = false;
         public List<float> ReeverbIntervals = new List<float>();
@@ -56,12 +50,23 @@ namespace ProjectMGG.Ingame
         private string _currentPlayingMusic = "";
         private AudioReverbFilter _reverbFilter;
         private float _currentDecayTime = 0.1f;
+        #endregion
+        #region UI
+        public CanvasGroup CanvasDefault;
 
+        public TextMeshProUGUI NameUI;
+        public TextMeshProUGUI ContentUI;
+        public RawImage CharacterSample;
+
+        public float TextAnimationMultiplier = 0.04f;
+        #endregion
+        #region Text & UI
         private GraphicRaycaster _raycaster;
         private bool _goToNext = true;
         private bool _readAll = false;
         private bool _paused = false;
         private bool _pausedHard = false;
+        #endregion
 
         void Awake()
         {
@@ -120,10 +125,10 @@ namespace ProjectMGG.Ingame
 
             if (ContentUI.text.Length == 0) _readAll = true;
             else if (!_readAll) _readAll = ContentUI.maxVisibleCharacters == ContentUI.text.Length;
-            if (_readAll && NoWait)
+            if (_readAll && _noWait)
             {
                 _goToNext = true;
-                NoWait = false;
+                _noWait = false;
             }
 
             switch (GetMouseDownType())
@@ -455,7 +460,17 @@ namespace ProjectMGG.Ingame
         private void LetsTextTag(out bool completed)
         {
             //_tagIndex (like script)
-            completed = _tagIndex >= 
+            completed = _tagIndex + 1 >= _textTags.Count;
+            var tag = _textTags[_tagIndex];
+
+            switch (tag.Tag)
+            {
+                case "nw":
+                    {
+                        _noWait = true;
+                        break;
+                    }
+            }
         }
         #endregion
         #region Keywords: Custom
