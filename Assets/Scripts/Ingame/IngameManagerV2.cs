@@ -28,14 +28,18 @@ namespace ProjectMGG.Ingame
         public static VariableCollection Global { get; private set; } = new VariableCollection();
 
         public static string ScriptPath { get; set; }
-        public static string PlayerName { get; set; } //���̸�
-        public static string PlayerName2 { get; set; } //�̸�
+        public static string PlayerName { get; set; } //성이름
+        public static string PlayerName2 { get; set; } //이름
 
         public CanvasGroup CanvasDefault;
 
         private List<Token> _tokens;
         [SerializeField] private List<string> _tokensDebug;
         public Interpreter Interpreter;
+
+        [SerializeField]
+        private List<TextTag> _textTags;
+        private int _tagIndex = 0;
 
         public TextMeshProUGUI NameUI;
         public TextMeshProUGUI ContentUI;
@@ -261,7 +265,7 @@ namespace ProjectMGG.Ingame
                 }
                 else
                 {
-                    chr = new Character()
+                    chr = new Character() //temporary character name
                     {
                         Name = new Script.Keywords.StringLiteral(chrName),
                         Colour = new Color(0.553f, 0.129f, 0.1568f)
@@ -446,6 +450,12 @@ namespace ProjectMGG.Ingame
                 _paused = false;
                 _goToNext = true;
             }
+        }
+
+        private void LetsTextTag(out bool completed)
+        {
+            //_tagIndex (like script)
+            completed = _tagIndex >= 
         }
         #endregion
         #region Keywords: Custom

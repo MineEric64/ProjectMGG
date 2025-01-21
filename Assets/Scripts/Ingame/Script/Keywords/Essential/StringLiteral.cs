@@ -96,10 +96,8 @@ namespace ProjectMGG.Ingame.Script.Keywords
 
             bool isTag = false;
 
-            ExceptionManager.Throw($"The text tag '?' is not defined.", "Script/Interpreter/StringLiteral");
+            //ExceptionManager.Throw($"The text tag '?' is not defined.", "Script/Interpreter/StringLiteral");
             //TODO: https://www.renpy.org/doc/html/text.html#dialogue-text-tags
-
-            
 
             foreach (char ch in value)
             {
@@ -112,7 +110,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
                     case '}':
                         if (tag.Length > 0)
                         {
-                            var textTag = InterpretTagInternal(sb.ToString(), tag.ToString());
+                            var textTag = InterpretTag(sb.ToString(), tag.ToString());
                             textTags.Add(textTag);
 
                             sb.Clear();
@@ -130,7 +128,8 @@ namespace ProjectMGG.Ingame.Script.Keywords
             }
             if (sb.Length > 0)
             {
-
+                textTags.Add(new TextTag(sb.ToString()));
+                sb.Clear();
             }
 
             return textTags;
@@ -138,7 +137,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
 
         private static string[] _predefinedTags = new string[] { "b", "color", "font", "i", "size", "space", "s", "u" };
 
-        private static TextTag InterpretTagInternal(string text, string tagContent)
+        private static TextTag InterpretTag(string text, string tagContent)
         {
             var tag = new TextTag(text);
             var scanner = new Scanner();
@@ -171,11 +170,11 @@ namespace ProjectMGG.Ingame.Script.Keywords
                             {
                                 if (isPredefined)
                                 {
-                                    tag.Text = string.Concat(string.Empty, text, "<", tag.Tag, "=", token.Content, ">");
+                                    tag.Text = string.Concat(text, "<", tag.Tag, "=", token.Content, ">");
                                     tag.Tag = string.Empty;
                                     break;
                                 }
-                                tag.TagArgument = token.Content; //maybe Parse?()
+                                tag.TagArgument = ParseTagArgument(token);
                                 //https://www.renpy.org/doc/html/text.html#dialogue-text-tags
                             }
                             break;
@@ -184,6 +183,28 @@ namespace ProjectMGG.Ingame.Script.Keywords
             }
 
             return tag;
+        }
+
+        private static object ParseTagArgument(Token token)
+        {
+            switch (token.Kind)
+            {
+                case ArgumentKind.NumberLiteral:
+                    {
+                        NumberLiteral result = new NumberLiteral();
+                        result.Value = float.Parse(token.Content);
+                        return result.Interpret();
+                    }
+
+                case ArgumentKind.StringLiteral:
+                    {
+                        StringLiteral result = new StringLiteral();
+                        result.Value = token.Content;
+                        return result.Interpret();
+                    }
+            }
+
+            return null;
         }
     }
 }
