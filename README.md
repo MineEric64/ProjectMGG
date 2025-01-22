@@ -11,4 +11,5 @@
 
 # Library Used
 - [MessagePack-CSharp](https://github.com/MessagePack-CSharp/MessagePack-CSharp)
+- [PrimeTween](https://github.com/KyryloKuzyk/PrimeTween)
 - [SmartFormat.NET-Korean](https://github.com/what-studio/SmartFormat.NET-Korean)
