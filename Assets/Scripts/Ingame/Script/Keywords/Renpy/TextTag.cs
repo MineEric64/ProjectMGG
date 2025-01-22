@@ -24,4 +24,10 @@ public class TextTag
     {
         TagArgument = tagArgument;
     }
+
+    public override string ToString()
+    {
+        string arg = TagArgument == null ? string.Empty : TagArgument.ToString();
+        return $"'{Text}'\n'{Tag}'\n'{arg}'";
+    }
 }

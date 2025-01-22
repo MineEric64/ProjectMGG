@@ -85,12 +85,15 @@ namespace ProjectMGG.Ingame.Script.Keywords
         /// for Renpy, Supports Tag {}
         /// </summary>
         /// <returns></returns>
-        public static List<TextTag> ApplyTag(string value)
+        public static void ApplyTag(string value, ref List<TextTag> textTags)
         {
             bool hasTag = value.Contains('{') && value.Contains('}');
-            if (!hasTag) return new List<TextTag> { new TextTag(value) };
+            if (!hasTag)
+            {
+                textTags.Add(new TextTag(value));
+                return;
+            }
 
-            List<TextTag> textTags = new List<TextTag>();
             StringBuilder sb = new StringBuilder();
             StringBuilder tag = new StringBuilder();
 
@@ -131,8 +134,6 @@ namespace ProjectMGG.Ingame.Script.Keywords
                 textTags.Add(new TextTag(sb.ToString()));
                 sb.Clear();
             }
-
-            return textTags;
         }
 
         private static string[] _predefinedTags = new string[] { "b", "color", "font", "i", "size", "space", "s", "u" };

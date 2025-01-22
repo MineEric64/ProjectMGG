@@ -17,6 +17,8 @@ using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
 using ProjectMGG.Settings;
 
 using Path = System.IO.Path;
+using static System.Net.Mime.MediaTypeNames;
+using System.Linq;
 
 namespace ProjectMGG.Ingame
 {
@@ -35,8 +37,8 @@ namespace ProjectMGG.Ingame
         public static VariableCollection Global { get; private set; } = new VariableCollection();
         public Interpreter Interpreter;
 
-        [SerializeField]
-        private List<TextTag> _textTags;
+        private List<TextTag> _textTags = new List<TextTag>();
+        [SerializeField] private List<string> _textTagsDebug;
         private int _tagIndex = 0;
         private bool _noWait = false;
         #endregion
@@ -142,12 +144,12 @@ namespace ProjectMGG.Ingame
                             break;
                         }
 
-                        if (!_readAll)
+                        if (!_readAll) //while reading
                         {
                             _readAll = true;
                             ContentUI.maxVisibleCharacters = ContentUI.text.Length;
                         }
-                        else
+                        else //if already read then need to go to next
                         {
                             _goToNext = true;
                             _readAll = false;
@@ -227,7 +229,7 @@ namespace ProjectMGG.Ingame
             return 0;
         }
 
-        public void TMPDOText(TextMeshProUGUI text, float duration)
+        public void TMPDOText(TextMeshProUGUI text, float start, float duration)
         {
             if (text.text.Length == 0)
             {
@@ -238,12 +240,17 @@ namespace ProjectMGG.Ingame
             _readAll = false;
             text.maxVisibleCharacters = 0;
 
-            var ease = Ease.Linear;
+            Ease ease = Ease.Linear;
+            bool stop = false;
             Enum.TryParse(SettingsManager.Settings.UI.TextEase, out ease);
 
-            Tween.Custom(0f, text.text.Length, duration, x =>
+            Tween.Custom(start, text.text.Length, duration, x =>
             {
-                if (!_readAll) text.maxVisibleCharacters = (int)x;
+                if (!stop)
+                {
+                    if (!_readAll) text.maxVisibleCharacters = (int)x;
+                    else stop = true;
+                }
             }, ease);
         }
 
@@ -251,8 +258,7 @@ namespace ProjectMGG.Ingame
         public void LetsNarration(string content)
         {
             NameUI.text = "";
-            ContentUI.text = content;
-            TMPDOText(ContentUI, TextAnimationMultiplier * ContentUI.text.Length);
+            StartCoroutine(ProcessText(content));
 
             _goToNext = false;
         }
@@ -280,8 +286,7 @@ namespace ProjectMGG.Ingame
 
             NameUI.text = chr.Name.Interpret() as string;
             NameUI.color = chr.Colour;
-            ContentUI.text = content;
-            TMPDOText(ContentUI, TextAnimationMultiplier * ContentUI.text.Length);
+            StartCoroutine(ProcessText(content));
 
             _goToNext = false;
         }
@@ -448,7 +453,7 @@ namespace ProjectMGG.Ingame
         {
             _paused = true;
             _pausedHard = pause.Hard;
-            yield return new WaitForSeconds((float)pause.Delay);
+            yield return new WaitForSeconds(pause.Delay);
 
             if (_paused) //if not paused already (for hard)
             {
@@ -457,11 +462,45 @@ namespace ProjectMGG.Ingame
             }
         }
 
-        private void LetsTextTag(out bool completed)
+        /// <summary>
+        /// Supports the Text Tag
+        /// </summary>
+        private IEnumerator ProcessText(string text)
         {
-            //_tagIndex (like script)
+            bool completed = false;
+            int start = 0;
+
+            _tagIndex = 0;
+            _textTags.Clear();
+            Script.Keywords.StringLiteral.ApplyTag(text, ref _textTags);
+            //_textTagsDebug = _textTags.Select(x => x.ToString()).ToList();
+
+            while (!completed)
+            {
+                if (_readAll)
+                {
+                    LetsTextTag(ContentUI, out completed);
+                    TMPDOText(ContentUI, start, TextAnimationMultiplier * ContentUI.text.Length);
+                    start = ContentUI.text.Length;
+                }
+                yield return null;
+            }
+        }
+
+        /// <summary>
+        /// Interpret Tag + Set Text on UI
+        /// </summary>
+        private void LetsTextTag(TextMeshProUGUI textUI, out bool completed)
+        {
             completed = _tagIndex + 1 >= _textTags.Count;
-            var tag = _textTags[_tagIndex];
+            if (_tagIndex >= _textTags.Count) return; //Something went wrong
+
+            TextTag tag = _textTags[_tagIndex];
+            int start = textUI.maxVisibleCharacters;
+            int end = textUI.text.Length;
+
+            if (_tagIndex == 0) textUI.text = tag.Text;
+            else textUI.text += tag.Text;
 
             switch (tag.Tag)
             {
@@ -470,7 +509,11 @@ namespace ProjectMGG.Ingame
                         _noWait = true;
                         break;
                     }
+
+                //https://www.renpy.org/doc/html/text.html#dialogue-text-tags
             }
+
+            _tagIndex++;
         }
         #endregion
         #region Keywords: Custom
