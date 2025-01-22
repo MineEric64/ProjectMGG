@@ -290,7 +290,7 @@ namespace ProjectMGG.Ingame
             _goToNext = false;
         }
 
-        public void LetsShow(Show show)
+        public IEnumerator LetsShow(Show show)
         {
             var image = GetVariable(show.Tag, ref Local.Images, ref Global.Images);
             string resource = "";
@@ -298,7 +298,7 @@ namespace ProjectMGG.Ingame
             if (image == null)
             {
                 ExceptionManager.Throw($"The image '{show.Tag}' variable doesn't exists while interpreting 'show' statement.", "IngameManagerV2");
-                return;
+                yield break;
             }
             if (string.IsNullOrEmpty(show.Attributes)) resource = image.MainImage;
             else
@@ -306,40 +306,42 @@ namespace ProjectMGG.Ingame
                 if (!image.SubImages.TryGetValue(show.Attributes, out var subPath))
                 {
                     ExceptionManager.Throw($"The image '{show.Tag}' that has a attribute '{show.Attributes}' variable doesn't exists.", "IngameManagerV2");
-                    return;
+                    yield break;
                 }
                 resource = subPath;
             }
 
             Texture2D texture = LoadResource<Texture2D>(resource);
             RawImage prefab = GameObject.Find(show.Tag)?.GetComponent<RawImage>();
+            bool showed = false;
 
-            LetsWithBefore(show.With, true, out bool showed, prefab, () => ShowImage(show, texture, prefab));
-            if (!showed) ShowImage(show, texture, prefab);
-            LetsWithAfter(show.With, true, prefab);
-        }
+            yield return LetsWithBefore(show.With, true, prefab, () =>
+            {
+                ShowImage(show, texture, ref prefab);
+                showed = true;
+            });
+            if (!showed) ShowImage(show, texture, ref prefab);
+            yield return LetsWithAfter(show.With, true, prefab);
 
-        private void ShowImage(Show show, Texture2D texture, RawImage prefab)
-        {
+            //Destroy all images if scene
             if (show.IsScene)
             {
                 var canvasImage = this.transform.Find("CanvasImage");
 
                 foreach (Transform child in canvasImage)
                 {
-                    if (child.gameObject.name == show.Tag)
-                    {
-                        DestroyImmediate(child.gameObject);
-                        continue;
-                    }
+                    if (child.gameObject.name == show.Tag) continue;
                     Destroy(child.gameObject);
                 }
             }
+        }
 
+        private void ShowImage(Show show, Texture2D texture, ref RawImage prefab)
+        {
             if (prefab == null)
             {
                 prefab = Instantiate(CharacterSample, this.transform.Find("CanvasImage"));
-                prefab.transform.SetSiblingIndex(1);
+                prefab.transform.SetAsLastSibling();
             }
             if (texture == null) return;
 
@@ -395,10 +397,9 @@ namespace ProjectMGG.Ingame
             return result;
         }
 
-        public void LetsWithBefore(With with, bool isShow, out bool showed, RawImage image = null, Action showAction = null)
+        public IEnumerator LetsWithBefore(With with, bool isShow, RawImage image = null, Action showAction = null)
         {
-            showed = false;
-            if (with == null) return;
+            if (with == null) yield break;
 
             var result = ParseWithKind(with);
             Pause pause = new Pause();
@@ -412,30 +413,26 @@ namespace ProjectMGG.Ingame
                 float inTime = (float)fade.InTime.Interpret();
 
                 pause.Delay = endTime + holdTime + inTime;
-                showed = true;
+                StartCoroutine(LetsPause(pause));
 
-                Tween.Custom(1f, 0f, endTime, x =>
+                yield return Tween.Custom(1f, 0f, endTime, x =>
                 {
                     CanvasDefault.alpha = x;
-                }, Ease.OutCubic).OnComplete(() =>
+                }, Ease.OutCubic).ToYieldInstruction();
+
+                showAction?.Invoke();
+                yield return Tween.Custom(0f, 1f, holdTime, _ => { }).ToYieldInstruction();
+                yield return Tween.Custom(0f, 1f, inTime, x =>
                 {
-                    showAction?.Invoke();
-                    Tween.Custom(0f, 1f, holdTime, _ => { }).OnComplete(() =>
-                    {
-                        Tween.Custom(0f, 1f, inTime, x =>
-                        {
-                            CanvasDefault.alpha = x;
-                        }, Ease.InCubic);
-                    });
-                });
+                    CanvasDefault.alpha = x;
+                }, Ease.InCubic).ToYieldInstruction();
             }
 
-            if (pause.Delay > 0f) StartCoroutine(LetsPause(pause));
         }
 
-        public void LetsWithAfter(With with, bool isShow, RawImage image = null)
+        public IEnumerator LetsWithAfter(With with, bool isShow, RawImage image = null)
         {
-            if (with == null) return;
+            if (with == null) yield break;
 
             var result = ParseWithKind(with);
             Pause pause = new Pause();
@@ -448,14 +445,13 @@ namespace ProjectMGG.Ingame
                 float end = isShow ? 1f : 0f;
                 float time = (float)dissolve.Time.Interpret();
                 pause.Delay = time;
+                StartCoroutine(LetsPause(pause));
 
-                Tween.Custom(start, end, time, x =>
+                yield return Tween.Custom(start, end, time, x =>
                 {
                     image.color = new Color(image.color.r, image.color.g, image.color.b, x);
-                }, Ease.Linear);
+                }, Ease.Linear).ToYieldInstruction();
             }
-
-            if (pause.Delay > 0f) StartCoroutine(LetsPause(pause));
         }
 
         public void LetsPlay(string channel, string path)

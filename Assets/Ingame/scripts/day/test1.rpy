@@ -1,6 +1,7 @@
 define seah = Character("한세아", color="#3a3e4a")
 image seah default = "$/images/chr_seah/1.png"
 image classroom = "$/images/bg_classroom_demo.png"
+image homebase = "$/images/bg_homebase_demo.png"
 
 transform half_size:
     zoom 0.5
@@ -14,6 +15,7 @@ label start:
     "히나" "안녕~"
     show seah default at half_size with Fade(0.5, 0, 0.5)
     seah "안녕하세요오.."
+    scene homebase with Dissolve(1.0)
     play music "$/audio/Nemo Neko.mp3"
     pause 1
     seah "ㄱㅡ그냥 제가 할게요오..."
