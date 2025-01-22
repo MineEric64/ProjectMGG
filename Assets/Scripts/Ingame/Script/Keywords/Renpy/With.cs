@@ -19,7 +19,8 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
         {
             if (Alone)
             {
-                IngameManagerV2.Instance.LetsWith(this, false);
+                IngameManagerV2.Instance.LetsWithBefore(this, false, out _);
+                IngameManagerV2.Instance.LetsWithAfter(this, false);
             }
         }
     }

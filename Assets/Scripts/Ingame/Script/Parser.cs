@@ -393,7 +393,12 @@ namespace ProjectMGG.Ingame.Script
             result.IsScene = isScene;
             result.IsHide = isHide;
 
-            while (_tokens[_index].Kind == ArgumentKind.At || _tokens[_index].Kind == ArgumentKind.With)
+            bool IsShowKeyword(ArgumentKind kind)
+            {
+                return kind == ArgumentKind.At || kind == ArgumentKind.With;
+            }
+
+            while (IsShowKeyword(_tokens[_index].Kind))
             {
                 switch (_tokens[_index].Kind)
                 {

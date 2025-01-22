@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -17,8 +18,6 @@ using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
 using ProjectMGG.Settings;
 
 using Path = System.IO.Path;
-using static System.Net.Mime.MediaTypeNames;
-using System.Linq;
 
 namespace ProjectMGG.Ingame
 {
@@ -315,52 +314,68 @@ namespace ProjectMGG.Ingame
             Texture2D texture = LoadResource<Texture2D>(resource);
             RawImage prefab = GameObject.Find(show.Tag)?.GetComponent<RawImage>();
 
+            LetsWithBefore(show.With, true, out bool showed, prefab, () => ShowImage(show, texture, prefab));
+            if (!showed) ShowImage(show, texture, prefab);
+            LetsWithAfter(show.With, true, prefab);
+        }
+
+        private void ShowImage(Show show, Texture2D texture, RawImage prefab)
+        {
+            if (show.IsScene)
+            {
+                var canvasImage = this.transform.Find("CanvasImage");
+
+                foreach (Transform child in canvasImage)
+                {
+                    if (child.gameObject.name == show.Tag)
+                    {
+                        DestroyImmediate(child.gameObject);
+                        continue;
+                    }
+                    Destroy(child.gameObject);
+                }
+            }
+
             if (prefab == null)
             {
                 prefab = Instantiate(CharacterSample, this.transform.Find("CanvasImage"));
                 prefab.transform.SetSiblingIndex(1);
             }
+            if (texture == null) return;
 
-            if (texture != null)
+            prefab.texture = texture;
+            prefab.name = show.Tag;
+            prefab.rectTransform.sizeDelta = new Vector3(texture.width, texture.height);
+
+            if (!string.IsNullOrEmpty(show.At))
             {
-                prefab.texture = texture;
-                prefab.name = show.Tag;
-                prefab.rectTransform.sizeDelta = new Vector3(texture.width, texture.height);
-
-                if (!string.IsNullOrEmpty(show.At))
+                var transform = GetVariable(show.At, ref Local.Transforms, ref Global.Transforms);
+                if (transform == null)
                 {
-                    var transform = GetVariable(show.At, ref Local.Transforms, ref Global.Transforms);
-                    if (transform == null)
-                    {
-                        ExceptionManager.Throw($"The transform '{show.At}' variable doesn't exists while interpreting 'show' statement.", "IngameManagerV2");
-                        return;
-                    }
-
-                    if (transform.zoom != 1f)
-                    {
-                        float width = texture.width * transform.zoom;
-                        float height = texture.height * transform.zoom;
-
-                        prefab.transform.localScale = new Vector3(transform.zoom, transform.zoom);
-                        prefab.transform.localPosition = new Vector3(0f, -(720 - height / 2));
-                    }
-                    //TODO: xpos, ypos, xalign, yalign
-                    if (transform.xcenter != -1f) prefab.transform.localPosition = new Vector3(1280 * (transform.xcenter - 0.5f) * 2, prefab.transform.localPosition.y); //TODO: 0~1: ratio, 1~: absolute value
-                    if (transform.ycenter != -1f) prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(720 * (transform.ycenter - 0.5f) * 2));
-                }
-                else
-                {
-                    prefab.transform.localPosition = new Vector3(0f, -(720 - texture.height / 2));
+                    ExceptionManager.Throw($"The transform '{show.At}' variable doesn't exists while interpreting 'show' statement.", "IngameManagerV2");
+                    return;
                 }
 
-                LetsWith(show.With, true, prefab);
+                if (transform.zoom != 1f)
+                {
+                    float width = texture.width * transform.zoom;
+                    float height = texture.height * transform.zoom;
+
+                    prefab.transform.localScale = new Vector3(transform.zoom, transform.zoom);
+                    prefab.transform.localPosition = new Vector3(0f, -(720 - height / 2));
+                }
+                //TODO: xpos, ypos, xalign, yalign
+                if (transform.xcenter != -1f) prefab.transform.localPosition = new Vector3(1280 * (transform.xcenter - 0.5f) * 2, prefab.transform.localPosition.y); //TODO: 0~1: ratio, 1~: absolute value
+                if (transform.ycenter != -1f) prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(720 * (transform.ycenter - 0.5f) * 2));
+            }
+            else
+            {
+                prefab.transform.localPosition = new Vector3(0f, -(720 - texture.height / 2));
             }
         }
 
-        public void LetsWith(With with, bool isShow, RawImage image = null)
+        private object ParseWithKind(With with)
         {
-            if (with == null) return;
-
             var result = with.Transition.Interpret();
 
             if (with.Transition is Script.Keywords.GetVariable identifier)
@@ -377,11 +392,57 @@ namespace ProjectMGG.Ingame
                 }
             }
 
+            return result;
+        }
+
+        public void LetsWithBefore(With with, bool isShow, out bool showed, RawImage image = null, Action showAction = null)
+        {
+            showed = false;
+            if (with == null) return;
+
+            var result = ParseWithKind(with);
             Pause pause = new Pause();
             pause.Delay = 0f;
             pause.Hard = true;
 
-            if (result is Dissolve dissolve)
+            if (result is Fade fade)
+            {
+                float endTime = (float)fade.OutTime.Interpret();
+                float holdTime = (float)fade.HoldTime.Interpret();
+                float inTime = (float)fade.InTime.Interpret();
+
+                pause.Delay = endTime + holdTime + inTime;
+                showed = true;
+
+                Tween.Custom(1f, 0f, endTime, x =>
+                {
+                    CanvasDefault.alpha = x;
+                }, Ease.OutCubic).OnComplete(() =>
+                {
+                    showAction?.Invoke();
+                    Tween.Custom(0f, 1f, holdTime, _ => { }).OnComplete(() =>
+                    {
+                        Tween.Custom(0f, 1f, inTime, x =>
+                        {
+                            CanvasDefault.alpha = x;
+                        }, Ease.InCubic);
+                    });
+                });
+            }
+
+            if (pause.Delay > 0f) StartCoroutine(LetsPause(pause));
+        }
+
+        public void LetsWithAfter(With with, bool isShow, RawImage image = null)
+        {
+            if (with == null) return;
+
+            var result = ParseWithKind(with);
+            Pause pause = new Pause();
+            pause.Delay = 0f;
+            pause.Hard = true;
+
+            if (result is Dissolve dissolve && image != null)
             {
                 float start = isShow ? 0f : 1f;
                 float end = isShow ? 1f : 0f;
@@ -392,28 +453,6 @@ namespace ProjectMGG.Ingame
                 {
                     image.color = new Color(image.color.r, image.color.g, image.color.b, x);
                 }, Ease.Linear);
-            }
-            else if (result is Fade fade)
-            {
-                float endTime = (float)fade.OutTime.Interpret();
-                float holdTime = (float)fade.HoldTime.Interpret();
-                float inTime = (float)fade.InTime.Interpret();
-                //pause.Delay = endTime + holdTime + inTime;
-                pause.Delay = endTime + holdTime;
-
-                Tween.Custom(1f, 0f, endTime, x =>
-                {
-                    CanvasDefault.alpha = x;
-                }, Ease.OutCubic).OnComplete(() =>
-                {
-                    Tween.Custom(0f, 1f, holdTime, _ => { }).OnComplete(() =>
-                    {
-                        Tween.Custom(0f, 1f, inTime, x =>
-                        {
-                            CanvasDefault.alpha = x;
-                        }, Ease.InCubic);
-                    });
-                });
             }
 
             if (pause.Delay > 0f) StartCoroutine(LetsPause(pause));
@@ -480,7 +519,7 @@ namespace ProjectMGG.Ingame
             {
                 if (_readAll)
                 {
-                    LetsTextTag(ContentUI, out completed);
+                    LetsTextTag(ContentUI, out completed, ref start);
                     TMPDOText(ContentUI, start, TextAnimationMultiplier * ContentUI.text.Length);
                     start = ContentUI.text.Length;
                 }
@@ -491,7 +530,7 @@ namespace ProjectMGG.Ingame
         /// <summary>
         /// Interpret Tag + Set Text on UI
         /// </summary>
-        private void LetsTextTag(TextMeshProUGUI textUI, out bool completed)
+        private void LetsTextTag(TextMeshProUGUI textUI, out bool completed, ref int startText)
         {
             completed = _tagIndex + 1 >= _textTags.Count;
             if (_tagIndex >= _textTags.Count) return; //Something went wrong
@@ -508,6 +547,12 @@ namespace ProjectMGG.Ingame
                 case "nw":
                     {
                         _noWait = true;
+                        break;
+                    }
+
+                case "fast":
+                    {
+                        startText = textUI.text.Length;
                         break;
                     }
 

@@ -17,22 +17,6 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 
         public void Interpret()
         {
-            if (IsScene)
-            {
-                var canvasImage = IngameManagerV2.Instance.transform.Find("CanvasImage");
-
-                foreach (Transform child in canvasImage)
-                {
-                    if (child.gameObject.name == Tag)
-                    {
-                        GameObject.DestroyImmediate(child.gameObject);
-                        continue;
-                    }
-
-                    GameObject.Destroy(child.gameObject);
-                }
-            }
-
             IngameManagerV2.Instance.LetsShow(this);
         }
     }

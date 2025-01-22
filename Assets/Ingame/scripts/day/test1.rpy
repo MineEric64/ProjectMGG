@@ -17,6 +17,7 @@ label start:
     play music "$/audio/Nemo Neko.mp3"
     pause 1
     seah "ㄱㅡ그냥 제가 할게요오..."
+    seah "그ㅡ그냥 {fast}제가 할게요..."
 
     define hina = Character("유히나", color="#f688a7")
     hina "[playername2:야]아아!!!! 오랜만이다아!\n그동안 보고 싶었어 ㅜㅜ"
