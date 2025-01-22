@@ -398,8 +398,9 @@ namespace ProjectMGG.Ingame
                 float endTime = (float)fade.OutTime.Interpret();
                 float holdTime = (float)fade.HoldTime.Interpret();
                 float inTime = (float)fade.InTime.Interpret();
-                pause.Delay = endTime + holdTime + inTime;
-                
+                //pause.Delay = endTime + holdTime + inTime;
+                pause.Delay = endTime + holdTime;
+
                 Tween.Custom(1f, 0f, endTime, x =>
                 {
                     CanvasDefault.alpha = x;
