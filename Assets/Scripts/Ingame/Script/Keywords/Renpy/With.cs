@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
 
 namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 {
     public class With : IStatement
     {
-        public IExpression Transition { get; set; }
+        public IPause Transition { get; set; }
         public bool Alone { get; set; }
 
         public With(bool alone)

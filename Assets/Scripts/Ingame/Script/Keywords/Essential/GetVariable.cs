@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ProjectMGG.Ingame.Script.Keywords
 {
-    public class GetVariable : IExpression
+    public class GetVariable : Renpy.Transitions.IPause
     {
         public string Name { get; set; }
         public bool IsCommand { get; set; } = false;
@@ -29,6 +29,11 @@ namespace ProjectMGG.Ingame.Script.Keywords
 
             if (IsCommand) return Name;
             return null;
+        }
+
+        public float GetPauseTime()
+        {
+            return 0f;
         }
     }
 }

@@ -422,7 +422,7 @@ namespace ProjectMGG.Ingame.Script
             With result = new With(alone);
 
             SkipCurrent();
-            result.Transition = ParseExpression();
+            result.Transition = ParseTransition();
 
             return result;
         }
@@ -700,14 +700,6 @@ namespace ProjectMGG.Ingame.Script
                     result = ParseCharacter();
                     break;
 
-                case ArgumentKind.Dissolve:
-                    result = ParseDissolve();
-                    break;
-
-                case ArgumentKind.Fade:
-                    result = ParseFade();
-                    break;
-
                 case ArgumentKind.LeftBracket:
                     result = ParseListLiteral();
                     break;
@@ -944,7 +936,29 @@ namespace ProjectMGG.Ingame.Script
             return result;
         }
 
-        private IExpression ParseDissolve()
+        private IPause ParseTransition()
+        {
+            IPause result = null;
+
+            switch (_tokens[_index].Kind)
+            {
+                case ArgumentKind.Dissolve:
+                    result = ParseDissolve();
+                    break;
+
+                case ArgumentKind.Fade:
+                    result = ParseFade();
+                    break;
+
+                case ArgumentKind.Identifier:
+                    result = ParseIdentifier();
+                    break;
+            }
+
+            return result;
+        }
+
+        private IPause ParseDissolve()
         {
             Dissolve result = new Dissolve();
 
@@ -957,7 +971,7 @@ namespace ProjectMGG.Ingame.Script
             return result;
         }
 
-        private IExpression ParseFade()
+        private IPause ParseFade()
         {
             Fade result = new Fade();
 

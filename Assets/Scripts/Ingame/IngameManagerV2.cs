@@ -136,10 +136,13 @@ namespace ProjectMGG.Ingame
             {
                 case 1: //Dialog
                     {
-                        if (_paused && !_pausedHard)
+                        if (_paused)
                         {
-                            _goToNext = true;
-                            _paused = false;
+                            if (!_pausedHard)
+                            {
+                                _goToNext = true;
+                                _paused = false;
+                            }
                             break;
                         }
 
@@ -315,6 +318,7 @@ namespace ProjectMGG.Ingame
             RawImage prefab = GameObject.Find(show.Tag)?.GetComponent<RawImage>();
             bool showed = false;
 
+            PauseBeforeShow(show.With);
             yield return LetsWithBefore(show.With, true, prefab, () =>
             {
                 ShowImage(show, texture, ref prefab);
@@ -376,11 +380,25 @@ namespace ProjectMGG.Ingame
             }
         }
 
-        private object ParseWithKind(With with)
+        private void PauseBeforeShow(With with)
         {
-            var result = with.Transition.Interpret();
+            if (with == null) return;
 
-            if (with.Transition is Script.Keywords.GetVariable identifier)
+            with.Transition = ParseWithKind(with);
+            float time = with.Transition.GetPauseTime();
+
+            if (time > 0f)
+            {
+                Pause pause = new Pause(time, true);
+                StartCoroutine(LetsPause(pause));
+            }
+        }
+
+        private IPause ParseWithKind(With with)
+        {
+            var result = with.Transition;
+
+            if (result is Script.Keywords.GetVariable identifier)
             {
                 switch ((string)identifier)
                 {
@@ -400,22 +418,15 @@ namespace ProjectMGG.Ingame
         public IEnumerator LetsWithBefore(With with, bool isShow, RawImage image = null, Action showAction = null)
         {
             if (with == null) yield break;
-
-            var result = ParseWithKind(with);
-            Pause pause = new Pause();
-            pause.Delay = 0f;
-            pause.Hard = true;
+            var result = with.Transition;
 
             if (result is Fade fade)
             {
-                float endTime = (float)fade.OutTime.Interpret();
-                float holdTime = (float)fade.HoldTime.Interpret();
-                float inTime = (float)fade.InTime.Interpret();
+                float outTime = fade.OutTime?.Interpret() as float? ?? 0f;
+                float holdTime = fade.HoldTime?.Interpret() as float? ?? 0f;
+                float inTime = fade.InTime?.Interpret() as float? ?? 0f;
 
-                pause.Delay = endTime + holdTime + inTime;
-                StartCoroutine(LetsPause(pause));
-
-                yield return Tween.Custom(1f, 0f, endTime, x =>
+                yield return Tween.Custom(1f, 0f, outTime, x =>
                 {
                     CanvasDefault.alpha = x;
                 }, Ease.OutCubic).ToYieldInstruction();
@@ -427,27 +438,19 @@ namespace ProjectMGG.Ingame
                     CanvasDefault.alpha = x;
                 }, Ease.InCubic).ToYieldInstruction();
             }
-
         }
 
         public IEnumerator LetsWithAfter(With with, bool isShow, RawImage image = null)
         {
             if (with == null) yield break;
-
-            var result = ParseWithKind(with);
-            Pause pause = new Pause();
-            pause.Delay = 0f;
-            pause.Hard = true;
+            var result = with.Transition;
 
             if (result is Dissolve dissolve && image != null)
             {
                 float start = isShow ? 0f : 1f;
                 float end = isShow ? 1f : 0f;
-                float time = (float)dissolve.Time.Interpret();
-                pause.Delay = time;
-                StartCoroutine(LetsPause(pause));
 
-                yield return Tween.Custom(start, end, time, x =>
+                yield return Tween.Custom(start, end, result.GetPauseTime(), x =>
                 {
                     image.color = new Color(image.color.r, image.color.g, image.color.b, x);
                 }, Ease.Linear).ToYieldInstruction();
@@ -489,6 +492,7 @@ namespace ProjectMGG.Ingame
         {
             _paused = true;
             _pausedHard = pause.Hard;
+
             yield return new WaitForSeconds(pause.Delay);
 
             if (_paused) //if not paused already (for hard)
@@ -532,9 +536,6 @@ namespace ProjectMGG.Ingame
             if (_tagIndex >= _textTags.Count) return; //Something went wrong
 
             TextTag tag = _textTags[_tagIndex];
-            int start = textUI.maxVisibleCharacters;
-            int end = textUI.text.Length;
-
             if (_tagIndex == 0) textUI.text = tag.Text;
             else textUI.text += tag.Text;
 

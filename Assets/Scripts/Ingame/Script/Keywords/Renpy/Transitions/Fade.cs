@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions
 {
-    public class Fade : IExpression
+    public class Fade : IPause
     {
         public IExpression OutTime { get; set; }
         public IExpression HoldTime { get; set; }
@@ -27,6 +27,14 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions
         public object Interpret()
         {
             return this;
+        }
+
+        public float GetPauseTime()
+        {
+            float outTime = OutTime?.Interpret() as float? ?? 0f;
+            float holdTime = HoldTime?.Interpret() as float? ?? 0f;
+            float inTime = InTime?.Interpret() as float? ?? 0f;
+            return outTime + holdTime + inTime;
         }
     }
 }

@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions
 {
-    public class Dissolve : IExpression
+    public class Dissolve : IPause
     {
         public IExpression Time { get; set; }
 
@@ -22,6 +23,11 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions
         public object Interpret()
         {
             return this;
+        }
+
+        public float GetPauseTime()
+        {
+            return Time?.Interpret() as float? ?? 0f;
         }
     }
 }
