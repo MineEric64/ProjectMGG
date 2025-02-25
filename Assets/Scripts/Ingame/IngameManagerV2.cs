@@ -314,6 +314,18 @@ namespace ProjectMGG.Ingame
                 resource = subPath;
             }
 
+            var sceneImages = new List<GameObject>();
+            if (show.IsScene) //already adding image object to list (issue #18)
+            {
+                var canvasImage = this.transform.Find("CanvasImage");
+
+                foreach (Transform child in canvasImage)
+                {
+                    if (child.gameObject.name == show.Tag) continue;
+                    sceneImages.Add(child.gameObject);
+                }
+            }
+
             Texture2D texture = LoadResource<Texture2D>(resource);
             RawImage prefab = GameObject.Find(show.Tag)?.GetComponent<RawImage>();
             bool showed = false;
@@ -328,15 +340,10 @@ namespace ProjectMGG.Ingame
             yield return LetsWithAfter(show.With, true, prefab);
 
             //Destroy all images if scene
-            if (show.IsScene)
+            if (show.IsScene && sceneImages.Count > 0)
             {
-                var canvasImage = this.transform.Find("CanvasImage");
-
-                foreach (Transform child in canvasImage)
-                {
-                    if (child.gameObject.name == show.Tag) continue;
-                    Destroy(child.gameObject);
-                }
+                foreach (var sceneImage in sceneImages) Destroy(sceneImage);
+                sceneImages.Clear();
             }
         }
 
