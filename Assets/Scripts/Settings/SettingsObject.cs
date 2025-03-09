@@ -10,7 +10,7 @@ namespace ProjectMGG.Settings
     public class SettingsObject
     {
         [Key("ui")]
-        public SettingUI UI { get; set; }
+        public SettingUI UI { get; set; } = new SettingUI();
 
         [Key("debug")]
         public bool Debug { get; set; } = false;
