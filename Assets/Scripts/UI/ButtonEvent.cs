@@ -5,7 +5,10 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+
+using PrimeTween;
 using TMPro;
+
 using Random = UnityEngine.Random;
 
 //TODO: Change to PrimeTween
@@ -61,7 +64,8 @@ namespace ProjectMGG.UI
                 desiredColor = hover;
             }
 
-            needToUpdate = true;
+            needToUpdate = true; //legacy support for Text Glow
+            Tween.Color(buttonText, desiredColor, 0.2f, Ease.OutSine);
             onHover?.Invoke(buttonText);
         }
 
@@ -74,7 +78,8 @@ namespace ProjectMGG.UI
             }
 
             desiredColor = exit;
-            needToUpdate = true;
+            needToUpdate = true; //legacy support for Text Glow
+            Tween.Color(buttonText, desiredColor, 0.2f, Ease.OutSine);
             onExit?.Invoke(buttonText);
         }
 
@@ -95,12 +100,10 @@ namespace ProjectMGG.UI
 
         void Update()
         {
-            if (needToUpdate)
+            if (needToUpdate) //legacy support for Text Glow
             {
                 updateStart += Time.deltaTime;
                 float weight = 2 * (updateTime / 0.2f);
-
-                buttonText.color = Color.Lerp(buttonText.color, desiredColor, updateStart / weight);
 
                 if (haveToTextGlow)
                 {
@@ -108,7 +111,7 @@ namespace ProjectMGG.UI
                     buttonText.fontSharedMaterial.SetColor(ShaderUtilities.ID_GlowColor, glowColor);
                 }
 
-                if (buttonText.color == desiredColor || updateStart >= updateTime)
+                if (updateStart >= updateTime)
                 {
                     updateStart = 0f;
                     needToUpdate = false;

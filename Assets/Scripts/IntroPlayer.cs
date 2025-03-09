@@ -35,6 +35,8 @@ namespace ProjectMGG
         public GameObject seperators;
 
         public static IntroPlayer Instance { get; private set; } = null;
+        public static float SCREEN_WEIGHT_X = 1.0f;
+        public static float SCREEN_WEIGHT_Y = 1.0f;
 
         public bool needToFadeIn = false;
         public bool needToFadeOut = false;
@@ -50,6 +52,8 @@ namespace ProjectMGG
         void Start()
         {
             Instance = this;
+            SCREEN_WEIGHT_X = Screen.width / 2560.0f; //based on QHD
+            SCREEN_WEIGHT_Y = Screen.height / 1440.0f;
             Smart.Default.AddExtensions(new KoreanFormatter(Smart.Default));
             PrimeTweenConfig.warnZeroDuration = false;
             SettingsManager.ApplySettings();
@@ -238,10 +242,10 @@ namespace ProjectMGG
         {
             //Initialize
             textMenu.GetComponent<CanvasGroup>().alpha = 0f;
-            menu.transform.localPosition = new Vector3(1740f, 0f, 0f);
+            menu.transform.localPosition = new Vector3(1740f * SCREEN_WEIGHT_X, 0f, 0f);
 
             var repeater = seperators.GetComponent<ObjectRepeater>();
-            repeater.Prefab.transform.localPosition = new Vector3(678f, 0f, 0f);
+            repeater.Prefab.transform.localPosition = new Vector3(678f * SCREEN_WEIGHT_X, 0f, 0f);
             repeater.ApplyOffsetChanges();
 
             //Animation
@@ -263,13 +267,14 @@ namespace ProjectMGG
         void FadeInMainMenu2()
         {
             //Menu: Position
-            Tween.PositionX(menu.transform, 2188.46f, 1f, Ease.OutQuart);
+            Tween.PositionX(menu.transform, 2188.46f * SCREEN_WEIGHT_X, 1f, Ease.OutQuart);
 
             //Seperator: Position 66.53
             var repeater = seperators.GetComponent<ObjectRepeater>();
+            repeater.Offset.y *= SCREEN_WEIGHT_Y;
 
-            Tween.LocalPositionX(repeater.Prefab.transform, 66.53f, 1.3f, Ease.OutQuart);
-            Tween.Custom(237f, 0f, 1.3f, x =>
+            Tween.LocalPositionX(repeater.Prefab.transform, 80f * SCREEN_WEIGHT_X, 1.3f, Ease.OutQuart);
+            Tween.Custom(237f * SCREEN_WEIGHT_X, 0f, 1.3f, x =>
             {
                 repeater.Offset = new Vector3(x, repeater.Offset.y, repeater.Offset.z);
                 repeater.ApplyOffsetChanges();
