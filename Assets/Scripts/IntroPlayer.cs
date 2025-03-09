@@ -54,6 +54,9 @@ namespace ProjectMGG
             Instance = this;
             SCREEN_WEIGHT_X = Screen.width / 2560.0f; //based on QHD
             SCREEN_WEIGHT_Y = Screen.height / 1440.0f;
+            var repeater = seperators.GetComponent<ObjectRepeater>();
+            repeater.Offset.y *= SCREEN_WEIGHT_Y;
+
             Smart.Default.AddExtensions(new KoreanFormatter(Smart.Default));
             PrimeTweenConfig.warnZeroDuration = false;
             SettingsManager.ApplySettings();
@@ -271,7 +274,6 @@ namespace ProjectMGG
 
             //Seperator: Position 66.53
             var repeater = seperators.GetComponent<ObjectRepeater>();
-            repeater.Offset.y *= SCREEN_WEIGHT_Y;
 
             Tween.LocalPositionX(repeater.Prefab.transform, 80f * SCREEN_WEIGHT_X, 1.3f, Ease.OutQuart);
             Tween.Custom(237f * SCREEN_WEIGHT_X, 0f, 1.3f, x =>
