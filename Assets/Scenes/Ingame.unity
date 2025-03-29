@@ -508,17 +508,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5088209550339784cbc313caef006a93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CanvasDefault: {fileID: 0}
   _tokensDebug: []
-  Background: {fileID: 0}
-  NameUI: {fileID: 265009907}
-  ContentUI: {fileID: 310616674}
-  CharacterSample: {fileID: 8649560694921746454, guid: 3daaf7c50de43a34e9f4654cd113a783, type: 3}
-  TextAnimationMultiplier: 0.03
+  _textTagsDebug: []
   MusicPlayer: {fileID: 605366159}
   IsReeverb: 0
   ReeverbIntervals: []
   EndReverbTime: 0
+  CanvasDefault: {fileID: 525807514}
+  CanvasDialogUI: {fileID: 1418379781}
+  NameUI: {fileID: 265009907}
+  ContentUI: {fileID: 310616674}
+  CharacterSample: {fileID: 8649560694921746454, guid: 3daaf7c50de43a34e9f4654cd113a783, type: 3}
+  TextAnimationMultiplier: 0.03
 --- !u!225 &525807514
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -931,7 +932,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.09433961, g: 0.09433961, b: 0.09433961, a: 0.7176471}
+  m_Color: {r: 0.09433961, g: 0.09433961, b: 0.09433961, a: 0.7647059}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

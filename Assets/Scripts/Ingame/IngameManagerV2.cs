@@ -53,7 +53,8 @@ namespace ProjectMGG.Ingame
         private float _currentDecayTime = 0.1f;
         #endregion
         #region UI
-        public CanvasGroup CanvasDefault;
+        public CanvasGroup CanvasDefault; ///Screen
+        public CanvasGroup CanvasDialogUI;
 
         public TextMeshProUGUI NameUI;
         public TextMeshProUGUI ContentUI;
@@ -108,8 +109,6 @@ namespace ProjectMGG.Ingame
             //UI
             NameUI.text = "";
             ContentUI.text = "";
-
-            CanvasDefault = GetComponent<CanvasGroup>(); //Fade In
             CanvasDefault.alpha = 0f;
             Tween.Custom(0f, 1f, 1f, x => CanvasDefault.alpha = x, Ease.InSine);
         }
@@ -385,6 +384,9 @@ namespace ProjectMGG.Ingame
             {
                 prefab.transform.localPosition = new Vector3(0f, -(720 - texture.height / 2));
             }
+
+            //Dialog
+            if (show?.With?.Transition is Fade) Tween.Alpha(CanvasDialogUI, 0f, 1f, 1f, Ease.OutSine);
         }
 
         private void PauseBeforeShow(With with)
@@ -429,6 +431,11 @@ namespace ProjectMGG.Ingame
 
             if (result is Fade fade)
             {
+                //Dialog
+                NameUI.text = "";
+                ContentUI.text = "";
+                Tween.Alpha(CanvasDialogUI, 1f, 0f, 1f, Ease.InSine);
+
                 float outTime = fade.OutTime?.Interpret() as float? ?? 0f;
                 float holdTime = fade.HoldTime?.Interpret() as float? ?? 0f;
                 float inTime = fade.InTime?.Interpret() as float? ?? 0f;

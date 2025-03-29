@@ -95,7 +95,7 @@ namespace ProjectMGG
                 });
             }
 
-            if (_currentTime > 3.0f && !_isSkipped)
+            if (_currentTime > 2.0f && !_isSkipped)
             {
                 needToFadeOut = true;
                 _isSkipped = true;
@@ -166,13 +166,13 @@ namespace ProjectMGG
 
         string GetPlayerName2(string playerName)
         {
-            string[] database = new string[] { "김", "이", "박", "최", "정", "강", "조", "윤", "장", "임", "한", "오", "서", "신", "권", "황", "안", "송", "전", "홍", "유", "고", "문", "양", "손", "배", "백", "허", "남", "심", "노", "하", "곽", "성", "차", "주", "연", "방", "위", "표", "명", "기", "반", "라", "왕", "금", "옥", "육", "인", "맹", "제", "모", "장", "탁", "국", "여", "진", "어", "남궁", "독고", "선우", "제갈" };
+            string[] database = new string[] { "김", "이", "박", "최", "정", "강", "조", "윤", "장", "임", "한", "오", "서", "신", "권", "황", "안", "송", "전", "홍", "유", "류", "고", "문", "양", "손", "배", "백", "허", "남", "심", "노", "하", "곽", "성", "차", "주", "연", "방", "위", "표", "명", "기", "반", "라", "왕", "금", "옥", "육", "인", "맹", "제", "모", "장", "탁", "국", "여", "진", "어", "남궁", "독고", "선우", "제갈" };
 
             if (playerName.Length == 2) //이름 or 성(1글자), 이름(1글자)
             {
                 //select: [0]이 성인가요?
             }
-            else if (playerName.Length == 3) //성(1글자), 이름(2글자) or 성(2글자), 이름(1글자)
+            else if (playerName.Length >= 3) //성(n글자), 이름(n + 1글자) or 성(n + 1글자), 이름(n글자)
             {
                 string familyName = database.Where(x => playerName.StartsWith(x)).FirstOrDefault();
 
@@ -181,11 +181,11 @@ namespace ProjectMGG
                     if (familyName.Length == 1) return playerName.Substring(1);
                     else return playerName.Substring(2);
                 }
+
+                return playerName.Substring(1);
+                //return playerName; //uncomment this if you want to reveal the player's full name
             }
-            else if (playerName.Length == 4) //성(2글자), 이름(2글자)
-            {
-                return playerName.Substring(2);
-            }
+
             return playerName;
         }
 
