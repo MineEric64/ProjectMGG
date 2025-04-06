@@ -6,6 +6,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 {
     public class Narration : IStatement
     {
+        public int Line { get; set; } = 0;
         public string Argument { get; set; }
 
         public void Interpret()

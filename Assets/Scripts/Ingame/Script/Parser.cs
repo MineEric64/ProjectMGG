@@ -118,7 +118,8 @@ namespace ProjectMGG.Ingame.Script
         private Function ParseFunction()
         {
             Function result = new Function();
-            SkipCurrent(ArgumentKind.Function);
+            result.Line = _tokens[_index].Line;
+            SkipCurrent(ArgumentKind.Function);     
 
             result.Name = _tokens[_index].Content; //identifier
             SkipCurrent(ArgumentKind.Identifier);
@@ -268,6 +269,7 @@ namespace ProjectMGG.Ingame.Script
         private Variable ParseVariable(bool isGlobal = false)
         {
             Variable result = new Variable();
+            result.Line = _tokens[_index].Line;
             SkipCurrent(ArgumentKind.Variable);
             result.Name = ParseIdentifier();
             SkipCurrent(ArgumentKind.Assignment);
@@ -284,6 +286,7 @@ namespace ProjectMGG.Ingame.Script
         private Image ParseImage(bool isGlobal = false)
         {
             Image result = new Image();
+            result.Line = _tokens[_index].Line;
             SkipCurrent(ArgumentKind.Image);
 
             result.Tag = ParseIdentifier();
@@ -303,6 +306,7 @@ namespace ProjectMGG.Ingame.Script
         private If ParseIf()
         {
             If result = new If();
+            result.Line = _tokens[_index].Line;
             SkipCurrent(ArgumentKind.If);
 
             do
@@ -334,6 +338,7 @@ namespace ProjectMGG.Ingame.Script
         private Narration ParseNarration()
         {
             Narration result = new Narration();
+            result.Line = _tokens[_index].Line;
             result.Argument = ParseStringLiteral();
             return result;
         }
@@ -341,6 +346,7 @@ namespace ProjectMGG.Ingame.Script
         private Dialog ParseDialog()
         {
             Dialog result = new Dialog();
+            result.Line = _tokens[_index].Line;
 
             string chrName = "";
             if (_tokens[_index].Kind == ArgumentKind.StringLiteral) chrName = ParseStringLiteral();
@@ -356,6 +362,7 @@ namespace ProjectMGG.Ingame.Script
         private Reeverb ParseReeverb()
         {
             Reeverb result = new Reeverb();
+            result.Line = _tokens[_index].Line;
             SkipCurrent();
 
             if (_tokens[_index].Kind == ArgumentKind.Identifier || _tokens[_index].Kind == ArgumentKind.LeftBracket)
@@ -368,6 +375,7 @@ namespace ProjectMGG.Ingame.Script
         private Pause ParsePause()
         {
             Pause result = new Pause();
+            result.Line = _tokens[_index].Line;
             SkipCurrent();
 
             result.Delay = ParseNumberLiteral();
@@ -377,6 +385,7 @@ namespace ProjectMGG.Ingame.Script
         private Comment ParseComment()
         {
             Comment result = new Comment();
+            result.Line = _tokens[_index].Line;
             result.Content = _tokens[_index].Content;
             SkipCurrent();
 
@@ -386,6 +395,7 @@ namespace ProjectMGG.Ingame.Script
         private Show ParseShow(bool isScene = false, bool isHide = false)
         {
             Show result = new Show();
+            result.Line = _tokens[_index].Line;
             SkipCurrent();
 
             result.Tag = ParseIdentifier();
@@ -421,6 +431,7 @@ namespace ProjectMGG.Ingame.Script
         {
             With result = new With(alone);
 
+            result.Line = _tokens[_index].Line;
             SkipCurrent();
             result.Transition = ParseTransition();
 
@@ -431,6 +442,7 @@ namespace ProjectMGG.Ingame.Script
         {
             RpyTransform result = new RpyTransform();
 
+            result.Line = _tokens[_index].Line;
             SkipCurrent(ArgumentKind.Transform);
             result.Name = ParseIdentifier();
             result.IsGlobal = isGlobal;
@@ -1021,6 +1033,7 @@ namespace ProjectMGG.Ingame.Script
         {
             var result = new Play();
 
+            result.Line = _tokens[_index].Line;
             SkipCurrent();
             result.Channel = ParseIdentifier();
             result.Path = ParseStringLiteral();

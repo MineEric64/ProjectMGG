@@ -9,6 +9,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 {
     public class Pause : IStatement
     {
+        public int Line { get; set; } = 0;
         public float Delay { get; set; }
         public bool Hard { get; set; } = false;
 

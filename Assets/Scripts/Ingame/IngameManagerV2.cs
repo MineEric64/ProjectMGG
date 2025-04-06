@@ -591,6 +591,26 @@ namespace ProjectMGG.Ingame
                 IsReeverb = false;
             }
         }
+
+        public IEnumerator LetsGoTo(int line)
+        {
+            int currentLine = 0;
+
+            while (currentLine < line)
+            {
+                var block = Interpreter.CurrentPoint?.GetCurrentBlock();
+
+                if (block == null) yield break;
+
+                currentLine = block.Line;
+                if (currentLine > line) yield break;
+
+                _goToNext = true;
+                _readAll = true;
+
+                yield return null;
+            }
+        }
         #endregion
         #region UI: Button Events
         public void GoHome()

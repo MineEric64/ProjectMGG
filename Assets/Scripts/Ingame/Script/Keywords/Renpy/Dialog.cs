@@ -6,6 +6,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 {
     public class Dialog : IStatement
     {
+        public int Line { get; set; } = 0;
         public string CharacterName { get; set; }
         public string Content { get; set; }
 

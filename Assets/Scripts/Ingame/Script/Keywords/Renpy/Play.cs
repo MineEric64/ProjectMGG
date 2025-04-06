@@ -6,6 +6,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 {
     public class Play : IStatement
     {
+        public int Line { get; set; } = 0;
         public string Channel { get; set; }
         public string Path { get; set; }
 

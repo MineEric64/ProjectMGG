@@ -9,6 +9,7 @@ namespace ProjectMGG.Ingame.Script
     {
         public ArgumentKind Kind { get; set; } = ArgumentKind.Unknown;
         public string Content { get; set; }
+        public int Line { get; set; } = 0;
 
         public Token(ArgumentKind kind)
         {
@@ -21,9 +22,16 @@ namespace ProjectMGG.Ingame.Script
             this.Content = content;
         }
 
+        public Token(ArgumentKind kind, string content, int line)
+        {
+            this.Kind = kind;
+            this.Content = content;
+            this.Line = line;
+        }
+
         public override string ToString()
         {
-            return $"Token(kind={Kind}, content='{Content}')";
+            return $"Token(kind={Kind}, content='{Content}', line='{Line}')";
         }
     }
 }

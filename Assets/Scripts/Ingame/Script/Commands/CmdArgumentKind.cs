@@ -14,6 +14,7 @@ namespace ProjectMGG.Ingame.Script.Commands
         [KindAttr("#identifier")] Identifier,
 
         [KindAttr("day")] Day,
+        [KindAttr("goto")] GoTo,
 
         [KindAttr(",")] Comma,
         [KindAttr(":")] Colon,

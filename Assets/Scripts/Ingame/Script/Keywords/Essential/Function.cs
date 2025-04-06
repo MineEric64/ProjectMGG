@@ -6,6 +6,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
 {
     public class Function : IStatement
     {
+        public int Line { get; set; } = 0;
         public string Name { get; set; }
         public List<string> Parameters { get; set; } = new List<string>();
         public List<IStatement> Block { get; set; }
@@ -39,5 +40,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
             if (_index + 1 >= Block.Count) return null;
             return Block[_index + 1];
         }
+
+        public int GetIndex() { return _index; }
     }
 }

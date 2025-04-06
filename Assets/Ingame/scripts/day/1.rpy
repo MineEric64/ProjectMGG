@@ -51,7 +51,7 @@ label start:
 	"첫인상부터 대차게 말아먹게 생겼는데 뭐? 인싸???"
 	"에휴."
 
-	scene school gate with Fade(1.5, 1.0, 1.0)
+	scene school gate with Fade(1.5, 1.0, 1.5)
 	"깔끔하게 정각 도착은 포기했다."
 	"학교를 들어가려던 찰나, 뒤에서 들리는 소리에 무심코 뒤돌아보니···"
 	show yunseul default at yunseul_t1 with Dissolve(0.7)

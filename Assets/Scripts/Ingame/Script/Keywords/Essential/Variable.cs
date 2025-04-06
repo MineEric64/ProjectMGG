@@ -9,6 +9,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
 {
     public class Variable : IStatement
     {
+        public int Line { get; set; } = 0;
         public string Name { get; set; }
         public IExpression Expression { get; set; }
         public bool IsGlobal { get; set; } = false;

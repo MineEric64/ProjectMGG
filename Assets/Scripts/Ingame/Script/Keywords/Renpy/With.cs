@@ -8,6 +8,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 {
     public class With : IStatement
     {
+        public int Line { get; set; } = 0;
         public IPause Transition { get; set; }
         public bool Alone { get; set; }
 

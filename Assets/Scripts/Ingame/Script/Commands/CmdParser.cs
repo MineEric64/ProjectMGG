@@ -37,7 +37,6 @@ namespace ProjectMGG.Ingame.Script.Commands
                 }
 
                 result.Blocks.Add(block);
-                break;
             }
 
             return result;
@@ -79,6 +78,9 @@ namespace ProjectMGG.Ingame.Script.Commands
                 case CmdArgumentKind.Day:
                     return ParseDay();
 
+                case CmdArgumentKind.GoTo:
+                    return ParseGoTo();
+
                 case CmdArgumentKind.EndOfToken:
                     return null;
 
@@ -99,6 +101,15 @@ namespace ProjectMGG.Ingame.Script.Commands
             Day result = new Day();
             SkipCurrent();
             result.FileName = ParseExpression();
+
+            return result;
+        }
+
+        private GoTo ParseGoTo()
+        {
+            GoTo result = new GoTo();
+            SkipCurrent();
+            result.Value = ParseExpression();
 
             return result;
         }

@@ -27,7 +27,7 @@ namespace ProjectMGG.Ingame.Script
             sourceCode = sourceCode.Replace("    ", "\t"); //indentation, TODO: is available for 3 space characters?
 
             bool needToExit = false;
-            bool firstKind = true; //for distinguish new line
+            bool firstKind = true; //for distinguish new line, TODO: remove this variable and use Token's Line Variable?
 
             _index = 0;
             _line = 1;
@@ -182,7 +182,7 @@ namespace ProjectMGG.Ingame.Script
                 }
             }
 
-            return new Token(ArgumentKind.NumberLiteral, content);
+            return new Token(ArgumentKind.NumberLiteral, content, _line);
         }
 
         private Token ScanStringLiteral(string sourceCode)
@@ -202,7 +202,7 @@ namespace ProjectMGG.Ingame.Script
             }
             _index += 1;
 
-            return new Token(ArgumentKind.StringLiteral, content);
+            return new Token(ArgumentKind.StringLiteral, content, _line);
         }
 
         private Token ScanIdentifierAndKeyword(string sourceCode, out bool forShow)
@@ -233,7 +233,7 @@ namespace ProjectMGG.Ingame.Script
             {
                 kind = ArgumentKind.Identifier;
             }
-            return new Token(kind, content);
+            return new Token(kind, content, _line);
         }
 
         private Token ScanOperatorAndPunctuator(string sourceCode)
@@ -257,7 +257,7 @@ namespace ProjectMGG.Ingame.Script
             }
 
             string content = sb.ToString();
-            return new Token(ArgumentKinds.ToKind(content), content);
+            return new Token(ArgumentKinds.ToKind(content), content, _line);
         }
 
         private Token ScanComment(string sourceCode)
@@ -277,7 +277,7 @@ namespace ProjectMGG.Ingame.Script
                 _index++;
             }
 
-            return new Token(ArgumentKind.Comment, content);
+            return new Token(ArgumentKind.Comment, content, _line);
         }
 
         private bool IsCharType(char ch, CharType type)

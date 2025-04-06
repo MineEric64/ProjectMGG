@@ -9,6 +9,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 {
     public class Reeverb : IStatement
     {
+        public int Line { get; set; } = 0;
         public IExpression Intervals { get; set; } = null;
 
         public void Interpret()

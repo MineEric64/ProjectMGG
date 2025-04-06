@@ -7,6 +7,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 {
     public class Show : IStatement
     {
+        public int Line { get; set; } = 0;
         public string Tag { get; set; }
         public string Attributes { get; set; } = string.Empty;
         public string At { get; set; } = string.Empty; //Transform Name

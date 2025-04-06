@@ -7,9 +7,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 {
     public class RpyTransform : IStatement
     {
-        //deprecated
-        [Obsolete()] public Dictionary<string, float> Options = new Dictionary<string, float>();
-
+        public int Line { get; set; } = 0;
         public string Name { get; set; }
         public bool IsGlobal { get; set; } = false;
 

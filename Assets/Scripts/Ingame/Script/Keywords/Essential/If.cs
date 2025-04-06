@@ -6,6 +6,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
 {
     public class If : IStatement
     {
+        public int Line { get; set; } = 0;
         public List<IExpression> Conditions { get; set; } = new List<IExpression>();
         public List<List<IStatement>> Blocks { get; set; } = new List<List<IStatement>>();
         public List<IStatement> ElseBlock { get; set; } = new List<IStatement>();

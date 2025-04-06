@@ -9,6 +9,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Commands
 {
     public class Day : IStatement
     {
+        public int Line { get; set; } = 0;
         public IExpression FileName { get; set; } = null;
 
         public void Interpret()
