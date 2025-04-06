@@ -680,8 +680,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\u200B"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 4706695059cc9c14e8b09c7d97415af8, type: 2}
-  m_sharedMaterial: {fileID: 8537491291281935011, guid: 4706695059cc9c14e8b09c7d97415af8, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 82856f0b9d0c3524fadc12e45d42bfa6, type: 2}
+  m_sharedMaterial: {fileID: -8136188534113519010, guid: 82856f0b9d0c3524fadc12e45d42bfa6, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -705,8 +705,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 105
-  m_fontSizeBase: 105
+  m_fontSize: 115
+  m_fontSizeBase: 115
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
