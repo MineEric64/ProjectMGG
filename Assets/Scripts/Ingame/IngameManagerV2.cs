@@ -527,7 +527,7 @@ namespace ProjectMGG.Ingame
             _tagIndex = 0;
             _textTags.Clear();
             Script.Keywords.StringLiteral.ApplyTag(text, ref _textTags);
-            //_textTagsDebug = _textTags.Select(x => x.ToString()).ToList();
+            _textTagsDebug = _textTags.Select(x => x.ToString()).ToList();
 
             while (!completed)
             {
@@ -536,6 +536,7 @@ namespace ProjectMGG.Ingame
                     LetsTextTag(ContentUI, out completed, ref start);
                     TMPDOText(ContentUI, start, TextAnimationMultiplier * ContentUI.text.Length);
                     start = ContentUI.text.Length;
+                    if (_tagIndex < _textTagsDebug.Count) Debug.Log(_textTagsDebug[_tagIndex]);
                 }
                 yield return null;
             }

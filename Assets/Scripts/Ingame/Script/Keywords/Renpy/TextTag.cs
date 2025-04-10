@@ -28,6 +28,6 @@ public class TextTag
     public override string ToString()
     {
         string arg = TagArgument == null ? string.Empty : TagArgument.ToString();
-        return $"'{Text}'\n'{Tag}'\n'{arg}'";
+        return $"TextTag(text={Text}, tag='{Tag}', arg='{arg}')";
     }
 }
