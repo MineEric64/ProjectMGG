@@ -1,33 +1,28 @@
-public class TextTag
+using System.Collections.Generic;
+using System.Linq;
+
+namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 {
-    public string Text { get; set; } = string.Empty;
-    public string Tag { get; set; } = string.Empty;
-    public object TagArgument { get; set; } = null;
-
-    public TextTag()
+    public class TextTag
     {
+        public string Text { get; set; } = string.Empty;
+        public HashSet<TextTagData> Datas { get; set; } = new HashSet<TextTagData>();
 
-    }
+        public TextTag()
+        {
 
-    public TextTag(string text)
-    {
-        Text = text;
-    }
+        }
 
-    public TextTag(string text, string tag)
-    {
-        Text = text;
-        Tag = tag;
-    }
+        public TextTag(string text)
+        {
+            Text = text;
+        }
 
-    public TextTag(string text, string tag, object tagArgument) : this(text, tag)
-    {
-        TagArgument = tagArgument;
-    }
-
-    public override string ToString()
-    {
-        string arg = TagArgument == null ? string.Empty : TagArgument.ToString();
-        return $"TextTag(text={Text}, tag='{Tag}', arg='{arg}')";
+        public override string ToString()
+        {
+            string tags = string.Join(";", Datas.Select(x => x.Tag).ToList());
+            string args = string.Join(";", Datas.Select(x => x.TagArgument).ToList());
+            return $"TextTag(text={Text}, tag='{tags}', arg='{args}')";
+        }
     }
 }
