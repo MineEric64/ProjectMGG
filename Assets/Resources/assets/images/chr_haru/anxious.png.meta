@@ -160,7 +160,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      anxious_0: 7200068995114476322
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
