@@ -25,7 +25,6 @@ label start:
 
     # scene homebase with Dissolve(1.0)
     show haru default at half_size with Dissolve(0.5)
-    "{b}안녕!{/b}{b}다시 안녕{/b}"
     haru "[playername2], 반가워."
     show haru embarrassed1 at half_size
     "하루는 내게 인사를 건내는 동시에 얼굴을 붉히고 말았다."

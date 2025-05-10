@@ -68,6 +68,7 @@ namespace ProjectMGG.Ingame
         private bool _readAll = false;
         private bool _paused = false;
         private bool _pausedHard = false;
+        private Action _actionAfterPause = null;
         #endregion
 
         void Awake()
@@ -141,6 +142,12 @@ namespace ProjectMGG.Ingame
                             {
                                 _goToNext = true;
                                 _paused = false;
+
+                                if (_actionAfterPause != null)
+                                {
+                                    _actionAfterPause.Invoke();
+                                    _actionAfterPause = null;
+                                }
                             }
                             break;
                         }
@@ -513,6 +520,12 @@ namespace ProjectMGG.Ingame
             {
                 _paused = false;
                 _goToNext = true;
+
+                if (_actionAfterPause != null)
+                {
+                    _actionAfterPause.Invoke();
+                    _actionAfterPause = null;
+                }
             }
         }
 
@@ -531,12 +544,11 @@ namespace ProjectMGG.Ingame
 
             while (!completed)
             {
-                if (_readAll)
+                if (!_paused && _readAll)
                 {
                     LetsTextTag(ContentUI, out completed, ref start);
                     TMPDOText(ContentUI, start, TextAnimationMultiplier * ContentUI.text.Length);
                     start = ContentUI.text.Length;
-                    if (_tagIndex < _textTagsDebug.Count) Debug.Log(_textTagsDebug[_tagIndex]);
                 }
                 yield return null;
             }
@@ -554,11 +566,53 @@ namespace ProjectMGG.Ingame
             if (_tagIndex == 0) textUI.text = tag.Text;
             else textUI.text += tag.Text;
 
-            switch (tag.Tag)
+            switch (tag.PrimaryData.Tag) //Dialogue
             {
+                case "w":
+                    {
+                        float delay = 9999f;
+                        if (tag.PrimaryData.TagArgument != null) delay = (float)tag.PrimaryData.TagArgument;
+
+                        Pause pause = new Pause(delay, false);
+                        _actionAfterPause = new Action(() =>
+                        {
+                            _goToNext = false;
+                        });
+                        StartCoroutine(LetsPause(pause));
+                        break;
+                    }
+
+                case "p":
+                    {
+                        float delay = 9999f;
+                        if (tag.PrimaryData.TagArgument != null) delay = (float)tag.PrimaryData.TagArgument;
+
+                        Pause pause = new Pause(delay, false);
+                        _actionAfterPause = new Action(() =>
+                        {
+                            textUI.text += "\n";
+                            _goToNext = false;
+                        });
+                        StartCoroutine(LetsPause(pause));
+                        break;
+                    }
+                  
                 case "nw":
                     {
-                        _noWait = true;
+                        if (tag.PrimaryData.TagArgument != null)
+                        {
+                            float delay = (float)tag.PrimaryData.TagArgument;
+
+                            Pause pause = new Pause(delay, false);
+                            _actionAfterPause = new Action(() =>
+                            {
+                                textUI.text += "\n";
+                                _noWait = true;
+                                _goToNext = false;
+                            });
+                            StartCoroutine(LetsPause(pause));
+                        }
+                        else _noWait = true;
                         break;
                     }
 
@@ -568,7 +622,49 @@ namespace ProjectMGG.Ingame
                         break;
                     }
 
+                case "done":
+                    {
+
+                        break;
+                    }
+
+                case "clear":
+                    {
+
+                        break;
+                    }
+
                 //https://www.renpy.org/doc/html/text.html#dialogue-text-tags
+            }
+
+            foreach (var prefix in tag.PrefixDatas) //General
+            {
+                switch (prefix.Tag)
+                {
+                    case "a":
+                        {
+
+                            break;
+                        }
+
+                    case "alpha":
+                        {
+
+                            break;
+                        }
+
+                    case "alt":
+                        {
+
+                            break;
+                        }
+
+                    case "art":
+                        {
+
+                            break;
+                        }
+                }
             }
 
             _tagIndex++;

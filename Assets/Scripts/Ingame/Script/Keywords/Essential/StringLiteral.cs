@@ -1,3 +1,4 @@
+using ProjectMGG.Ingame.Script.Keywords.Renpy;
 using SmartFormat;
 using System.Collections;
 using System.Collections.Generic;
@@ -96,6 +97,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
 
             StringBuilder sb = new StringBuilder();
             StringBuilder tag = new StringBuilder();
+            HashSet<TextTagData> prefixes = new HashSet<TextTagData>();
 
             bool isTag = false;
 
@@ -113,8 +115,8 @@ namespace ProjectMGG.Ingame.Script.Keywords
                     case '}':
                         if (tag.Length > 0)
                         {
-                            var textTag = InterpretTag(sb.ToString(), tag.ToString());
-                            textTags.Add(textTag);
+                            var textTag = InterpretTag(sb.ToString(), tag.ToString(), ref prefixes);
+                            if (textTag != null) textTags.Add(textTag);
 
                             sb.Clear();
                             tag.Clear();
@@ -131,16 +133,56 @@ namespace ProjectMGG.Ingame.Script.Keywords
             }
             if (sb.Length > 0)
             {
-                textTags.Add(new TextTag(sb.ToString()));
+                var textTag = new TextTag(sb.ToString());
+                textTag.PrefixDatas = new HashSet<TextTagData>(prefixes);
+                textTags.Add(textTag);
                 sb.Clear();
             }
         }
 
         private static string[] _predefinedTags = new string[] { "b", "color", "font", "i", "size", "space", "s", "u" };
+        private static string[] _tagType1 = new string[] { "a", "alpha", "alt", "art", "b", "color", "cps", "font", "i", "image", "k", "noalt", "outlinecolor", "plain", "rb", "rt", "s", "shader", "size", "space", "u", "vspace", "#"};
+        private static string[] _tagType2 = new string[] { "w", "p", "nw", "fast", "done", "clear" };
 
-        private static TextTag InterpretTag(string text, string tagContent)
+        /// <summary>
+        /// Interpret each text and tag like: {tag}{text}{tag2}{/tag}
+        /// </summary>
+        private static TextTag InterpretTag(string text, string tag, ref HashSet<TextTagData> prefixes)
         {
-            var tag = new TextTag(text);
+            TextTag textTag = new TextTag();
+            TextTagData primary = new TextTagData();
+            TextTagData tag2 = InterpretTagOnly(tag);
+            int tagType = ParseTextTagType(tag2.Tag);
+
+            if (tagType == 1) //Dialogue
+            {
+                primary = tag2;
+            }
+
+            textTag.Text = text;
+            textTag.PrimaryData = primary;
+            textTag.PrefixDatas = new HashSet<TextTagData>(prefixes);
+
+            if (tag.StartsWith("/")) //Closed Tag
+            {
+                string tag3 = tag.Substring(1);
+                prefixes.RemoveWhere(x => x.Tag == tag3);
+            }
+            else if (tagType == 0) //General
+            {
+                prefixes.Add(tag2);
+                if (string.IsNullOrWhiteSpace(text)) return null;
+            }
+
+            return textTag;
+        }
+
+        /// <summary>
+        /// If tag arguments exist, return it with them
+        /// </summary>
+        private static TextTagData InterpretTagOnly(string tagContent)
+        {
+            var tag = new TextTagData();
             var scanner = new Scanner();
             var tokens = scanner.Scan(tagContent);
 
@@ -153,6 +195,11 @@ namespace ProjectMGG.Ingame.Script.Keywords
                 {
                     case ArgumentKind.Identifier:
                         {
+                            if (isAssignment)
+                            {
+                                tag.TagArgument = ParseTagArgument(token);
+                                break;
+                            }
                             string predefined = _predefinedTags.Where(x => token.Content == x).FirstOrDefault();
                             string predefined2 = _predefinedTags.Select(x => string.Concat("/", x)).Where(x => token.Content == x).FirstOrDefault();
 
@@ -162,19 +209,24 @@ namespace ProjectMGG.Ingame.Script.Keywords
                         }
 
                     case ArgumentKind.Assignment:
-                        isAssignment = true;
+                        {
+                            isAssignment = true;
+                            break;
+                        }
+
+                    case ArgumentKind.EndOfToken:
                         break;
 
                     default:
                         {
                             if (isAssignment)
                             {
-                                if (isPredefined)
-                                {
-                                    tag.Text = string.Concat(text, "<", tag.Tag, "=", token.Content, ">");
-                                    tag.Tag = string.Empty;
-                                    break;
-                                }
+                                //if (isPredefined)
+                                //{
+                                //    tag.Text = string.Concat(text, "<", tag.Tag, "=", token.Content, ">");
+                                //    tag.Tag = string.Empty;
+                                //    break;
+                                //}
                                 tag.TagArgument = ParseTagArgument(token);
                                 //https://www.renpy.org/doc/html/text.html#dialogue-text-tags
                             }
@@ -206,6 +258,13 @@ namespace ProjectMGG.Ingame.Script.Keywords
             }
 
             return null;
+        }
+
+        private static int ParseTextTagType(string tag)
+        {
+            for (int i = 0; i < _tagType1.Length; i++) if (tag == _tagType1[i]) return 0; //General
+            for (int i = 0; i < _tagType2.Length; i++) if (tag == _tagType2[i]) return 1; //Dialogue
+            return -1;
         }
     }
 }
