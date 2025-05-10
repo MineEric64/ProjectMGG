@@ -25,6 +25,7 @@ label start:
 
     # scene homebase with Dissolve(1.0)
     show haru default at half_size with Dissolve(0.5)
+    haru "안녕하세요 이것은 테스트입니다 매우 반가워요{ease=Linear} 나는 지금 Text Ease를 평가하고 있습니다{ease=QuadOut}{p}다시 쿼드아웃으로 진행되는 것은 정상이 맞습니다만?"
     haru "[playername2], 반가워."
     show haru embarrassed1 at half_size
     "하루는 내게 인사를 건내는 동시에 얼굴을 붉히고 말았다."

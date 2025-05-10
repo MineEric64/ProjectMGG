@@ -270,7 +270,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
         private static Token ReparseTagArgument(string tagContent)
         {
             string arg = tagContent.Substring(tagContent.IndexOf('=') + 1);
-            arg.Insert(0, "\"");
+            arg = arg.Insert(0, "\"");
             arg += "\"";
             var scanner = new Scanner();
             var tokens = scanner.Scan(arg);
