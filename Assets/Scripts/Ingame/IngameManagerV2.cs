@@ -237,7 +237,7 @@ namespace ProjectMGG.Ingame
             return 0;
         }
 
-        public void TMPDOText(TextMeshProUGUI text, float start, float duration)
+        public void TMPDOText(TextMeshProUGUI text, float start, float duration, Ease ease)
         {
             if (text.text.Length == 0)
             {
@@ -248,9 +248,7 @@ namespace ProjectMGG.Ingame
             _readAll = false;
             text.maxVisibleCharacters = 0;
 
-            Ease ease = Ease.Linear;
             bool stop = false;
-            Enum.TryParse(SettingsManager.Settings.UI.TextEase, out ease);
 
             Tween.Custom(start, text.text.Length, duration, x =>
             {
@@ -540,14 +538,17 @@ namespace ProjectMGG.Ingame
             _tagIndex = 0;
             _textTags.Clear();
             Script.Keywords.StringLiteral.ApplyTag(text, ref _textTags);
-            //_textTagsDebug = _textTags.Select(x => x.ToString()).ToList();
+            _textTagsDebug = _textTags.Select(x => x.ToString()).ToList();
+
+            Ease ease = Ease.Linear;
+            Enum.TryParse(SettingsManager.Settings.UI.TextEase, out ease);
 
             while (!completed)
             {
                 if (!_paused && _readAll)
                 {
-                    LetsTextTag(ContentUI, out completed, ref start);
-                    TMPDOText(ContentUI, start, TextAnimationMultiplier * ContentUI.text.Length);
+                    LetsTextTag(ContentUI, out completed, ref ease, ref start);
+                    TMPDOText(ContentUI, start, TextAnimationMultiplier * ContentUI.text.Length, ease);
                     start = ContentUI.text.Length;
                 }
                 yield return null;
@@ -557,9 +558,10 @@ namespace ProjectMGG.Ingame
         /// <summary>
         /// Interpret Tag + Set Text on UI
         /// </summary>
-        private void LetsTextTag(TextMeshProUGUI textUI, out bool completed, ref int startText)
+        private void LetsTextTag(TextMeshProUGUI textUI, out bool completed, ref Ease ease, ref int startText)
         {
             completed = _tagIndex + 1 >= _textTags.Count;
+
             if (_tagIndex >= _textTags.Count) return; //Something went wrong
 
             TextTag tag = _textTags[_tagIndex];
@@ -631,6 +633,16 @@ namespace ProjectMGG.Ingame
                 case "clear":
                     {
 
+                        break;
+                    }
+
+                case "ease":
+                    {
+                        if (tag.PrimaryData.TagArgument != null)
+                        {
+                            string name = (string)tag.PrimaryData.TagArgument;
+                            Enum.TryParse(name, out ease);
+                        }
                         break;
                     }
 

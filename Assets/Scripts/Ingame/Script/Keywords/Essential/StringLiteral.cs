@@ -142,7 +142,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
 
         private static string[] _predefinedTags = new string[] { "b", "color", "font", "i", "size", "space", "s", "u" };
         private static string[] _tagType1 = new string[] { "a", "alpha", "alt", "art", "b", "color", "cps", "font", "i", "image", "k", "noalt", "outlinecolor", "plain", "rb", "rt", "s", "shader", "size", "space", "u", "vspace", "#"};
-        private static string[] _tagType2 = new string[] { "w", "p", "nw", "fast", "done", "clear" };
+        private static string[] _tagType2 = new string[] { "w", "p", "nw", "fast", "done", "clear", "ease" };
 
         /// <summary>
         /// Interpret each text and tag like: {tag}{text}{tag2}{/tag}
@@ -197,7 +197,8 @@ namespace ProjectMGG.Ingame.Script.Keywords
                         {
                             if (isAssignment)
                             {
-                                tag.TagArgument = ParseTagArgument(token);
+                                var arg = ReparseTagArgument(tagContent) ?? token;
+                                tag.TagArgument = ParseTagArgument(arg);
                                 break;
                             }
                             string predefined = _predefinedTags.Where(x => token.Content == x).FirstOrDefault();
@@ -228,6 +229,12 @@ namespace ProjectMGG.Ingame.Script.Keywords
                                 //    break;
                                 //}
                                 tag.TagArgument = ParseTagArgument(token);
+
+                                if (tag.TagArgument == null)
+                                {
+                                    var arg = ReparseTagArgument(tagContent);
+                                    if (arg != null) tag.TagArgument = ParseTagArgument(arg);
+                                }
                                 //https://www.renpy.org/doc/html/text.html#dialogue-text-tags
                             }
                             break;
@@ -257,6 +264,18 @@ namespace ProjectMGG.Ingame.Script.Keywords
                     }
             }
 
+            return null;
+        }
+
+        private static Token ReparseTagArgument(string tagContent)
+        {
+            string arg = tagContent.Substring(tagContent.IndexOf('=') + 1);
+            arg.Insert(0, "\"");
+            arg += "\"";
+            var scanner = new Scanner();
+            var tokens = scanner.Scan(arg);
+
+            if (tokens.Count > 0) return tokens[0];
             return null;
         }
 
