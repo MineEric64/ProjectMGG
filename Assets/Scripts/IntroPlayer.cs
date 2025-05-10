@@ -27,6 +27,7 @@ namespace ProjectMGG
     {
         CanvasGroup canvasGroup;
         public GameObject canvasMain;
+        public RawImage backgroundImage;
         public AudioSource bgm;
         public TMP_InputField nameInput;
         public TMP_InputField commandInput;
@@ -119,6 +120,11 @@ namespace ProjectMGG
                 commandInput.gameObject.SetActive(!active);
                 if (!active) commandInput.ActivateInputField();
             }
+
+            //Camera Moving (Issue #24)
+            float dx = ((Input.mousePosition.x / Screen.width) - 0.5f) * 20;
+            float dy = ((Input.mousePosition.y / Screen.height) - 0.5f) * 20;
+            backgroundImage.transform.localPosition = new Vector3(dx, dy, backgroundImage.transform.position.z);
 
             _currentTime += Time.deltaTime;
         }
