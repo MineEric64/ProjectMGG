@@ -538,7 +538,7 @@ namespace ProjectMGG.Ingame
             _tagIndex = 0;
             _textTags.Clear();
             Script.Keywords.StringLiteral.ApplyTag(text, ref _textTags);
-            _textTagsDebug = _textTags.Select(x => x.ToString()).ToList();
+            //_textTagsDebug = _textTags.Select(x => x.ToString()).ToList();
 
             Ease ease = Ease.Linear;
             Enum.TryParse(SettingsManager.Settings.UI.TextEase, out ease);
