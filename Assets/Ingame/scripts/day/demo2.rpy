@@ -1,4 +1,4 @@
-define player = Character("[playername]", color="#000000")
+ define player = Character("[playername]", color="#000000")
 
 define seah = Character("한세아", color="#abb7db")
 image seah default = "$/images/chr_seah/1.png"
@@ -135,8 +135,7 @@ label start:
 	show seah default at seah_t1
 	"세아 선배는 테이프를 다시 힘껏 뜯어, 내 옆으로 천천히 다가왔다."
 	"이번에는 테이프를 손에 건내지 않고 선배가 직접 붙여주었다."
-	"선배가 테이프를 한땀한땀 붙이는 동안 나는 그저 가만히 있을 수 밖에 없었다."
-	"만약 한 발짝 움직이기라도 했다면··· 세아 선배 어깨에 닿고 말았을 것이다."
+	"선배가 테이프를 한땀한땀 붙이는 동안 나는 그저 가만히 있을 수 밖에 없었다.{p}만약 한 발짝 움직이기라도 했다면··· 세아 선배 어깨에 닿고 말았을 것이다."
 	"세아 선배는 내가 이렇게 가까이 있다는 것조차 눈치 채지 못한 듯하다."
 	"여전히 테이프 하나하나를 고심 끝에 붙이고 있었다."
 	"잠시 후, 세아 선배는 테이프를 바닥에 놓고 포스터를 멀리서 보려고 뒷걸음질을 쳤다."

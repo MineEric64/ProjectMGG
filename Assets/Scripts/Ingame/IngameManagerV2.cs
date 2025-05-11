@@ -59,8 +59,6 @@ namespace ProjectMGG.Ingame
         public TextMeshProUGUI NameUI;
         public TextMeshProUGUI ContentUI;
         public RawImage CharacterSample;
-
-        public float TextAnimationMultiplier = 0.04f;
         #endregion
         #region Text & UI
         private GraphicRaycaster _raycaster;
@@ -532,6 +530,7 @@ namespace ProjectMGG.Ingame
         /// </summary>
         private IEnumerator ProcessText(string text)
         {
+            const float TEXT_WEIGHT_VELOCITY = 0.04f;
             bool completed = false;
             int start = 0;
 
@@ -548,7 +547,7 @@ namespace ProjectMGG.Ingame
                 if (!_paused && _readAll)
                 {
                     LetsTextTag(ContentUI, out completed, ref ease, ref start);
-                    TMPDOText(ContentUI, start, TextAnimationMultiplier * ContentUI.text.Length, ease);
+                    TMPDOText(ContentUI, start, TEXT_WEIGHT_VELOCITY * (ContentUI.text.Length - start), ease);
                     start = ContentUI.text.Length;
                 }
                 yield return null;
