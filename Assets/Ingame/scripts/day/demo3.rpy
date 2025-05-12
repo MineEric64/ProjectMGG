@@ -38,6 +38,7 @@ label start:
 	"……"
 	"이럴 땐 무슨 말로 대답해야 좋을까."
 
+	# TODO: menu로 선택지(+ UI) 구현
 	define select = 1
 
 	if select == 1:
