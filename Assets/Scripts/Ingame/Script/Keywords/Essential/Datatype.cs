@@ -9,42 +9,12 @@ namespace ProjectMGG.Ingame.Script.Keywords
     {
         public static bool IsTrue(object value)
         {
-            return IsBoolean(value) && ToBoolean(value);
+            return value is bool value2 && value2;
         }
 
         public static bool IsFalse(object value)
         {
-            return IsBoolean(value) && (ToBoolean(value) == false);
-        }
-
-        public static bool IsBoolean(object value)
-        {
-            return value is bool;
-        }
-
-        public static bool ToBoolean(object value)
-        {
-            return (bool)value;
-        }
-
-        public static bool IsNumber(object value)
-        {
-            return value is double;
-        }
-
-        public static double ToNumber(object value)
-        {
-            return (double)value;
-        }
-
-        public static bool IsString(object value)
-        {
-            return value is string;
-        }
-
-        public static string ToString(object value)
-        {
-            return (string)value;
+            return value is bool value2 && !value2;
         }
 
         public static bool IsArray(object value)
@@ -59,7 +29,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
 
         public static object GetValueOfArray(object obj, object index)
         {
-            int i = (int)ToNumber(index);
+            int i = (int)index;
             Array arr = ToArray(obj);
 
             if (i >= 0 && i < arr.Length)
@@ -71,7 +41,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
 
         public static object SetValueOfArray(object obj, object index, object value)
         {
-            int i = (int)ToNumber(index);
+            int i = (int)index;
             Array arr = ToArray(obj);
 
             if (i >= 0 && i < arr.Length)
@@ -93,8 +63,8 @@ namespace ProjectMGG.Ingame.Script.Keywords
 
         public static object GetValueOfMap(object obj, object key)
         {
-            var map = ToMap(obj);
-            var key2 = ToString(key);
+            var map = (Dictionary<string, object>)obj;
+            var key2 = key.ToString();
 
             if (map.ContainsKey(key2))
             {
@@ -105,7 +75,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
 
         public static object SetValueOfMap(object obj, object key, object value)
         {
-            ToMap(obj)[ToString(key)] = value;
+            ((Dictionary<string, object>)obj)[key.ToString()] = value;
             return value;
         }
 

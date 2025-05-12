@@ -32,7 +32,8 @@ namespace ProjectMGG.Ingame
         #region Script & TextTag
         private List<Token> _tokens;
         [SerializeField] private List<string> _tokensDebug;
-        public static VariableCollection Local { get; private set; } = new VariableCollection(); //TODO: every label (using stack)
+        public static Dictionary<string, VariableCollection> Locals { get; private set; } //Key: FunctionName
+        public static VariableCollection Local => Locals?.GetValueOrDefault(Interpreter.CurrentPoint?.Name) ?? Global;
         public static VariableCollection Global { get; private set; } = new VariableCollection();
         public Interpreter Interpreter;
 
@@ -80,7 +81,7 @@ namespace ProjectMGG.Ingame
         {
             //Initialize
             Instance = this;
-            Local = new VariableCollection();
+            Locals = new Dictionary<string, VariableCollection>();
             Global = new VariableCollection();
 
             //Script
@@ -259,6 +260,7 @@ namespace ProjectMGG.Ingame
         }
 
         #region Keywords: Renpy
+        #region Texts
         public void LetsNarration(string content)
         {
             NameUI.text = "";
@@ -280,11 +282,8 @@ namespace ProjectMGG.Ingame
                 }
                 else
                 {
-                    chr = new Character() //temporary character name
-                    {
-                        Name = new Script.Keywords.StringLiteral(chrName),
-                        Colour = new Color(0.553f, 0.129f, 0.1568f)
-                    };
+                    chr = new Character(); //temporary character name
+                    chr.Name = new Script.Keywords.StringLiteral(chrName);
                 }
             }
 
@@ -295,17 +294,174 @@ namespace ProjectMGG.Ingame
             _goToNext = false;
         }
 
+        /// <summary>
+        /// Supports the Text Tag
+        /// </summary>
+        private IEnumerator ProcessText(string text)
+        {
+            const float TEXT_WEIGHT_VELOCITY = 0.04f;
+            bool completed = false;
+            int start = 0;
+
+            _tagIndex = 0;
+            _textTags.Clear();
+            Script.Keywords.StringLiteral.ApplyTag(text, ref _textTags);
+            //_textTagsDebug = _textTags.Select(x => x.ToString()).ToList();
+
+            Ease ease = Ease.Linear;
+            Enum.TryParse(SettingsManager.Settings.UI.TextEase, out ease);
+
+            while (!completed)
+            {
+                if (!_paused && _readAll)
+                {
+                    LetsTextTag(ContentUI, out completed, ref ease, ref start);
+                    TMPDOText(ContentUI, start, TEXT_WEIGHT_VELOCITY * (ContentUI.text.Length - start), ease);
+                    start = ContentUI.text.Length;
+                }
+                yield return null;
+            }
+        }
+
+        /// <summary>
+        /// Interpret Tag + Set Text on UI
+        /// </summary>
+        private void LetsTextTag(TextMeshProUGUI textUI, out bool completed, ref Ease ease, ref int startText)
+        {
+            completed = _tagIndex + 1 >= _textTags.Count;
+
+            if (_tagIndex >= _textTags.Count) return; //Something went wrong
+
+            TextTag tag = _textTags[_tagIndex];
+            if (_tagIndex == 0) textUI.text = tag.Text;
+            else textUI.text += tag.Text;
+
+            switch (tag.PrimaryData.Tag) //Dialogue
+            {
+                case "w":
+                    {
+                        float delay = 9999f;
+                        if (tag.PrimaryData.TagArgument != null) delay = (float)tag.PrimaryData.TagArgument;
+
+                        Pause pause = new Pause(delay, false);
+                        _actionAfterPause = new Action(() =>
+                        {
+                            _goToNext = false;
+                        });
+                        StartCoroutine(LetsPause(pause));
+                        break;
+                    }
+
+                case "p":
+                    {
+                        float delay = 9999f;
+                        if (tag.PrimaryData.TagArgument != null) delay = (float)tag.PrimaryData.TagArgument;
+
+                        Pause pause = new Pause(delay, false);
+                        _actionAfterPause = new Action(() =>
+                        {
+                            textUI.text += "\n";
+                            _goToNext = false;
+                        });
+                        StartCoroutine(LetsPause(pause));
+                        break;
+                    }
+
+                case "nw":
+                    {
+                        if (tag.PrimaryData.TagArgument != null)
+                        {
+                            float delay = (float)tag.PrimaryData.TagArgument;
+
+                            Pause pause = new Pause(delay, false);
+                            _actionAfterPause = new Action(() =>
+                            {
+                                textUI.text += "\n";
+                                _noWait = true;
+                                _goToNext = false;
+                            });
+                            StartCoroutine(LetsPause(pause));
+                        }
+                        else _noWait = true;
+                        break;
+                    }
+
+                case "fast":
+                    {
+                        startText = textUI.text.Length;
+                        break;
+                    }
+
+                case "done":
+                    {
+
+                        break;
+                    }
+
+                case "clear":
+                    {
+
+                        break;
+                    }
+
+                case "ease":
+                    {
+                        if (tag.PrimaryData.TagArgument != null)
+                        {
+                            string name = (string)tag.PrimaryData.TagArgument;
+                            Enum.TryParse(name, out ease);
+                        }
+                        break;
+                    }
+
+                    //https://www.renpy.org/doc/html/text.html#dialogue-text-tags
+            }
+
+            foreach (var prefix in tag.PrefixDatas) //General
+            {
+                switch (prefix.Tag)
+                {
+                    case "a":
+                        {
+
+                            break;
+                        }
+
+                    case "alpha":
+                        {
+
+                            break;
+                        }
+
+                    case "alt":
+                        {
+
+                            break;
+                        }
+
+                    case "art":
+                        {
+
+                            break;
+                        }
+                }
+            }
+
+            _tagIndex++;
+        }
+        #endregion
+        #region Images
         public IEnumerator LetsShow(Show show)
         {
             var image = GetVariable(show.Tag, ref Local.Images, ref Global.Images);
-            string resource = "";
+            Texture2D texture = null;
 
             if (image == null)
             {
                 ExceptionManager.Throw($"The image '{show.Tag}' variable doesn't exists while interpreting 'show' statement.", "IngameManagerV2");
                 yield break;
             }
-            if (string.IsNullOrEmpty(show.Attributes)) resource = image.MainImage;
+            if (string.IsNullOrEmpty(show.Attributes)) texture = image.MainImage;
             else
             {
                 if (!image.SubImages.TryGetValue(show.Attributes, out var subPath))
@@ -313,7 +469,7 @@ namespace ProjectMGG.Ingame
                     ExceptionManager.Throw($"The image '{show.Tag}' that has a attribute '{show.Attributes}' variable doesn't exists.", "IngameManagerV2");
                     yield break;
                 }
-                resource = subPath;
+                texture = subPath;
             }
 
             var sceneImages = new List<GameObject>();
@@ -328,7 +484,6 @@ namespace ProjectMGG.Ingame
                 }
             }
 
-            Texture2D texture = LoadResource<Texture2D>(resource);
             RawImage prefab = GameObject.Find(show.Tag)?.GetComponent<RawImage>();
             bool showed = false;
 
@@ -473,7 +628,8 @@ namespace ProjectMGG.Ingame
                 }, Ease.Linear).ToYieldInstruction();
             }
         }
-
+        #endregion
+        #region Audio
         public void LetsPlay(string channel, string path)
         {
             switch (channel)
@@ -505,6 +661,23 @@ namespace ProjectMGG.Ingame
             }
         }
 
+        public void LetsStop(string channel)
+        {
+            switch (channel)
+            {
+                case "music":
+                    {
+                        MusicPlayer.Stop();
+                        break;
+                    }
+
+                default:
+                    ExceptionManager.Throw("TODO: support channel on stop keyword", "IngameManagerV2");
+                    break;
+            }
+        }
+        #endregion
+        #region Etc
         public IEnumerator LetsPause(Pause pause)
         {
             _paused = true;
@@ -524,162 +697,7 @@ namespace ProjectMGG.Ingame
                 }
             }
         }
-
-        /// <summary>
-        /// Supports the Text Tag
-        /// </summary>
-        private IEnumerator ProcessText(string text)
-        {
-            const float TEXT_WEIGHT_VELOCITY = 0.04f;
-            bool completed = false;
-            int start = 0;
-
-            _tagIndex = 0;
-            _textTags.Clear();
-            Script.Keywords.StringLiteral.ApplyTag(text, ref _textTags);
-            //_textTagsDebug = _textTags.Select(x => x.ToString()).ToList();
-
-            Ease ease = Ease.Linear;
-            Enum.TryParse(SettingsManager.Settings.UI.TextEase, out ease);
-
-            while (!completed)
-            {
-                if (!_paused && _readAll)
-                {
-                    LetsTextTag(ContentUI, out completed, ref ease, ref start);
-                    TMPDOText(ContentUI, start, TEXT_WEIGHT_VELOCITY * (ContentUI.text.Length - start), ease);
-                    start = ContentUI.text.Length;
-                }
-                yield return null;
-            }
-        }
-
-        /// <summary>
-        /// Interpret Tag + Set Text on UI
-        /// </summary>
-        private void LetsTextTag(TextMeshProUGUI textUI, out bool completed, ref Ease ease, ref int startText)
-        {
-            completed = _tagIndex + 1 >= _textTags.Count;
-
-            if (_tagIndex >= _textTags.Count) return; //Something went wrong
-
-            TextTag tag = _textTags[_tagIndex];
-            if (_tagIndex == 0) textUI.text = tag.Text;
-            else textUI.text += tag.Text;
-
-            switch (tag.PrimaryData.Tag) //Dialogue
-            {
-                case "w":
-                    {
-                        float delay = 9999f;
-                        if (tag.PrimaryData.TagArgument != null) delay = (float)tag.PrimaryData.TagArgument;
-
-                        Pause pause = new Pause(delay, false);
-                        _actionAfterPause = new Action(() =>
-                        {
-                            _goToNext = false;
-                        });
-                        StartCoroutine(LetsPause(pause));
-                        break;
-                    }
-
-                case "p":
-                    {
-                        float delay = 9999f;
-                        if (tag.PrimaryData.TagArgument != null) delay = (float)tag.PrimaryData.TagArgument;
-
-                        Pause pause = new Pause(delay, false);
-                        _actionAfterPause = new Action(() =>
-                        {
-                            textUI.text += "\n";
-                            _goToNext = false;
-                        });
-                        StartCoroutine(LetsPause(pause));
-                        break;
-                    }
-                  
-                case "nw":
-                    {
-                        if (tag.PrimaryData.TagArgument != null)
-                        {
-                            float delay = (float)tag.PrimaryData.TagArgument;
-
-                            Pause pause = new Pause(delay, false);
-                            _actionAfterPause = new Action(() =>
-                            {
-                                textUI.text += "\n";
-                                _noWait = true;
-                                _goToNext = false;
-                            });
-                            StartCoroutine(LetsPause(pause));
-                        }
-                        else _noWait = true;
-                        break;
-                    }
-
-                case "fast":
-                    {
-                        startText = textUI.text.Length;
-                        break;
-                    }
-
-                case "done":
-                    {
-
-                        break;
-                    }
-
-                case "clear":
-                    {
-
-                        break;
-                    }
-
-                case "ease":
-                    {
-                        if (tag.PrimaryData.TagArgument != null)
-                        {
-                            string name = (string)tag.PrimaryData.TagArgument;
-                            Enum.TryParse(name, out ease);
-                        }
-                        break;
-                    }
-
-                //https://www.renpy.org/doc/html/text.html#dialogue-text-tags
-            }
-
-            foreach (var prefix in tag.PrefixDatas) //General
-            {
-                switch (prefix.Tag)
-                {
-                    case "a":
-                        {
-
-                            break;
-                        }
-
-                    case "alpha":
-                        {
-
-                            break;
-                        }
-
-                    case "alt":
-                        {
-
-                            break;
-                        }
-
-                    case "art":
-                        {
-
-                            break;
-                        }
-                }
-            }
-
-            _tagIndex++;
-        }
+        #endregion
         #endregion
         #region Keywords: Custom
         void Reeverb()

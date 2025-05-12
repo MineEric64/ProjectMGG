@@ -15,47 +15,47 @@ namespace ProjectMGG.Ingame.Script.Keywords
             object lValue = Lhs.Interpret();
             object rValue = Rhs.Interpret();
 
-            if (Kind == ArgumentKind.Equal && Datatype.IsBoolean(lValue) && Datatype.IsBoolean(rValue))
+            if (Kind == ArgumentKind.Equal && lValue is bool && rValue is bool)
             {
-                return Datatype.ToBoolean(lValue) == Datatype.ToBoolean(rValue);
+                return (bool)lValue == (bool)rValue;
             }
-            if (Kind == ArgumentKind.Equal && Datatype.IsNumber(lValue) && Datatype.IsNumber(rValue))
+            if (Kind == ArgumentKind.Equal && lValue is float && rValue is float)
             {
-                return Datatype.ToNumber(lValue) == Datatype.ToNumber(rValue);
+                return (float)lValue == (float)rValue;
             }
-            if (Kind == ArgumentKind.Equal && Datatype.IsString(lValue) && Datatype.IsString(rValue))
+            if (Kind == ArgumentKind.Equal && lValue is string && rValue is string)
             {
-                return Datatype.ToString(lValue) == Datatype.ToString(rValue);
-            }
-
-            if (Kind == ArgumentKind.NotEqual && Datatype.IsBoolean(lValue) && Datatype.IsBoolean(rValue))
-            {
-                return Datatype.ToBoolean(lValue) != Datatype.ToBoolean(rValue);
-            }
-            if (Kind == ArgumentKind.NotEqual && Datatype.IsNumber(lValue) && Datatype.IsNumber(rValue))
-            {
-                return Datatype.ToNumber(lValue) != Datatype.ToNumber(rValue);
-            }
-            if (Kind == ArgumentKind.NotEqual && Datatype.IsString(lValue) && Datatype.IsString(rValue))
-            {
-                return Datatype.ToString(lValue) != Datatype.ToString(rValue);
+                return (string)lValue == (string)rValue;
             }
 
-            if (Kind == ArgumentKind.LessThan && Datatype.IsNumber(lValue) && Datatype.IsNumber(rValue))
+            if (Kind == ArgumentKind.NotEqual && lValue is bool && rValue is bool)
             {
-                return Datatype.ToNumber(lValue) < Datatype.ToNumber(rValue);
+                return (bool)lValue != (bool)rValue;
             }
-            if (Kind == ArgumentKind.GreaterThan && Datatype.IsNumber(lValue) && Datatype.IsNumber(rValue))
+            if (Kind == ArgumentKind.NotEqual && lValue is float && rValue is float)
             {
-                return Datatype.ToNumber(lValue) > Datatype.ToNumber(rValue);
+                return (float)lValue != (float)rValue;
             }
-            if (Kind == ArgumentKind.LessOrEqual && Datatype.IsNumber(lValue) && Datatype.IsNumber(rValue))
+            if (Kind == ArgumentKind.NotEqual && lValue is string && rValue is string)
             {
-                return Datatype.ToNumber(lValue) <= Datatype.ToNumber(rValue);
+                return (string)lValue != (string)rValue;
             }
-            if (Kind == ArgumentKind.GreaterOrEqual && Datatype.IsNumber(lValue) && Datatype.IsNumber(rValue))
+
+            if (Kind == ArgumentKind.LessThan && lValue is float && rValue is float)
             {
-                return Datatype.ToNumber(lValue) >= Datatype.ToNumber(rValue);
+                return (float)lValue < (float)rValue;
+            }
+            if (Kind == ArgumentKind.GreaterThan && lValue is float && rValue is float)
+            {
+                return (float)lValue > (float)rValue;
+            }
+            if (Kind == ArgumentKind.LessOrEqual && lValue is float && rValue is float)
+            {
+                return (float)lValue <= (float)rValue;
+            }
+            if (Kind == ArgumentKind.GreaterOrEqual && lValue is float && rValue is float)
+            {
+                return (float)lValue >= (float)rValue;
             }
 
             return false;

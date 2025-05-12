@@ -14,11 +14,11 @@ namespace ProjectMGG.Ingame.Script.Keywords
             object obj = Sub.Interpret();
             object index = Index.Interpret();
 
-            if (Datatype.IsArray(obj) && Datatype.IsNumber(index))
+            if (Datatype.IsArray(obj) && index is float)
             {
                 return Datatype.GetValueOfArray(obj, index);
             }
-            if (Datatype.IsMap(obj) && Datatype.IsString(index))
+            if (Datatype.IsMap(obj) && index is string)
             {
                 return Datatype.GetValueOfMap(obj, index);
             }

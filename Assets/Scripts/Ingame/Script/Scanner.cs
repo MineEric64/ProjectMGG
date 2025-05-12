@@ -17,7 +17,6 @@ namespace ProjectMGG.Ingame.Script
         private static int _line;
         private static int _tab;
         private static int _tabPrev;
-        private static bool _isShow = false;
 
         public List<Token> Scan(string sourceCode)
         {
@@ -27,13 +26,11 @@ namespace ProjectMGG.Ingame.Script
             sourceCode = sourceCode.Replace("    ", "\t"); //indentation, TODO: is available for 3 space characters?
 
             bool needToExit = false;
-            bool firstKind = true; //for distinguish new line, TODO: remove this variable and use Token's Line Variable?
 
             _index = 0;
             _line = 1;
             _tab = 0;
             _tabPrev = 0;
-            _isShow = false;
 
             if (!ArgumentKinds.IsInitialized()) ArgumentKinds.Initialize();
 
@@ -47,7 +44,6 @@ namespace ProjectMGG.Ingame.Script
                 {
                     _line++;
                     _tab = 0;
-                    firstKind = true;
                 }
 
                 if (ch == '.' && _index + 1 < sourceCode.Length) //ex: .2
@@ -69,31 +65,21 @@ namespace ProjectMGG.Ingame.Script
 
                     case CharType.StringLiteral:
                         ProcessBlockEnd(ref result);
-
-                        //for distinguish dialog (the issue about new line)
-                        bool isPreviousString = result.Count > 0 && result.Last().Kind == ArgumentKind.StringLiteral;
-                        if (isPreviousString && !firstKind) result.Add(new Token(ArgumentKind.Unknown));
-
                         result.Add(ScanStringLiteral(sourceCode));
                         break;
 
                     case CharType.IdentifierAndKeyword:
                         ProcessBlockEnd(ref result);
-                        Token token = ScanIdentifierAndKeyword(sourceCode, out bool forShow);
+                        Token token = ScanIdentifierAndKeyword(sourceCode);
 
                         if (token == null)
                         {
                             _index++; //comment this if the game is stopped
-                                      //needToExit = true; //uncomment this if the game is stopped
+                            //needToExit = true; //uncomment this if the game is stopped
                             break;
                         }
 
                         result.Add(token);
-                        if (token.Kind == ArgumentKind.Show ||
-                            (token.Kind == ArgumentKind.Identifier &&
-                            token.Content == "scene") || token.Kind == ArgumentKind.Reeverb) _isShow = true;
-                        else if (forShow) result.Add(new Token(ArgumentKind.Unknown)); //for distinguish new line
-
                         break;
 
                     case CharType.OperatorAndPunctuator:
@@ -111,8 +97,6 @@ namespace ProjectMGG.Ingame.Script
                         needToExit = true;
                         break;
                 }
-
-                if (charType != CharType.WhiteSpace) firstKind = false;
             }
             if (!Loop(sourceCode)) //the code is already ended without EndOfToken (\0)
             {
@@ -205,20 +189,14 @@ namespace ProjectMGG.Ingame.Script
             return new Token(ArgumentKind.StringLiteral, content, _line);
         }
 
-        private Token ScanIdentifierAndKeyword(string sourceCode, out bool forShow)
+        private Token ScanIdentifierAndKeyword(string sourceCode)
         {
-            forShow = false;
             string content = string.Empty;
 
             while (Loop(sourceCode) && IsCharType(sourceCode[_index], CharType.IdentifierAndKeyword))
             {
                 content += sourceCode[_index];
                 _index += 1;
-            }
-            if (Loop(sourceCode) && _isShow && (sourceCode[_index] == '\r' || sourceCode[_index] == '\n'))
-            {
-                forShow = true;
-                _isShow = false;
             }
 
             if (Loop(sourceCode) && string.IsNullOrEmpty(content))

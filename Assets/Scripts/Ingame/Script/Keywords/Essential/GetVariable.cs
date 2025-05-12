@@ -24,11 +24,6 @@ namespace ProjectMGG.Ingame.Script.Keywords
             var glocal4 = IngameManagerV2.GetVariable(Name, ref IngameManagerV2.Local.Images, ref IngameManagerV2.Global.Images);
             if (glocal4 != null) return glocal4;
 
-            if (Interpreter.FunctionTable.ContainsKey(Name))
-            {
-                return Interpreter.FunctionTable[Name];
-            }
-
             if (IsCommand) return Name;
             return null;
         }

@@ -14,13 +14,13 @@ namespace ProjectMGG.Ingame.Script.Keywords
         {
             object value = Sub.Interpret();
 
-            if (Kind == ArgumentKind.Add && Datatype.IsNumber(value))
+            if (Kind == ArgumentKind.Add && value is float)
             {
-                return Math.Abs(Datatype.ToNumber(value));
+                return Math.Abs((float)value);
             }
-            if (Kind == ArgumentKind.Subtract && Datatype.IsNumber(value))
+            if (Kind == ArgumentKind.Subtract && value is float)
             {
-                return Datatype.ToNumber(value) * -1;
+                return (float)value * -1;
             }
             return 0.0;
         }

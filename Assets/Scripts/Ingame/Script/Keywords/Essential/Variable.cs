@@ -20,13 +20,11 @@ namespace ProjectMGG.Ingame.Script.Keywords
 
             if (Expression is Character character)
             {
-                character.NameVar = Name;
                 vars.Characters.Add(Name, character);
             }
             else
             {
                 vars.Others.Add(Name, Expression.Interpret());
-                //Interpreter.Local[Interpreter.Local.Count - 1][0][Name] = Expression.Interpret();
             }
         }
     }

@@ -17,32 +17,23 @@ namespace ProjectMGG.Ingame.Script.Keywords
             {
                 object result = Conditions[i].Interpret();
 
-                if (!Datatype.IsTrue(result))
+                if (Datatype.IsFalse(result))
                 {
                     continue;
                 }
 
-                Interpreter.Local[Interpreter.Local.Count - 1].Insert(0, new Dictionary<string, object>());
                 foreach (IStatement node in Blocks[i])
                 {
                     node.Interpret();
                 }
-                Interpreter.Local[Interpreter.Local.Count - 1].RemoveAt(0);
-                return;
-            }
-
-            if (ElseBlock.Count == 0)
-            {
                 return;
             }
 
             //else
-            Interpreter.Local[Interpreter.Local.Count - 1].Insert(0, new Dictionary<string, object>());
             foreach (IStatement node in ElseBlock)
             {
                 node.Interpret();
             }
-            Interpreter.Local[Interpreter.Local.Count - 1].RemoveAt(0);
         }
     }
 }

@@ -6,19 +6,19 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 {
     public class Attributes
     {
-        public string MainImage { get; set; }
-        public Dictionary<string, string> SubImages { get; set; }
+        public Texture2D MainImage { get; set; }
+        public Dictionary<string, Texture2D> SubImages { get; set; }
 
         public Attributes()
         {
-            MainImage = string.Empty;
-            SubImages = new Dictionary<string, string>();
+            MainImage = Texture2D.blackTexture;
+            SubImages = new Dictionary<string, Texture2D>();
         }
 
-        public Attributes(string mainImage)
+        public Attributes(Texture2D mainImage)
         {
             MainImage = mainImage;
-            SubImages = new Dictionary<string, string>();
+            SubImages = new Dictionary<string, Texture2D>();
         }
     }
 }

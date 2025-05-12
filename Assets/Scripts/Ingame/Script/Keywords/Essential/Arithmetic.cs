@@ -15,29 +15,31 @@ namespace ProjectMGG.Ingame.Script.Keywords
             object lValue = Lhs.Interpret();
             object rValue = Rhs.Interpret();
 
-            if (Kind == ArgumentKind.Add && Datatype.IsNumber(lValue) && Datatype.IsNumber(rValue))
+            if (Kind == ArgumentKind.Add && lValue is float && rValue is float)
             {
-                return Datatype.ToNumber(lValue) + Datatype.ToNumber(rValue);
+                return (float)lValue + (float)rValue;
             }
-            if (Kind == ArgumentKind.Add && Datatype.IsString(lValue) && Datatype.IsString(rValue))
+            if (Kind == ArgumentKind.Add && lValue is string && rValue is string)
             {
-                return Datatype.ToString(lValue) + Datatype.ToString(rValue);
+                return (string)lValue + (string)rValue;
             }
-            if (Kind == ArgumentKind.Subtract && Datatype.IsNumber(lValue) && Datatype.IsNumber(rValue))
+            if (Kind == ArgumentKind.Subtract && lValue is float && rValue is float)
             {
-                return Datatype.ToNumber(lValue) - Datatype.ToNumber(rValue);
+                return (float)lValue - (float)rValue;
             }
-            if (Kind == ArgumentKind.Multiply && Datatype.IsNumber(lValue) && Datatype.IsNumber(rValue))
+            if (Kind == ArgumentKind.Multiply && lValue is float && rValue is float)
             {
-                return Datatype.ToNumber(lValue) * Datatype.ToNumber(rValue);
+                return (float)lValue * (float)rValue;
             }
-            if (Kind == ArgumentKind.Divide && Datatype.IsNumber(lValue) && Datatype.IsNumber(rValue))
+            if (Kind == ArgumentKind.Divide && lValue is float && rValue is float)
             {
-                return Datatype.ToNumber(rValue) == 0 ? "INF" : Datatype.ToNumber(lValue) / Datatype.ToNumber(rValue);
+                if ((float)rValue == 0f) return float.PositiveInfinity;
+                return (float)lValue / (float)rValue;
             }
-            if (Kind == ArgumentKind.Modulo && Datatype.IsNumber(lValue) && Datatype.IsNumber(rValue))
+            if (Kind == ArgumentKind.Modulo && lValue is float && rValue is float)
             {
-                return Datatype.ToNumber(rValue) == 0 ? "NaN" : Datatype.ToNumber(lValue) % Datatype.ToNumber(rValue);
+                if ((float)rValue == 0f) return float.NaN;
+                return (float)lValue % (float) rValue;
             }
 
             ExceptionManager.Throw($"Invalid Arithmethic Expression '{lValue} {Kind.GetContent()} {rValue}'.", "Script/Arithmethic");

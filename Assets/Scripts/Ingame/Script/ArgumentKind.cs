@@ -37,9 +37,11 @@ namespace ProjectMGG.Ingame.Script
         [KindAttr("else")] Else,
         [KindAttr("#")] Comment,
         [KindAttr("jump")] Jump,
+        [KindAttr("call")] Call,
         [KindAttr("pause")] Pause,
 
         [KindAttr("Character")] Character,
+        [KindAttr("Solid")] Solid,
 
         [KindAttr("transform")] Transform,
         [KindAttr("xalign")] XAlign,
@@ -54,6 +56,7 @@ namespace ProjectMGG.Ingame.Script
         [KindAttr("Fade")] Fade,
 
         [KindAttr("play")] Play,
+        [KindAttr("stop")] Stop,
         [KindAttr("reeverb")] Reeverb,
 
         [KindAttr("and")] LogicalAnd,

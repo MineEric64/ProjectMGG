@@ -11,7 +11,34 @@ namespace ProjectMGG.Ingame.Script.Keywords
 
         public object Interpret()
         {
-            Debug.Log("Call -Function TODO");
+            string name = Sub.Interpret() as string;
+
+            if (string.IsNullOrEmpty(name))
+            {
+                ExceptionManager.Throw("The label name to call can't be null.", "Script/Interpreter");
+                return null;
+            }
+            bool success = Interpreter.FunctionTable.TryGetValue(name, out var point);
+
+            if (!success)
+            {
+                ExceptionManager.Throw($"Can't call because the label '{name}' doesn't exists.", "Script/Interpreter");
+                return null;
+            }
+
+            IngameManagerV2.Locals.Add(point.Name, new VariableCollection());
+            Interpreter.FramePointers.Push(Interpreter.CurrentPoint);
+            Interpreter.CurrentPoint = point;
+
+            foreach (IExpression arg in Arguments)
+            {
+                var variable = new Variable();
+
+                variable.Expression = arg;
+                //variable.Name = "?";
+                //variable.Interpret();
+            }
+            
             return null;
         }
     }

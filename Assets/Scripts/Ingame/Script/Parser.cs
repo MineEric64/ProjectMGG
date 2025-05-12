@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -90,30 +91,13 @@ namespace ProjectMGG.Ingame.Script
             _index = _tokens.Count - 1;
         }
 
-        //private Function ParseFunction()
-        //{
-        //    Function result = new Function();
-        //    SkipCurrent(ArgumentKind.Function);
-
-        //    result.Name = _tokens[_index].Content; //identifier
-        //    SkipCurrent(ArgumentKind.Identifier);
-
-        //    SkipCurrent(ArgumentKind.LeftParen);
-        //    if (_tokens[_index].Kind != ArgumentKind.RightParen)
-        //    {
-        //        do
-        //        {
-        //            result.Add(_tokens[_index].Content); //parameter
-        //            SkipCurrent(ArgumentKind.Identifier);
-        //        } while (SkipCurrentIf(ArgumentKind.Comma));
-        //    }
-        //    SkipCurrent(ArgumentKind.RightParen);
-
-        //    SkipCurrent(ArgumentKind.LeftBrace);
-        //    result.Block = ParseBlock();
-        //    SkipCurrent(ArgumentKind.RightBrace);
-        //    return result;
-        //}
+        /// <summary>
+        /// Check for selective argument in statement
+        /// </summary>
+        private bool IsUnknown(ArgumentKind kind, int offset)
+        {
+            return _index + offset < _tokens.Count && _tokens[_index + offset].Kind == kind && _tokens[_index + offset].Line == _tokens[_index + offset - 1].Line;
+        }
 
         private Function ParseFunction()
         {
@@ -148,7 +132,7 @@ namespace ProjectMGG.Ingame.Script
                         break;
 
                     case ArgumentKind.StringLiteral: //narration
-                        if (_index + 1 < _tokens.Count && _tokens[_index + 1].Kind == ArgumentKind.Unknown) //it's dialog
+                        if (IsUnknown(ArgumentKind.StringLiteral, 1)) //it's dialog (ex: "temporary character name" "text")
                         {
                             result.Add(ParseDialog());
                             break;
@@ -191,6 +175,10 @@ namespace ProjectMGG.Ingame.Script
                         result.Add(ParsePlay());
                         break;
 
+                    case ArgumentKind.Stop:
+                        result.Add(ParseStop());
+                        break;
+
                     case ArgumentKind.Reeverb:
                         result.Add(ParseReeverb());
                         break;
@@ -204,15 +192,19 @@ namespace ProjectMGG.Ingame.Script
                         break;
 
                     case ArgumentKind.Jump:
-                        //result.Add(ParseJump());
+                        result.Add(ParseJump());
+                        break;
+
+                    case ArgumentKind.Call:
+                        result.Add(ParseCall());
                         break;
 
                     case ArgumentKind.Pass:
-                        //result.Add(ParsePass());
+                        result.Add(ParsePass());
                         break;
 
                     case ArgumentKind.Return:
-                        //result.Add(ParseReturn());
+                        result.Add(ParseReturn());
                         break;
 
                     case ArgumentKind.Comment:
@@ -293,10 +285,10 @@ namespace ProjectMGG.Ingame.Script
             result.Attributes = ParseIdentifier(true);
             SkipCurrent(ArgumentKind.Assignment);
 
-            result.Path = ParseStringLiteral();
+            result.Data = ParseExpression();
             result.IsGlobal = isGlobal;
 
-            if (result.Path == null)
+            if (result.Data == null)
             {
                 ExceptionManager.Throw($"Image '{result.Tag}' is used before it has been assigned a value.", "Script/Parser");
             }
@@ -320,17 +312,42 @@ namespace ProjectMGG.Ingame.Script
                 }
                 result.Conditions.Add(condition);
 
-                SkipCurrent(ArgumentKind.LeftBrace);
+                SkipCurrent(ArgumentKind.Colon);
                 result.Blocks.Add(ParseBlock());
                 SkipCurrent(ArgumentKind.RightBrace);
             } while (SkipCurrentIf(ArgumentKind.Elif));
 
             if (SkipCurrentIf(ArgumentKind.Else))
             {
-                SkipCurrent(ArgumentKind.LeftBrace);
+                SkipCurrent(ArgumentKind.Colon);
                 result.ElseBlock = ParseBlock();
                 SkipCurrent(ArgumentKind.RightBrace);
             }
+
+            return result;
+        }
+
+        private Return ParseReturn()
+        {
+            Return result = new Return();
+            SkipCurrent(ArgumentKind.Return);
+
+            return result;
+        }
+
+        private Jump ParseJump()
+        {
+            Jump result = new Jump();
+            SkipCurrent(ArgumentKind.Jump);
+            result.Name = ParseExpression();
+
+            return result;
+        }
+
+        private Pass ParsePass()
+        {
+            Pass result = new Pass();
+            SkipCurrent(ArgumentKind.Pass);
 
             return result;
         }
@@ -351,9 +368,8 @@ namespace ProjectMGG.Ingame.Script
             string chrName = "";
             if (_tokens[_index].Kind == ArgumentKind.StringLiteral) chrName = ParseStringLiteral();
             else if (_tokens[_index].Kind == ArgumentKind.Identifier) chrName = ParseIdentifier();
-            result.CharacterName = chrName;
 
-            SkipCurrentIf(ArgumentKind.Unknown);
+            result.CharacterName = chrName;
             result.Content = ParseStringLiteral();
 
             return result;
@@ -365,9 +381,8 @@ namespace ProjectMGG.Ingame.Script
             result.Line = _tokens[_index].Line;
             SkipCurrent();
 
-            if (_tokens[_index].Kind == ArgumentKind.Identifier || _tokens[_index].Kind == ArgumentKind.LeftBracket)
+            if (IsUnknown(ArgumentKind.Identifier, 0) || IsUnknown(ArgumentKind.LeftBracket, 0))
                 result.Intervals = ParseExpression();
-            SkipCurrentIf(ArgumentKind.Unknown); //new line
 
             return result;
         }
@@ -392,6 +407,11 @@ namespace ProjectMGG.Ingame.Script
             return result;
         }
 
+        private bool IsShowKeyword(ArgumentKind kind)
+        {
+            return kind == ArgumentKind.At || kind == ArgumentKind.With;
+        }
+
         private Show ParseShow(bool isScene = false, bool isHide = false)
         {
             Show result = new Show();
@@ -402,11 +422,6 @@ namespace ProjectMGG.Ingame.Script
             result.Attributes = ParseIdentifier(true);
             result.IsScene = isScene;
             result.IsHide = isHide;
-
-            bool IsShowKeyword(ArgumentKind kind)
-            {
-                return kind == ArgumentKind.At || kind == ArgumentKind.With;
-            }
 
             while (IsShowKeyword(_tokens[_index].Kind))
             {
@@ -422,7 +437,6 @@ namespace ProjectMGG.Ingame.Script
                         break;
                 }
             }
-            SkipCurrentIf(ArgumentKind.Unknown);
 
             return result;
         }
@@ -509,20 +523,6 @@ namespace ProjectMGG.Ingame.Script
             SkipCurrentIf(ArgumentKind.RightBrace);
             return result;
         }
-
-        //private Return parseReturn()
-        //{
-        //    Return result = new Return();
-        //    SkipCurrent(ArgumentKind.Return);
-        //    result.setExpression(ParseExpression());
-
-        //    if (result.getExpression() == null)
-        //    {
-        //        throw new RuntimeException("return ���� ���� �����ϴ�.");
-        //    }
-        //    skipCurrent(tokens, Kind.Semicolon);
-        //    return result;
-        //}
 
         private ExpressionStatement ParseExpressionStatement()
         {
@@ -712,6 +712,10 @@ namespace ProjectMGG.Ingame.Script
                     result = ParseCharacter();
                     break;
 
+                case ArgumentKind.Solid:
+                    result = ParseSolid();
+                    break;
+
                 case ArgumentKind.LeftBracket:
                     result = ParseListLiteral();
                     break;
@@ -822,6 +826,7 @@ namespace ProjectMGG.Ingame.Script
         private GetVariable ParseIdentifier(bool allowWhiteSpace = false, bool allowKeyword = true)
         {
             GetVariable result = new GetVariable();
+            result.IsCommand = true;
 
             if (allowWhiteSpace)
             {
@@ -831,7 +836,8 @@ namespace ProjectMGG.Ingame.Script
                 {
                     if (!allowKeyword && _tokens[_index].Kind != ArgumentKind.Identifier) break;
                     if (_tokens[_index].Kind == ArgumentKind.Assignment) break; //image
-                    if (_tokens[_index].Kind == ArgumentKind.Unknown || _tokens[_index].Kind == ArgumentKind.At || _tokens[_index].Kind == ArgumentKind.With) break; //show
+                    if (IsShowKeyword(_tokens[_index].Kind)) break; //with
+                    if (_tokens[_index - 1].Line != _tokens[_index].Line) break; //new line
 
                     sb.Append(_tokens[_index].Content);
                     SkipCurrent();
@@ -879,20 +885,31 @@ namespace ProjectMGG.Ingame.Script
             }
         }
 
+        private ExpressionStatement ParseCall()
+        {
+            var result = new ExpressionStatement();
+            SkipCurrent(ArgumentKind.Call);
+            result.Expression = ParseCall(ParseExpression());
+            return result;
+        }
+
         private IExpression ParseCall(IExpression sub)
         {
             Call result = new Call();
             result.Sub = sub;
-            SkipCurrent(ArgumentKind.LeftParen);
 
-            if (_tokens[_index].Kind != ArgumentKind.RightParen)
+            if (SkipCurrentIf(ArgumentKind.LeftParen))
             {
-                do
+                if (_tokens[_index].Kind != ArgumentKind.RightParen)
                 {
-                    result.Arguments.Add(ParseExpression());
-                } while (SkipCurrentIf(ArgumentKind.Comma));
+                    do
+                    {
+                        result.Arguments.Add(ParseExpression());
+                    } while (SkipCurrentIf(ArgumentKind.Comma));
+                }
+                SkipCurrent(ArgumentKind.RightParen);
             }
-            SkipCurrent(ArgumentKind.RightParen);
+
             return result;
         }
 
@@ -907,16 +924,22 @@ namespace ProjectMGG.Ingame.Script
             return result;
         }
 
-        private IExpression ParseCharacter()
+        private void ParseClass(Dictionary<string, Action> essential, Dictionary<string, Action> args = null)
         {
-            Character result = new Character();
-
             SkipCurrent();
             SkipCurrent(ArgumentKind.LeftParen);
 
-            result.Name = ParseExpression();
-            SkipCurrentIf(ArgumentKind.Comma);
-
+            foreach (string key in essential.Keys.ToList())
+            {
+                if (_index + 1 < _tokens.Count)
+                {
+                    if (_tokens[_index + 1].Kind == ArgumentKind.Assignment) break;
+                    essential[key].Invoke();
+                    essential[key] = null;
+                }
+                SkipCurrentIf(ArgumentKind.Comma);
+            }
+            
             if (_tokens[_index].Kind != ArgumentKind.RightParen)
             {
                 do
@@ -925,26 +948,63 @@ namespace ProjectMGG.Ingame.Script
                     SkipCurrent();
                     SkipCurrent(ArgumentKind.Assignment);
 
-                    switch (varName)
+                    if (args != null && args.TryGetValue(varName, out var action))
                     {
-                        case "color":
-                            {
-                                string content = ParseExpression()?.Interpret() as string;
-
-                                if (!ColorUtility.TryParseHtmlString(content, out var color))
-                                {
-                                    ExceptionManager.Throw("Invalid Color format on Character Class.", "Script/Parser");
-                                    SkipCurrent();
-                                    break;
-                                }
-                                result.Colour = color;
-                                break;
-                            }
+                        action?.Invoke();
+                        args[varName] = null;
                     }
-
+                    else
+                    {
+                        SkipCurrent();
+                    }
                 } while (SkipCurrentIf(ArgumentKind.Comma));
             }
             SkipCurrent(ArgumentKind.RightParen);
+        }
+
+        private IExpression ParseCharacter()
+        {
+            Character result = new Character();
+            var essential = new Dictionary<string, Action>();
+            var args = new Dictionary<string, Action>();
+
+            essential.Add("name", () => result.Name = ParseExpression());
+            args.Add("color", () =>
+            {
+                string content = ParseExpression()?.Interpret() as string;
+
+                if (!ColorUtility.TryParseHtmlString(content, out var color))
+                {
+                    ExceptionManager.Throw("Invalid Color format on Character Class.", "Script/Parser");
+                    SkipCurrent();
+                    return;
+                }
+                result.Colour = color;
+            });
+            ParseClass(essential, args);
+
+            return result;
+        }
+
+        private IExpression ParseSolid()
+        {
+            Solid result = new Solid();
+            var essential = new Dictionary<string, Action>();
+
+            essential.Add("color", () =>
+            {
+                string content = ParseExpression()?.Interpret() as string;
+
+                if (!ColorUtility.TryParseHtmlString(content, out var color))
+                {
+                    ExceptionManager.Throw("Invalid Color format on Character Class.", "Script/Parser");
+                    SkipCurrent();
+                    return;
+                }
+                result.Colour = color;
+            });
+            ParseClass(essential);
+
             return result;
         }
 
@@ -1037,6 +1097,17 @@ namespace ProjectMGG.Ingame.Script
             SkipCurrent();
             result.Channel = ParseIdentifier();
             result.Path = ParseStringLiteral();
+
+            return result;
+        }
+
+        private IStatement ParseStop()
+        {
+            var result = new Stop();
+
+            result.Line = _tokens[_index].Line;
+            SkipCurrent();
+            result.Channel = ParseIdentifier();
 
             return result;
         }
