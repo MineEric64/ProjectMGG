@@ -26,20 +26,28 @@ namespace ProjectMGG.Ingame.Script.Keywords
                 return null;
             }
 
-            IngameManagerV2.Locals.Add(point.Name, new VariableCollection());
+            Interpret(point, Arguments);
+            return null;
+        }
+
+        public static void Interpret(Function point, List<IExpression> arguments = null)
+        {
+            if (!IngameManagerV2.Locals.ContainsKey(point.Name))
+                IngameManagerV2.Locals.Add(point.Name, new VariableCollection());
             Interpreter.FramePointers.Push(Interpreter.CurrentPoint);
             Interpreter.CurrentPoint = point;
 
-            foreach (IExpression arg in Arguments)
+            if (arguments != null)
             {
-                var variable = new Variable();
+                foreach (IExpression arg in arguments)
+                {
+                    var variable = new Variable();
 
-                variable.Expression = arg;
-                //variable.Name = "?";
-                //variable.Interpret();
+                    variable.Expression = arg;
+                    //variable.Name = "?";
+                    //variable.Interpret();
+                }
             }
-            
-            return null;
         }
     }
 }

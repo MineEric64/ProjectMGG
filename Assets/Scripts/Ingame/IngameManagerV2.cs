@@ -236,29 +236,6 @@ namespace ProjectMGG.Ingame
             return 0;
         }
 
-        public void TMPDOText(TextMeshProUGUI text, float start, float duration, Ease ease)
-        {
-            if (text.text.Length == 0)
-            {
-                _readAll = true;
-                return;
-            }
-
-            _readAll = false;
-            text.maxVisibleCharacters = 0;
-
-            bool stop = false;
-
-            Tween.Custom(start, text.text.Length, duration, x =>
-            {
-                if (!stop)
-                {
-                    if (!_readAll) text.maxVisibleCharacters = (int)x;
-                    else stop = true;
-                }
-            }, ease);
-        }
-
         #region Keywords: Renpy
         #region Texts
         public void LetsNarration(string content)
@@ -324,6 +301,27 @@ namespace ProjectMGG.Ingame
         }
 
         /// <summary>
+        /// without Text Typing effect
+        /// </summary>
+        public void ProcessTextImmediate(string text)
+        {
+            bool completed = false;
+            Ease ease = Ease.Linear;
+            int start = 0;
+
+            _tagIndex = 0;
+            _textTags.Clear();
+            Script.Keywords.StringLiteral.ApplyTag(text, ref _textTags);
+
+            while (!completed)
+            {
+                LetsTextTag(ContentUI, out completed, ref ease, ref start);
+            }
+            ContentUI.maxVisibleCharacters = ContentUI.text.Length;
+            _readAll = true;
+        }
+
+        /// <summary>
         /// Interpret Tag + Set Text on UI
         /// </summary>
         private void LetsTextTag(TextMeshProUGUI textUI, out bool completed, ref Ease ease, ref int startText)
@@ -340,10 +338,9 @@ namespace ProjectMGG.Ingame
             {
                 case "w":
                     {
-                        float delay = 9999f;
-                        if (tag.PrimaryData.TagArgument != null) delay = (float)tag.PrimaryData.TagArgument;
+                        Pause pause = Pause.GetInfinity();
+                        if (tag.PrimaryData.TagArgument != null) pause.Delay = (float)tag.PrimaryData.TagArgument;
 
-                        Pause pause = new Pause(delay, false);
                         _actionAfterPause = new Action(() =>
                         {
                             _goToNext = false;
@@ -354,10 +351,9 @@ namespace ProjectMGG.Ingame
 
                 case "p":
                     {
-                        float delay = 9999f;
-                        if (tag.PrimaryData.TagArgument != null) delay = (float)tag.PrimaryData.TagArgument;
+                        Pause pause = Pause.GetInfinity();
+                        if (tag.PrimaryData.TagArgument != null) pause.Delay = (float)tag.PrimaryData.TagArgument;
 
-                        Pause pause = new Pause(delay, false);
                         _actionAfterPause = new Action(() =>
                         {
                             textUI.text += "\n";
@@ -448,6 +444,29 @@ namespace ProjectMGG.Ingame
             }
 
             _tagIndex++;
+        }
+
+        public void TMPDOText(TextMeshProUGUI text, float start, float duration, Ease ease)
+        {
+            if (text.text.Length == 0)
+            {
+                _readAll = true;
+                return;
+            }
+
+            _readAll = false;
+            text.maxVisibleCharacters = 0;
+
+            bool stop = false;
+
+            Tween.Custom(start, text.text.Length, duration, x =>
+            {
+                if (!stop)
+                {
+                    if (!_readAll) text.maxVisibleCharacters = (int)x;
+                    else stop = true;
+                }
+            }, ease);
         }
         #endregion
         #region Images
@@ -687,14 +706,19 @@ namespace ProjectMGG.Ingame
 
             if (_paused) //if not paused already (for hard)
             {
-                _paused = false;
-                _goToNext = true;
+                StopPause();
+            }
+        }
 
-                if (_actionAfterPause != null)
-                {
-                    _actionAfterPause.Invoke();
-                    _actionAfterPause = null;
-                }
+        public void StopPause()
+        {
+            _paused = false;
+            _goToNext = true;
+
+            if (_actionAfterPause != null)
+            {
+                _actionAfterPause.Invoke();
+                _actionAfterPause = null;
             }
         }
         #endregion

@@ -28,5 +28,10 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
         {
             
         }
+
+        public static Pause GetInfinity(bool hard = false)
+        {
+            return new Pause(9999f, hard);
+        }
     }
 }

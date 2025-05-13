@@ -14,6 +14,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 
         public void Interpret()
         {
+            IngameManagerV2.Instance.StartCoroutine(IngameManagerV2.Instance.LetsPause(Pause.GetInfinity(true)));
             MenuChoiceManager.Instance.CreateMenu(this);
         }
     }
