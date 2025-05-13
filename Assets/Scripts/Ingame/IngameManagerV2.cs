@@ -97,7 +97,7 @@ namespace ProjectMGG.Ingame
 
             string sourceCode = File.ReadAllText(ScriptPath);
             _tokens = scanner.Scan(sourceCode);
-            //_tokensDebug = _tokens.Select(x => x.ToString()).ToList();
+            _tokensDebug = _tokens.Select(x => x.ToString()).ToList();
             parser = new Parser(ref _tokens);
 
             var syntaxTree = parser.Parse();

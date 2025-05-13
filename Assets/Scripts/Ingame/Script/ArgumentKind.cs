@@ -39,6 +39,7 @@ namespace ProjectMGG.Ingame.Script
         [KindAttr("jump")] Jump,
         [KindAttr("call")] Call,
         [KindAttr("pause")] Pause,
+        [KindAttr("menu")] Menu,
 
         [KindAttr("Character")] Character,
         [KindAttr("Solid")] Solid,

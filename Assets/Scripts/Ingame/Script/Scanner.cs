@@ -288,7 +288,11 @@ namespace ProjectMGG.Ingame.Script
         {
             if (_tab != _tabPrev)
             {
-                if (_tab < _tabPrev) result.Add(new Token(ArgumentKind.RightBrace));
+                if (_tab < _tabPrev)
+                {
+                    for (int i = _tab; i < _tabPrev; i++)
+                        result.Add(new Token(ArgumentKind.RightBrace));
+                }
                 _tabPrev = _tab;
             }
         }

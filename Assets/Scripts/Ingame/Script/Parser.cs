@@ -148,7 +148,10 @@ namespace ProjectMGG.Ingame.Script
                         }
                         else
                         {
-                            result.Add(ParseDialog());
+                            var dialog = ParseDialog();
+                           
+                            if (dialog == null) goto default; //it's real and pure identifier
+                            else result.Add(dialog);
                         }
                         break;
 
@@ -161,6 +164,10 @@ namespace ProjectMGG.Ingame.Script
 
                         if (t == null) return null;
                         result.Add(t);
+                        break;
+
+                    case ArgumentKind.Menu:
+                        result.Add(ParseMenu());
                         break;
 
                     case ArgumentKind.Show:
@@ -362,6 +369,8 @@ namespace ProjectMGG.Ingame.Script
 
         private Dialog ParseDialog()
         {
+            if (!IsUnknown(ArgumentKind.StringLiteral, 1)) return null; //it's not dialog
+
             Dialog result = new Dialog();
             result.Line = _tokens[_index].Line;
 
@@ -521,6 +530,44 @@ namespace ProjectMGG.Ingame.Script
             }
 
             SkipCurrentIf(ArgumentKind.RightBrace);
+            return result;
+        }
+
+        private IStatement ParseMenu(bool isGlobal = false)
+        {
+            var result = new Menu();
+
+            result.Line = _tokens[_index].Line;
+            SkipCurrent(ArgumentKind.Menu);
+            SkipCurrent(ArgumentKind.Colon); //equals to LeftBrace
+
+            Stack<bool> s = new Stack<bool>();
+            s.Push(true); //LeftBrace
+
+            while (s.Count > 0)
+            {
+                if (s.Count == 1) //StringLiteral (Menu Name)
+                {
+                    if (SkipCurrentIf(ArgumentKind.RightBrace))
+                    {
+                        s.Pop();
+                        break;
+                    }
+
+                    string name = ParseStringLiteral();
+                    result.Names.Add(name);
+                    result.Count++;
+                }
+                else //Blocks
+                {
+                    var block = ParseBlock();
+                    result.Blocks.Add(block);
+                }
+                
+                if (SkipCurrentIf(ArgumentKind.Colon)) s.Push(true);
+                else if (SkipCurrentIf(ArgumentKind.RightBrace)) s.Pop();
+            }
+
             return result;
         }
 
