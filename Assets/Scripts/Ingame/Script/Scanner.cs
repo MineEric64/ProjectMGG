@@ -172,9 +172,10 @@ namespace ProjectMGG.Ingame.Script
         private Token ScanStringLiteral(string sourceCode)
         {
             string content = string.Empty;
+            char seperator = sourceCode[_index]; //ex: 'Hello" world', "Hello' world"
             _index += 1;
 
-            while (Loop(sourceCode) && IsCharType(sourceCode[_index], CharType.StringLiteral))
+            while (Loop(sourceCode) && sourceCode[_index] != seperator)
             {
                 content += sourceCode[_index];
                 _index += 1;

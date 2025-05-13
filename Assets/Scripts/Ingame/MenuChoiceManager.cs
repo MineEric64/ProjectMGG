@@ -99,12 +99,7 @@ namespace ProjectMGG.Ingame
 
         public void OnClick(int index)
         {
-            var function = new Function();
-            function.Name = Interpreter.CurrentPoint.Name; //temporary, because of sharing variables
-            function.Block = _currentMenu.Blocks[index];
-            function.Block.Add(new Return());
-
-            Call.Interpret(function);
+            IngameManagerV2.Instance.CallInteriorBlock(_currentMenu.Blocks[index]);
             IngameManagerV2.Instance.StopPause();
             DeleteAllMenus();
         }

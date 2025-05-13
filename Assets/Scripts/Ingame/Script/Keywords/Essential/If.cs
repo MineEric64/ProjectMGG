@@ -17,23 +17,14 @@ namespace ProjectMGG.Ingame.Script.Keywords
             {
                 object result = Conditions[i].Interpret();
 
-                if (Datatype.IsFalse(result))
-                {
-                    continue;
-                }
+                if (Datatype.IsFalse(result)) continue;
 
-                foreach (IStatement node in Blocks[i])
-                {
-                    node.Interpret();
-                }
+                IngameManagerV2.Instance.CallInteriorBlock(Blocks[i]);
                 return;
             }
 
             //else
-            foreach (IStatement node in ElseBlock)
-            {
-                node.Interpret();
-            }
+            IngameManagerV2.Instance.CallInteriorBlock(ElseBlock);
         }
     }
 }

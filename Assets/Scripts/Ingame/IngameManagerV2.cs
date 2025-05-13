@@ -97,7 +97,7 @@ namespace ProjectMGG.Ingame
 
             string sourceCode = File.ReadAllText(ScriptPath);
             _tokens = scanner.Scan(sourceCode);
-            _tokensDebug = _tokens.Select(x => x.ToString()).ToList();
+            //_tokensDebug = _tokens.Select(x => x.ToString()).ToList();
             parser = new Parser(ref _tokens);
 
             var syntaxTree = parser.Parse();
@@ -720,6 +720,16 @@ namespace ProjectMGG.Ingame
                 _actionAfterPause.Invoke();
                 _actionAfterPause = null;
             }
+        }
+
+        public void CallInteriorBlock(IEnumerable<Script.Keywords.IStatement> block)
+        {
+            var function = new Script.Keywords.Function();
+            function.Name = Interpreter.CurrentPoint.Name; //temporary, because of sharing variables
+            function.Block = new List<Script.Keywords.IStatement>(block);
+            function.Block.Add(new Return());
+
+            Script.Keywords.Call.Interpret(function);
         }
         #endregion
         #endregion
