@@ -18,6 +18,7 @@ using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
 using ProjectMGG.Settings;
 
 using Path = System.IO.Path;
+using Unity.VisualScripting;
 
 namespace ProjectMGG.Ingame
 {
@@ -33,7 +34,7 @@ namespace ProjectMGG.Ingame
         private List<Token> _tokens;
         [SerializeField] private List<string> _tokensDebug;
         public static Dictionary<string, VariableCollection> Locals { get; private set; } //Key: FunctionName
-        public static VariableCollection Local => Locals?.GetValueOrDefault(Interpreter.CurrentPoint?.Name) ?? Global;
+        public static VariableCollection Local => Locals?.GetValueOrDefault(Interpreter.CurrentPoint?.Name ?? string.Empty) ?? Global;
         public static VariableCollection Global { get; private set; } = new VariableCollection();
         public Interpreter Interpreter;
 
@@ -293,7 +294,7 @@ namespace ProjectMGG.Ingame
                 if (!_paused && _readAll)
                 {
                     LetsTextTag(ContentUI, out completed, ref ease, ref start);
-                    TMPDOText(ContentUI, start, TEXT_WEIGHT_VELOCITY * (ContentUI.text.Length - start), ease);
+                    TMPDOText(ContentUI, start, TEXT_WEIGHT_VELOCITY, ease);
                     start = ContentUI.text.Length;
                 }
                 yield return null;
@@ -467,7 +468,7 @@ namespace ProjectMGG.Ingame
             _tagIndex++;
         }
 
-        public void TMPDOText(TextMeshProUGUI text, float start, float duration, Ease ease)
+        public void TMPDOText(TextMeshProUGUI text, float start, float velocity, Ease ease)
         {
             if (text.text.Length == 0)
             {
@@ -478,16 +479,51 @@ namespace ProjectMGG.Ingame
             _readAll = false;
             text.maxVisibleCharacters = 0;
 
-            bool stop = false;
+            float end = text.text.Length;
+            float duration = velocity * (text.text.Length - start);
 
-            Tween.Custom(start, text.text.Length, duration, x =>
+            bool stop = false;
+            bool predefined = false;
+
+            string textToShow = text.text.Substring((int)start);
+            int currentTextLength = text.text.Length;
+            predefined = textToShow.Contains('<') && textToShow.Contains('>');
+
+            if (predefined)
+            {
+                TextTag tag = _textTags[_tagIndex - 1];
+
+                start += textToShow.IndexOf(tag.Text);
+                end = start + tag.Text.Length;
+                duration = velocity * tag.Text.Length;
+
+                text.maxVisibleCharacters = (int)start;
+            }
+
+            Tween.Custom(start, end, duration * 5, x =>
             {
                 if (!stop)
                 {
                     if (!_readAll) text.maxVisibleCharacters = (int)x;
                     else stop = true;
                 }
-            }, ease);
+                else if (predefined)
+                {
+                    Debug.Log("WHY?");
+                    text.maxVisibleCharacters = currentTextLength;
+                    _readAll = true;
+                    predefined = false;
+                }
+            }, ease).OnComplete(() =>
+            {
+                if (predefined)
+                {
+                    Debug.Log(currentTextLength);
+                    text.maxVisibleCharacters = currentTextLength;
+                    _readAll = true;
+                }
+                Debug.Log(predefined);
+            });
         }
         #endregion
         #region Images
