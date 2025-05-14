@@ -331,8 +331,10 @@ namespace ProjectMGG.Ingame
             if (_tagIndex >= _textTags.Count) return; //Something went wrong
 
             TextTag tag = _textTags[_tagIndex];
-            if (_tagIndex == 0) textUI.text = tag.Text;
-            else textUI.text += tag.Text;
+            string textWithPredefined = tag.GetTextWithPredefined();
+
+            if (_tagIndex == 0) textUI.text = textWithPredefined;
+            else textUI.text += textWithPredefined;
 
             switch (tag.PrimaryData.Tag) //Dialogue
             {
@@ -438,6 +440,25 @@ namespace ProjectMGG.Ingame
                     case "art":
                         {
 
+                            break;
+                        }
+
+                    case "size":
+                        {
+                            //DEPRECATED!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            //I overlooked the Text Mesh Pro's Tag Text
+
+                            break;
+
+                            textUI.ForceMeshUpdate(true);
+
+                            for (int i = startText; i < textUI.textInfo.characterCount; i++)
+                            {
+                                var info = textUI.textInfo.characterInfo[i];
+                                float ds = (float)prefix.TagArgument;
+
+                                info.pointSize += ds;
+                            }
                             break;
                         }
                 }

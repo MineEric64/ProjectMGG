@@ -23,6 +23,8 @@ label start:
     scene classroom
     "어떡하면 좋을까."
 
+    "{b}bold!{/b}and{size=+20}size{/size}{s}good!{/s}"
+
     # scene homebase with Dissolve(1.0)
     show haru default at half_size with Dissolve(0.5)
     haru "[playername2], 반가워."

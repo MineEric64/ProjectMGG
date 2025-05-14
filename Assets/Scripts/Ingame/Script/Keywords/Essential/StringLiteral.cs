@@ -98,6 +98,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
             StringBuilder sb = new StringBuilder();
             StringBuilder tag = new StringBuilder();
             HashSet<TextTagData> prefixes = new HashSet<TextTagData>();
+            HashSet<TextTagData> predefined = new HashSet<TextTagData>();
 
             bool isTag = false;
 
@@ -115,7 +116,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
                     case '}':
                         if (tag.Length > 0)
                         {
-                            var textTag = InterpretTag(sb.ToString(), tag.ToString(), ref prefixes);
+                            var textTag = InterpretTag(sb.ToString(), tag.ToString(), ref prefixes, ref predefined);
                             if (textTag != null) textTags.Add(textTag);
 
                             sb.Clear();
@@ -145,9 +146,9 @@ namespace ProjectMGG.Ingame.Script.Keywords
         private static string[] _tagType2 = new string[] { "w", "p", "nw", "fast", "done", "clear", "ease" };
 
         /// <summary>
-        /// Interpret each text and tag like: {tag}{text}{tag2}{/tag}
+        /// Interpret each text and tag like: {tag}<tag3>{text}</tag3>{tag2}{/tag}
         /// </summary>
-        private static TextTag InterpretTag(string text, string tag, ref HashSet<TextTagData> prefixes)
+        private static TextTag InterpretTag(string text, string tag, ref HashSet<TextTagData> prefixes, ref HashSet<TextTagData> predefined)
         {
             TextTag textTag = new TextTag();
             TextTagData primary = new TextTagData();
@@ -162,15 +163,23 @@ namespace ProjectMGG.Ingame.Script.Keywords
             textTag.Text = text;
             textTag.PrimaryData = primary;
             textTag.PrefixDatas = new HashSet<TextTagData>(prefixes);
+            textTag.PrefixPredefined = new HashSet<TextTagData>(predefined);
 
             if (tag.StartsWith("/")) //Closed Tag
             {
                 string tag3 = tag.Substring(1);
-                prefixes.RemoveWhere(x => x.Tag == tag3);
+                
+                if (tagType == 0) prefixes.RemoveWhere(x => x.Tag == tag3);
+                else if (tagType == 2) predefined.RemoveWhere(x => x.Tag == tag3);
             }
             else if (tagType == 0) //General
             {
                 prefixes.Add(tag2);
+                if (string.IsNullOrWhiteSpace(text)) return null;
+            }
+            else if (tagType == 2) //Predefined
+            {
+                predefined.Add(tag2);
                 if (string.IsNullOrWhiteSpace(text)) return null;
             }
 
@@ -186,7 +195,6 @@ namespace ProjectMGG.Ingame.Script.Keywords
             var scanner = new Scanner();
             var tokens = scanner.Scan(tagContent);
 
-            bool isPredefined = false;
             bool isAssignment = false;
 
             foreach (var token in tokens)
@@ -201,10 +209,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
                                 tag.TagArgument = ParseTagArgument(arg);
                                 break;
                             }
-                            string predefined = _predefinedTags.Where(x => token.Content == x).FirstOrDefault();
-                            string predefined2 = _predefinedTags.Select(x => string.Concat("/", x)).Where(x => token.Content == x).FirstOrDefault();
 
-                            isPredefined = !string.IsNullOrEmpty(predefined) || !string.IsNullOrEmpty(predefined2);
                             tag.Tag = token.Content;
                             break;
                         }
@@ -222,12 +227,6 @@ namespace ProjectMGG.Ingame.Script.Keywords
                         {
                             if (isAssignment)
                             {
-                                //if (isPredefined)
-                                //{
-                                //    tag.Text = string.Concat(text, "<", tag.Tag, "=", token.Content, ">");
-                                //    tag.Tag = string.Empty;
-                                //    break;
-                                //}
                                 tag.TagArgument = ParseTagArgument(token);
 
                                 if (tag.TagArgument == null)
@@ -279,10 +278,17 @@ namespace ProjectMGG.Ingame.Script.Keywords
             return null;
         }
 
-        private static int ParseTextTagType(string tag)
+        private static int ParseTextTagType(string tag1)
         {
-            for (int i = 0; i < _tagType1.Length; i++) if (tag == _tagType1[i]) return 0; //General
-            for (int i = 0; i < _tagType2.Length; i++) if (tag == _tagType2[i]) return 1; //Dialogue
+            var tags = new List<string>() { tag1 };
+            if (tag1.StartsWith("/")) tags.Add(tag1.Substring(1));
+
+            foreach (string tag in tags)
+            {
+                for (int i = 0; i < _predefinedTags.Length; i++) if (tag == _predefinedTags[i]) return 2; //Predefined
+                for (int i = 0; i < _tagType1.Length; i++) if (tag == _tagType1[i]) return 0; //General
+                for (int i = 0; i < _tagType2.Length; i++) if (tag == _tagType2[i]) return 1; //Dialogue
+            }
             return -1;
         }
     }
