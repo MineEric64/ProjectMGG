@@ -18,7 +18,6 @@ using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
 using ProjectMGG.Settings;
 
 using Path = System.IO.Path;
-using Unity.VisualScripting;
 
 namespace ProjectMGG.Ingame
 {
@@ -64,8 +63,12 @@ namespace ProjectMGG.Ingame
         #endregion
         #region Text & UI
         private GraphicRaycaster _raycaster;
+        
         private bool _goToNext = true;
         private bool _readAll = false;
+        private int _maxAllTextLength = 0; //used on set _readAll to true
+        private int _maxTextLength = 0; //used on get _readAll
+
         private bool _paused = false;
         private bool _pausedHard = false;
         private Action _actionAfterPause = null;
@@ -125,7 +128,6 @@ namespace ProjectMGG.Ingame
             #endregion
 
             if (ContentUI.text.Length == 0) _readAll = true;
-            else if (!_readAll) _readAll = ContentUI.maxVisibleCharacters == ContentUI.text.Length;
             if (_readAll && _noWait)
             {
                 _goToNext = true;
@@ -140,22 +142,16 @@ namespace ProjectMGG.Ingame
                         {
                             if (!_pausedHard)
                             {
-                                _goToNext = true;
-                                _paused = false;
-
-                                if (_actionAfterPause != null)
-                                {
-                                    _actionAfterPause.Invoke();
-                                    _actionAfterPause = null;
-                                }
+                                StopPause();
+                                if (ContentUI.maxVisibleCharacters >= _maxTextLength) break;
                             }
-                            break;
                         }
 
                         if (!_readAll) //while reading
                         {
                             _readAll = true;
-                            ContentUI.maxVisibleCharacters = ContentUI.text.Length;
+                            ContentUI.maxVisibleCharacters = _maxAllTextLength;
+                            //ContentUI.maxVisibleCharacters = _maxTextLength; //uncomment this if you want to show users tag by tag
                         }
                         else //if already read then need to go to next
                         {
@@ -283,22 +279,28 @@ namespace ProjectMGG.Ingame
 
             _tagIndex = 0;
             _textTags.Clear();
+            _readAll = false;
+            _maxAllTextLength = text.Length;
             Script.Keywords.StringLiteral.ApplyTag(text, ref _textTags);
             //_textTagsDebug = _textTags.Select(x => x.ToString()).ToList();
 
             Ease ease = Ease.Linear;
-            Enum.TryParse(SettingsManager.Settings.UI.TextEase, out ease);
 
             while (!completed)
             {
-                if (!_paused && _readAll)
+                if (!_paused)
                 {
+                    Enum.TryParse(SettingsManager.Settings.UI.TextEase, out ease);
+
                     LetsTextTag(ContentUI, out completed, ref ease, ref start);
-                    TMPDOText(ContentUI, start, TEXT_WEIGHT_VELOCITY, ease);
-                    start = ContentUI.text.Length;
+                    yield return TMPDOText(ContentUI, start, TEXT_WEIGHT_VELOCITY, ease);
+
+                    start = _maxTextLength;
+                    //Debug.Log(start);
                 }
                 yield return null;
             }
+            _readAll = true;
         }
 
         /// <summary>
@@ -362,6 +364,7 @@ namespace ProjectMGG.Ingame
                             textUI.text += "\n";
                             _goToNext = false;
                         });
+                        
                         StartCoroutine(LetsPause(pause));
                         break;
                     }
@@ -400,16 +403,6 @@ namespace ProjectMGG.Ingame
                 case "clear":
                     {
 
-                        break;
-                    }
-
-                case "ease":
-                    {
-                        if (tag.PrimaryData.TagArgument != null)
-                        {
-                            string name = (string)tag.PrimaryData.TagArgument;
-                            Enum.TryParse(name, out ease);
-                        }
                         break;
                     }
 
@@ -462,68 +455,55 @@ namespace ProjectMGG.Ingame
                             }
                             break;
                         }
+
+                    case "ease":
+                        {
+                            if (prefix.TagArgument != null)
+                            {
+                                string name = (string)prefix.TagArgument;
+                                Enum.TryParse(name, out ease);
+                            }
+                            break;
+                        }
                 }
             }
 
             _tagIndex++;
         }
 
-        public void TMPDOText(TextMeshProUGUI text, float start, float velocity, Ease ease)
+        public IEnumerator TMPDOText(TextMeshProUGUI text, float start, float velocity, Ease ease)
         {
             if (text.text.Length == 0)
             {
                 _readAll = true;
-                return;
+                yield break;
+            }
+            if (_readAll)
+            {
+                yield break;
             }
 
-            _readAll = false;
-            text.maxVisibleCharacters = 0;
-
             float end = text.text.Length;
-            float duration = velocity * (text.text.Length - start);
+            float duration = 0f;
 
-            bool stop = false;
             bool predefined = false;
 
             string textToShow = text.text.Substring((int)start);
-            int currentTextLength = text.text.Length;
             predefined = textToShow.Contains('<') && textToShow.Contains('>');
 
             if (predefined)
             {
-                TextTag tag = _textTags[_tagIndex - 1];
-
-                start += textToShow.IndexOf(tag.Text);
-                end = start + tag.Text.Length;
-                duration = velocity * tag.Text.Length;
-
-                text.maxVisibleCharacters = (int)start;
+                text.ForceMeshUpdate(true);
+                end = text.textInfo.characterCount;
             }
+            duration = velocity * (end - start);
+            _maxTextLength = (int)end;
 
-            Tween.Custom(start, end, duration * 5, x =>
+            yield return Tween.Custom(start, end, duration, x =>
             {
-                if (!stop)
-                {
-                    if (!_readAll) text.maxVisibleCharacters = (int)x;
-                    else stop = true;
-                }
-                else if (predefined)
-                {
-                    Debug.Log("WHY?");
-                    text.maxVisibleCharacters = currentTextLength;
-                    _readAll = true;
-                    predefined = false;
-                }
-            }, ease).OnComplete(() =>
-            {
-                if (predefined)
-                {
-                    Debug.Log(currentTextLength);
-                    text.maxVisibleCharacters = currentTextLength;
-                    _readAll = true;
-                }
-                Debug.Log(predefined);
-            });
+                if (!_readAll) text.maxVisibleCharacters = (int)x;
+                else Tween.StopAll(); //temporary: how to stop this tween only? (TODO: goto issue)
+            }, ease).ToYieldInstruction();
         }
         #endregion
         #region Images
@@ -759,7 +739,15 @@ namespace ProjectMGG.Ingame
             _paused = true;
             _pausedHard = pause.Hard;
 
-            yield return new WaitForSeconds(pause.Delay);
+            float time = 0f;
+
+            while (time < pause.Delay)
+            {
+                if (!_pausedHard && _readAll) yield break;
+
+                time += Time.deltaTime;
+                yield return null;
+            }
 
             if (_paused) //if not paused already (for hard)
             {
@@ -820,7 +808,12 @@ namespace ProjectMGG.Ingame
                 if (block == null) yield break;
 
                 currentLine = block.Line;
-                if (currentLine > line) yield break;
+                if (currentLine >= line)
+                {
+                    _goToNext = true;
+                    _readAll = false;
+                    yield break;
+                }
 
                 _goToNext = true;
                 _readAll = true;

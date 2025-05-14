@@ -21,7 +21,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Commands
                 {
                     _try++;
                     Debug.Log("Failed to interpret 'GoTo' because of Ingame not loaded yet.");
-                    Tween.Custom(0f, 1f, 1f, _ => { }).OnComplete(() => { if (_try < 3) Interpret(); });
+                    Tween.Delay(1f, () => { if (_try < 3) Interpret(); });
                 }
             }
         }

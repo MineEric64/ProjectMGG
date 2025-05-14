@@ -142,8 +142,8 @@ namespace ProjectMGG.Ingame.Script.Keywords
         }
 
         private static string[] _predefinedTags = new string[] { "b", "color", "font", "i", "size", "space", "s", "u" };
-        private static string[] _tagType1 = new string[] { "a", "alpha", "alt", "art", "b", "color", "cps", "font", "i", "image", "k", "noalt", "outlinecolor", "plain", "rb", "rt", "s", "shader", "size", "space", "u", "vspace", "#"};
-        private static string[] _tagType2 = new string[] { "w", "p", "nw", "fast", "done", "clear", "ease" };
+        private static string[] _tagType1 = new string[] { "a", "alpha", "alt", "art", "b", "color", "cps", "font", "i", "image", "k", "noalt", "outlinecolor", "plain", "rb", "rt", "s", "shader", "size", "space", "u", "vspace", "#", "ease"};
+        private static string[] _tagType2 = new string[] { "w", "p", "nw", "fast", "done", "clear" };
 
         /// <summary>
         /// Interpret each text and tag like: {tag}<tag3>{text}</tag3>{tag2}{/tag}

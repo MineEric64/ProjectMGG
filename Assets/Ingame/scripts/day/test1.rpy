@@ -23,8 +23,6 @@ label start:
     scene classroom
     "어떡하면 좋을까."
 
-    "{b}bold! Hello world{/b}and Hello World{size=140}size Hello world{/size}{s}good! Hello world this is test abcdefghijklmnopqrstuvwxyz{/s}"
-
     # scene homebase with Dissolve(1.0)
     show haru default at half_size with Dissolve(0.5)
     haru "[playername2], 반가워."

@@ -105,7 +105,7 @@ label start:
 	show seah blush7 at seah_t1
 	seah "혹시 [playername2]씨는, 취미가 뭐에요···?"
 	"첫 이야기 중에서도 하필 대답하기 어려운 질문이라니···."
-	player "아, 저 애니메이션을 보면서 감상···하는 게 제 취미에요."
+	player "아, 저 애니메이션을 보면서 {ease=QuadOut}감상···{/ease}하는 게 제 취미에요."
 	"애니 본다는 게 부끄러운 건 아니잖아?"
 	show seah default at seah_t1
 	seah "오! 저 애니메이션 하나 본 거 있어요."
