@@ -194,8 +194,10 @@ namespace ProjectMGG.Ingame.Script.Keywords
             var tag = new TextTagData();
             var scanner = new Scanner();
             var tokens = scanner.Scan(tagContent);
+            var sb = new StringBuilder();
 
             bool isAssignment = false;
+            bool stop = false;
 
             foreach (var token in tokens)
             {
@@ -205,8 +207,14 @@ namespace ProjectMGG.Ingame.Script.Keywords
                         {
                             if (isAssignment)
                             {
-                                var arg = ReparseTagArgument(tagContent) ?? token;
-                                tag.TagArgument = ParseTagArgument(arg);
+                                tag.TagArgument = ParseTagArgument(token);
+
+                                if (tag.TagArgument == null)
+                                {
+                                    var arg = ReparseTagArgument(tagContent);
+                                    if (arg != null) tag.TagArgument = ParseTagArgument(arg);
+                                }
+                                if (tag.TagArgument != null) stop = true;
                                 break;
                             }
 
@@ -234,11 +242,14 @@ namespace ProjectMGG.Ingame.Script.Keywords
                                     var arg = ReparseTagArgument(tagContent);
                                     if (arg != null) tag.TagArgument = ParseTagArgument(arg);
                                 }
+                                if (tag.TagArgument != null) stop = true;
                                 //https://www.renpy.org/doc/html/text.html#dialogue-text-tags
                             }
                             break;
                         }
                 }
+
+                if (stop) break;
             }
 
             return tag;

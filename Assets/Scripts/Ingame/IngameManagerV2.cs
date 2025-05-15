@@ -334,6 +334,28 @@ namespace ProjectMGG.Ingame
             if (_tagIndex >= _textTags.Count) return; //Something went wrong
 
             TextTag tag = _textTags[_tagIndex];
+
+            //General (Predefined), for converting Tag Argument properly (Renpy script -> Text Mesh Pro script)
+            foreach (var prefix in tag.PrefixPredefined)
+            {
+                switch (prefix.Tag)
+                {
+                    case "size":
+                        {
+                            if (prefix.TagArgument is string s)
+                            {
+                                if (s.StartsWith("*") && float.TryParse(s.Substring(1), out float ratio))
+                                {
+                                    int ratioRound = (int)(ratio * 100);
+                                    prefix.TagArgument = string.Concat(ratioRound, "%");
+                                    Debug.Log(prefix.TagArgument);
+                                }
+                            }
+                            break;
+                        }
+                }
+            }
+
             string textWithPredefined = tag.GetTextWithPredefined();
 
             if (_tagIndex == 0) textUI.text = textWithPredefined;
@@ -433,7 +455,7 @@ namespace ProjectMGG.Ingame
 
                     case "art":
                         {
-
+                            
                             break;
                         }
 
@@ -441,7 +463,6 @@ namespace ProjectMGG.Ingame
                         {
                             //DEPRECATED!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                             //I overlooked the Text Mesh Pro's Tag Text
-
                             break;
 
                             textUI.ForceMeshUpdate(true);
