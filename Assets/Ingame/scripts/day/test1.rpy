@@ -34,8 +34,8 @@ label start:
     show haru happy1 at half_size
     "시간이 어느정도 지나자 내게 미소를 짓는 하루."
     play music "$/audio/Nemo Neko.mp3"
-    seah "ㄱㅡ그냥 제가 할게요오..."
-    hina "[playername2:야]아아!!!! 오랜만이다아!\n그동안 보고 싶었어 ㅜㅜ"
+    seah "ㄱㅡ그냥 제가 할게요{size=-15}오{/size}..."
+    hina "[playername2:야]아아!!!! 오랜만이다{size=-10}아{/size}!\n그동안 보고 싶었어 ㅜㅜ"
 
     reeverb
 	"그 순간 어떠한 소리도 들리지 않았다."

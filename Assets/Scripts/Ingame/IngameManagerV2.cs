@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -296,7 +297,6 @@ namespace ProjectMGG.Ingame
                     yield return TMPDOText(ContentUI, start, TEXT_WEIGHT_VELOCITY, ease);
 
                     start = _maxTextLength;
-                    //Debug.Log(start);
                 }
                 yield return null;
             }
@@ -335,8 +335,9 @@ namespace ProjectMGG.Ingame
 
             TextTag tag = _textTags[_tagIndex];
 
-            //General (Predefined), for converting Tag Argument properly (Renpy script -> Text Mesh Pro script)
-            foreach (var prefix in tag.PrefixPredefined)
+            //for converting Tag Argument properly (Renpy script -> Text Mesh Pro script)
+            #region Predefined
+            foreach (var prefix in tag.PrefixPredefined) //General
             {
                 switch (prefix.Tag)
                 {
@@ -348,13 +349,65 @@ namespace ProjectMGG.Ingame
                                 {
                                     int ratioRound = (int)(ratio * 100);
                                     prefix.TagArgument = string.Concat(ratioRound, "%");
-                                    Debug.Log(prefix.TagArgument);
                                 }
                             }
                             break;
                         }
                 }
             }
+
+            switch (tag.PrimaryData.Tag) //Dialogue
+            {
+                case "sg":
+                    {
+                        var sb = new StringBuilder();
+                        float x = 0f;
+                        bool multiply = false;
+
+                        if (tag.PrimaryData.TagArgument is string s)
+                        {
+                            if (s.StartsWith("*") && float.TryParse(s.Substring(1), out x)) multiply = true;
+                            else float.TryParse(s, out x);
+                        }
+
+                        if (x != 0f)
+                        {
+                            float currentX = x;
+
+                            for (int i = 0; i < tag.Text.Length; i++)
+                            {
+                                sb.Append(tag.Text[i]);
+
+                                if (i != tag.Text.Length - 1)
+                                {
+                                    sb.Append("<size=");
+                                    
+                                    if (multiply)
+                                    {
+                                        currentX *= x;
+                                        int ratioRound = (int)(currentX * 100);
+
+                                        sb.Append(ratioRound);
+                                        sb.Append("%");
+                                    }
+                                    else
+                                    {
+                                        currentX += x;
+
+                                        if (x > 0f) sb.Append("+");
+                                        sb.Append((int)currentX);
+                                    }
+
+                                    sb.Append(">");
+                                }
+                            }
+                            tag.Text = sb.ToString();
+                        }
+
+                        break;
+                    }
+            }
+            #endregion
 
             string textWithPredefined = tag.GetTextWithPredefined();
 

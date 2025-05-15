@@ -142,8 +142,12 @@ namespace ProjectMGG.Ingame.Script.Keywords
         }
 
         private static string[] _predefinedTags = new string[] { "b", "color", "font", "i", "size", "space", "s", "u" };
-        private static string[] _tagType1 = new string[] { "a", "alpha", "alt", "art", "b", "color", "cps", "font", "i", "image", "k", "noalt", "outlinecolor", "plain", "rb", "rt", "s", "shader", "size", "space", "u", "vspace", "#", "ease"};
+
+        private static string[] _tagType1 = new string[] { "a", "alpha", "alt", "art", "b", "color", "cps", "font", "i", "image", "k", "noalt", "outlinecolor", "plain", "rb", "rt", "s", "shader", "size", "space", "u", "vspace", "#"};
+        private static string[] _tagTypeCustom1 = new string[] { "ease" };
+
         private static string[] _tagType2 = new string[] { "w", "p", "nw", "fast", "done", "clear" };
+        private static string[] _tagTypeCustom2 = new string[] { "sg" };
 
         /// <summary>
         /// Interpret each text and tag like: {tag}<tag3>{text}</tag3>{tag2}{/tag}
@@ -297,8 +301,12 @@ namespace ProjectMGG.Ingame.Script.Keywords
             foreach (string tag in tags)
             {
                 for (int i = 0; i < _predefinedTags.Length; i++) if (tag == _predefinedTags[i]) return 2; //Predefined
+
                 for (int i = 0; i < _tagType1.Length; i++) if (tag == _tagType1[i]) return 0; //General
+                for (int i = 0; i < _tagTypeCustom1.Length; i++) if (tag == _tagTypeCustom1[i]) return 0; //General (Custom)
+
                 for (int i = 0; i < _tagType2.Length; i++) if (tag == _tagType2[i]) return 1; //Dialogue
+                for (int i = 0; i < _tagTypeCustom2.Length; i++) if (tag == _tagTypeCustom2[i]) return 1; //Dialogue (Custom)
             }
             return -1;
         }
