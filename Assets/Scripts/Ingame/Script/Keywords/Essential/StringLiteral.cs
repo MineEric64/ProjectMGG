@@ -179,12 +179,12 @@ namespace ProjectMGG.Ingame.Script.Keywords
             else if (tagType == 0) //General
             {
                 prefixes.Add(tag2);
-                if (string.IsNullOrWhiteSpace(text)) return null;
+                if (string.IsNullOrEmpty(text)) return null;
             }
             else if (tagType == 2) //Predefined
             {
                 predefined.Add(tag2);
-                if (string.IsNullOrWhiteSpace(text)) return null;
+                if (string.IsNullOrEmpty(text)) return null;
             }
 
             return textTag;
