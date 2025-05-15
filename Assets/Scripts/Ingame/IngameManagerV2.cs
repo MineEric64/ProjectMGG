@@ -282,6 +282,7 @@ namespace ProjectMGG.Ingame
             _textTags.Clear();
             _readAll = false;
             _maxAllTextLength = text.Length;
+
             Script.Keywords.StringLiteral.ApplyTag(text, ref _textTags);
             //_textTagsDebug = _textTags.Select(x => x.ToString()).ToList();
 
@@ -298,7 +299,10 @@ namespace ProjectMGG.Ingame
 
                     start = _maxTextLength;
                 }
-                yield return null;
+
+                //GoTo
+                if (!completed) yield return null;
+                if (completed && _readAll) ContentUI.maxVisibleCharacters = _maxAllTextLength;
             }
             _readAll = true;
         }
@@ -573,10 +577,11 @@ namespace ProjectMGG.Ingame
             duration = velocity * (end - start);
             _maxTextLength = (int)end;
 
-            yield return Tween.Custom(start, end, duration, x =>
+            var id = Guid.NewGuid().ToString();
+            yield return Tween.Custom(id, start, end, duration, (string target, float x) =>
             {
                 if (!_readAll) text.maxVisibleCharacters = (int)x;
-                else Tween.StopAll(); //temporary: how to stop this tween only? (TODO: goto issue)
+                else Tween.StopAll(id);
             }, ease).ToYieldInstruction();
         }
         #endregion
