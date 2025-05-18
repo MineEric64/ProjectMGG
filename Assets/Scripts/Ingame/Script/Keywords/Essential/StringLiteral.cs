@@ -103,9 +103,6 @@ namespace ProjectMGG.Ingame.Script.Keywords
 
             bool isTag = false;
 
-            //ExceptionManager.Throw($"The text tag '?' is not defined.", "Script/Interpreter/StringLiteral");
-            //TODO: https://www.renpy.org/doc/html/text.html#dialogue-text-tags
-
             foreach (char ch in value)
             {
                 switch (ch)
@@ -142,6 +139,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
             }
         }
 
+        //https://www.renpy.org/doc/html/text.html#dialogue-text-tags
         private static string[] _predefinedTags = new string[] { "b", "color", "font", "i", "size", "space", "s", "u" };
         private static string[] _predefinedCustom = new string[] { "sg" };
 
@@ -200,6 +198,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
                 predefinedCustom.Add(tag2);
                 if (string.IsNullOrEmpty(text)) return null;
             }
+            //else if (tagType == -1) ExceptionManager.Throw($"The text tag '{tag}' is not defined.", "Script/Interpreter/StringLiteral");
 
             return textTag;
         }
