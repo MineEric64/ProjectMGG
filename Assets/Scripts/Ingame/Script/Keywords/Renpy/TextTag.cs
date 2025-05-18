@@ -7,9 +7,12 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
     public class TextTag
     {
         public string Text { get; set; } = string.Empty;
+
         public TextTagData PrimaryData { get; set; } = new TextTagData();
         public HashSet<TextTagData> PrefixDatas { get; set; } = new HashSet<TextTagData>();
+
         public HashSet<TextTagData> PrefixPredefined { get; set; } = new HashSet<TextTagData>();
+        public HashSet<TextTagData> PrefixPredefinedCustom { get; set; } = new HashSet<TextTagData>();
 
         public TextTag()
         {

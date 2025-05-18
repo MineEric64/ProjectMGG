@@ -19,6 +19,7 @@ using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
 using ProjectMGG.Settings;
 
 using Path = System.IO.Path;
+using Unity.VisualScripting;
 
 namespace ProjectMGG.Ingame
 {
@@ -33,6 +34,7 @@ namespace ProjectMGG.Ingame
         #region Script & TextTag
         private List<Token> _tokens;
         [SerializeField] private List<string> _tokensDebug;
+        public static Ease DefaultEase { get; private set; } = Ease.Linear;
         public static Dictionary<string, VariableCollection> Locals { get; private set; } //Key: FunctionName
         public static VariableCollection Local => Locals?.GetValueOrDefault(Interpreter.CurrentPoint?.Name ?? string.Empty) ?? Global;
         public static VariableCollection Global { get; private set; } = new VariableCollection();
@@ -88,6 +90,7 @@ namespace ProjectMGG.Ingame
             Instance = this;
             Locals = new Dictionary<string, VariableCollection>();
             Global = new VariableCollection();
+            if (Enum.TryParse(SettingsManager.Settings.UI.TextEase, out Ease ease)) DefaultEase = ease;
 
             //Script
             var scanner = new Scanner();
@@ -274,9 +277,8 @@ namespace ProjectMGG.Ingame
         /// </summary>
         private IEnumerator ProcessText(string text)
         {
-            const float TEXT_WEIGHT_VELOCITY = 0.04f;
             bool completed = false;
-            int start = 0;
+            TextTagOption option = new TextTagOption();
 
             _tagIndex = 0;
             _textTags.Clear();
@@ -286,18 +288,17 @@ namespace ProjectMGG.Ingame
             Script.Keywords.StringLiteral.ApplyTag(text, ref _textTags);
             //_textTagsDebug = _textTags.Select(x => x.ToString()).ToList();
 
-            Ease ease = Ease.Linear;
-
             while (!completed)
             {
                 if (!_paused)
                 {
-                    Enum.TryParse(SettingsManager.Settings.UI.TextEase, out ease);
+                    option.Ease = DefaultEase;
+                    option.CPS = 25f;
 
-                    LetsTextTag(ContentUI, out completed, ref ease, ref start);
-                    yield return TMPDOText(ContentUI, start, TEXT_WEIGHT_VELOCITY, ease);
+                    LetsTextTag(ContentUI, out completed, ref option);
+                    yield return TMPDOText(ContentUI, option.StartIndex, option.CPS, option.Ease);
 
-                    start = _maxTextLength;
+                    option.StartIndex = _maxTextLength;
                 }
 
                 //GoTo
@@ -313,8 +314,7 @@ namespace ProjectMGG.Ingame
         public void ProcessTextImmediate(string text)
         {
             bool completed = false;
-            Ease ease = Ease.Linear;
-            int start = 0;
+            TextTagOption option = new TextTagOption();
 
             _tagIndex = 0;
             _textTags.Clear();
@@ -322,7 +322,7 @@ namespace ProjectMGG.Ingame
 
             while (!completed)
             {
-                LetsTextTag(ContentUI, out completed, ref ease, ref start);
+                LetsTextTag(ContentUI, out completed, ref option);
             }
             ContentUI.maxVisibleCharacters = ContentUI.text.Length;
             _readAll = true;
@@ -331,7 +331,7 @@ namespace ProjectMGG.Ingame
         /// <summary>
         /// Interpret Tag + Set Text on UI
         /// </summary>
-        private void LetsTextTag(TextMeshProUGUI textUI, out bool completed, ref Ease ease, ref int startText)
+        private void LetsTextTag(TextMeshProUGUI textUI, out bool completed, ref TextTagOption option)
         {
             completed = _tagIndex + 1 >= _textTags.Count;
 
@@ -360,56 +360,62 @@ namespace ProjectMGG.Ingame
                 }
             }
 
-            switch (tag.PrimaryData.Tag) //Dialogue
+            foreach (var prefix in tag.PrefixPredefinedCustom) //General (Custom)
             {
-                case "sg":
-                    {
-                        var sb = new StringBuilder();
-                        float x = 0f;
-                        bool multiply = false;
-
-                        if (tag.PrimaryData.TagArgument is string s)
+                switch (prefix.Tag)
+                {
+                    case "sg":
                         {
-                            if (s.StartsWith("*") && float.TryParse(s.Substring(1), out x)) multiply = true;
-                            else float.TryParse(s, out x);
-                        }
+                            var sb = new StringBuilder();
+                            float x = 0f;
+                            bool multiply = false;
 
-                        if (x != 0f)
-                        {
-                            float currentX = x;
-
-                            for (int i = 0; i < tag.Text.Length; i++)
+                            if (prefix.TagArgument is string s)
                             {
-                                sb.Append(tag.Text[i]);
+                                if (s.StartsWith("*") && float.TryParse(s.Substring(1), out x)) multiply = true;
+                                else float.TryParse(s, out x);
+                            }
 
-                                if (i != tag.Text.Length - 1)
+                            if (x != 0f)
+                            {
+                                float currentX = x;
+
+                                for (int i = 0; i < tag.Text.Length; i++)
                                 {
-                                    sb.Append("<size=");
-                                    
-                                    if (multiply)
-                                    {
-                                        currentX *= x;
-                                        int ratioRound = (int)(currentX * 100);
+                                    sb.Append(tag.Text[i]);
 
-                                        sb.Append(ratioRound);
-                                        sb.Append("%");
+                                    if (i != tag.Text.Length - 1)
+                                    {
+                                        sb.Append("<size=");
+
+                                        if (multiply)
+                                        {
+                                            currentX *= x;
+                                            int ratioRound = (int)(currentX * 100);
+
+                                            sb.Append(ratioRound);
+                                            sb.Append("%");
+                                        }
+                                        else
+                                        {
+                                            currentX += x;
+
+                                            if (x > 0f) sb.Append("+");
+                                            sb.Append((int)currentX);
+                                        }
+
+                                        sb.Append(">");
                                     }
                                     else
                                     {
-                                        currentX += x;
-
-                                        if (x > 0f) sb.Append("+");
-                                        sb.Append((int)currentX);
+                                        sb.Append("<size=100%>");
                                     }
-
-                                    sb.Append(">");
                                 }
+                                tag.Text = sb.ToString();
                             }
-                            tag.Text = sb.ToString();
+                            break;
                         }
-
-                        break;
-                    }
+                }
             }
             #endregion
 
@@ -469,7 +475,7 @@ namespace ProjectMGG.Ingame
 
                 case "fast":
                     {
-                        startText = textUI.text.Length;
+                        option.StartIndex = textUI.text.Length;
                         break;
                     }
 
@@ -516,6 +522,23 @@ namespace ProjectMGG.Ingame
                             break;
                         }
 
+                    case "cps":
+                        {
+                            float x = 0f;
+                            bool multiply = false;
+
+                            if (prefix.TagArgument is string s)
+                            {
+                                if (s.StartsWith("*") && float.TryParse(s.Substring(1), out x)) multiply = true;
+                                else float.TryParse(s, out x);
+                            }
+
+                            if (multiply) option.CPS *= x;
+                            else option.CPS = x;
+
+                            break;
+                        }
+
                     case "size":
                         {
                             //DEPRECATED!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -524,7 +547,7 @@ namespace ProjectMGG.Ingame
 
                             textUI.ForceMeshUpdate(true);
 
-                            for (int i = startText; i < textUI.textInfo.characterCount; i++)
+                            for (int i = option.StartIndex; i < textUI.textInfo.characterCount; i++)
                             {
                                 var info = textUI.textInfo.characterInfo[i];
                                 float ds = (float)prefix.TagArgument;
@@ -539,7 +562,7 @@ namespace ProjectMGG.Ingame
                             if (prefix.TagArgument != null)
                             {
                                 string name = (string)prefix.TagArgument;
-                                Enum.TryParse(name, out ease);
+                                if (Enum.TryParse(name, out Ease ease)) option.Ease = ease;
                             }
                             break;
                         }
@@ -549,17 +572,14 @@ namespace ProjectMGG.Ingame
             _tagIndex++;
         }
 
-        public IEnumerator TMPDOText(TextMeshProUGUI text, float start, float velocity, Ease ease)
+        public IEnumerator TMPDOText(TextMeshProUGUI text, float start, float cps, Ease ease)
         {
             if (text.text.Length == 0)
             {
                 _readAll = true;
                 yield break;
             }
-            if (_readAll)
-            {
-                yield break;
-            }
+            if (_readAll) yield break;
 
             float end = text.text.Length;
             float duration = 0f;
@@ -574,8 +594,16 @@ namespace ProjectMGG.Ingame
                 text.ForceMeshUpdate(true);
                 end = text.textInfo.characterCount;
             }
-            duration = velocity * (end - start);
+
+            if (cps > 0f) duration = (1 / cps) * (end - start);
+            else duration = 0f;
             _maxTextLength = (int)end;
+
+            if (duration == 0f)
+            {
+                text.maxVisibleCharacters = _maxTextLength;
+                yield break;
+            }
 
             var id = Guid.NewGuid().ToString();
             yield return Tween.Custom(id, start, end, duration, (string target, float x) =>

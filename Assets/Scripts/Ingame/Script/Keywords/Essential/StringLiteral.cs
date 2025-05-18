@@ -99,6 +99,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
             StringBuilder tag = new StringBuilder();
             HashSet<TextTagData> prefixes = new HashSet<TextTagData>();
             HashSet<TextTagData> predefined = new HashSet<TextTagData>();
+            HashSet<TextTagData> predefinedCustom = new HashSet<TextTagData>();
 
             bool isTag = false;
 
@@ -116,7 +117,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
                     case '}':
                         if (tag.Length > 0)
                         {
-                            var textTag = InterpretTag(sb.ToString(), tag.ToString(), ref prefixes, ref predefined);
+                            var textTag = InterpretTag(sb.ToString(), tag.ToString(), ref prefixes, ref predefined, ref predefinedCustom);
                             if (textTag != null) textTags.Add(textTag);
 
                             sb.Clear();
@@ -142,17 +143,18 @@ namespace ProjectMGG.Ingame.Script.Keywords
         }
 
         private static string[] _predefinedTags = new string[] { "b", "color", "font", "i", "size", "space", "s", "u" };
+        private static string[] _predefinedCustom = new string[] { "sg" };
 
-        private static string[] _tagType1 = new string[] { "a", "alpha", "alt", "art", "b", "color", "cps", "font", "i", "image", "k", "noalt", "outlinecolor", "plain", "rb", "rt", "s", "shader", "size", "space", "u", "vspace", "#"};
+        private static string[] _tagType1 = new string[] { "a", "alpha", "alt", "art", "b", "color", "cps", "font", "i", "image", "k", "noalt", "outlinecolor", "plain", "rb", "rt", "s", "shader", "size", "space", "u", "vspace"};
         private static string[] _tagTypeCustom1 = new string[] { "ease" };
 
         private static string[] _tagType2 = new string[] { "w", "p", "nw", "fast", "done", "clear" };
-        private static string[] _tagTypeCustom2 = new string[] { "sg" };
+        //private static string[] _tagTypeCustom2 = new string[] { };
 
         /// <summary>
         /// Interpret each text and tag like: {tag}<tag3>{text}</tag3>{tag2}{/tag}
         /// </summary>
-        private static TextTag InterpretTag(string text, string tag, ref HashSet<TextTagData> prefixes, ref HashSet<TextTagData> predefined)
+        private static TextTag InterpretTag(string text, string tag, ref HashSet<TextTagData> prefixes, ref HashSet<TextTagData> predefined, ref HashSet<TextTagData> predefinedCustom)
         {
             TextTag textTag = new TextTag();
             TextTagData primary = new TextTagData();
@@ -168,13 +170,20 @@ namespace ProjectMGG.Ingame.Script.Keywords
             textTag.PrimaryData = primary;
             textTag.PrefixDatas = new HashSet<TextTagData>(prefixes);
             textTag.PrefixPredefined = new HashSet<TextTagData>(predefined);
+            textTag.PrefixPredefinedCustom = new HashSet<TextTagData>(predefinedCustom);
 
             if (tag.StartsWith("/")) //Closed Tag
             {
                 string tag3 = tag.Substring(1);
-                
+
+                if (tag3.StartsWith("#")) return textTag; //Empty Tag
                 if (tagType == 0) prefixes.RemoveWhere(x => x.Tag == tag3);
                 else if (tagType == 2) predefined.RemoveWhere(x => x.Tag == tag3);
+                else if (tagType == 3) predefinedCustom.RemoveWhere(x => x.Tag == tag3);
+            }
+            else if (tag.StartsWith("#")) //Empty Tag
+            {
+                return textTag;
             }
             else if (tagType == 0) //General
             {
@@ -184,6 +193,11 @@ namespace ProjectMGG.Ingame.Script.Keywords
             else if (tagType == 2) //Predefined
             {
                 predefined.Add(tag2);
+                if (string.IsNullOrEmpty(text)) return null;
+            }
+            else if (tagType == 3) //Predefined (Custom)
+            {
+                predefinedCustom.Add(tag2);
                 if (string.IsNullOrEmpty(text)) return null;
             }
 
@@ -301,12 +315,13 @@ namespace ProjectMGG.Ingame.Script.Keywords
             foreach (string tag in tags)
             {
                 for (int i = 0; i < _predefinedTags.Length; i++) if (tag == _predefinedTags[i]) return 2; //Predefined
+                for (int i = 0; i < _predefinedCustom.Length; i++) if (tag == _predefinedCustom[i]) return 3; //Predefined (Custom)
 
                 for (int i = 0; i < _tagType1.Length; i++) if (tag == _tagType1[i]) return 0; //General
                 for (int i = 0; i < _tagTypeCustom1.Length; i++) if (tag == _tagTypeCustom1[i]) return 0; //General (Custom)
 
                 for (int i = 0; i < _tagType2.Length; i++) if (tag == _tagType2[i]) return 1; //Dialogue
-                for (int i = 0; i < _tagTypeCustom2.Length; i++) if (tag == _tagTypeCustom2[i]) return 1; //Dialogue (Custom)
+                //for (int i = 0; i < _tagTypeCustom2.Length; i++) if (tag == _tagTypeCustom2[i]) return 1; //Dialogue (Custom)
             }
             return -1;
         }
