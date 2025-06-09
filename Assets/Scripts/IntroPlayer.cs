@@ -53,8 +53,8 @@ namespace ProjectMGG
         void Start()
         {
             Instance = this;
-            SCREEN_WEIGHT_X = Screen.width / 2560.0f; //based on QHD
-            SCREEN_WEIGHT_Y = Screen.height / 1440.0f;
+            SCREEN_WEIGHT_X = Screen.width / (float)IngameManagerV2.SCREEN_WIDTH; //based on QHD
+            SCREEN_WEIGHT_Y = Screen.height / (float)IngameManagerV2.SCREEN_HEIGHT;
             var repeater = seperators.GetComponent<ObjectRepeater>();
             repeater.Offset.y *= SCREEN_WEIGHT_Y;
 

@@ -57,6 +57,10 @@ namespace ProjectMGG.Ingame
         private float _currentDecayTime = 0.1f;
         #endregion
         #region UI
+        //based on QHD (refers to issue #20)
+        public const int SCREEN_WIDTH = 2560;
+        public const int SCREEN_HEIGHT = 1440;
+
         public CanvasGroup CanvasDefault; ///Screen
         public CanvasGroup CanvasDialogUI;
 

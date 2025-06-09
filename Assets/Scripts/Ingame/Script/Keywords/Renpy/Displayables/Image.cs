@@ -49,8 +49,8 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
                 }
                 else if (Data is Solid solid)
                 {
-                    var texture = new Texture2D(Screen.width, Screen.height);
-                    UnityEngine.Color[] pixels = Enumerable.Repeat(solid.Colour, Screen.width * Screen.height).ToArray();
+                    var texture = new Texture2D(IngameManagerV2.SCREEN_WIDTH, IngameManagerV2.SCREEN_HEIGHT);
+                    UnityEngine.Color[] pixels = Enumerable.Repeat(solid.Colour, texture.width * texture.height).ToArray();
                     texture.SetPixels(pixels);
                     texture.Apply();
 
