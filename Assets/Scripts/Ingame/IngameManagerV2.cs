@@ -128,11 +128,16 @@ namespace ProjectMGG.Ingame
         // Update is called once per frame
         void Update()
         {
+            int downType = 0;
+
             #region Hotkeys
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 GoHome();
             }
+            else if (Input.GetKeyDown(KeyCode.Space)) downType = 1;
+
+            if (downType == 0) downType = GetMouseDownType();
             #endregion
 
             if (ContentUI.text.Length == 0) _readAll = true;
@@ -142,7 +147,7 @@ namespace ProjectMGG.Ingame
                 _noWait = false;
             }
 
-            switch (GetMouseDownType())
+            switch (downType)
             {
                 case 1: //Dialog
                     {
