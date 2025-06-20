@@ -555,8 +555,16 @@ namespace ProjectMGG.Ingame.Script
                     }
 
                     string name = ParseStringLiteral();
-                    result.Names.Add(name);
-                    result.Count++;
+
+                    if (_tokens[_index].Kind == ArgumentKind.Colon) //Menu Name
+                    {
+                        result.Names.Add(name);
+                        result.Count++;
+                    }
+                    else //Head
+                    {
+                        result.Head = name;
+                    }
                 }
                 else //Blocks
                 {

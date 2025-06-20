@@ -75,7 +75,10 @@ namespace ProjectMGG.Ingame
             }
 
             //Dialog Text
-            IngameManagerV2.Instance.ProcessTextImmediate("하나를 선택하세요.");
+            string head = menu.Head;
+            if (string.IsNullOrEmpty(head)) head = "하나를 선택하세요."; //TODO: translation
+
+            IngameManagerV2.Instance.ProcessTextImmediate(head);
         }
 
         public void DeleteAllMenus()

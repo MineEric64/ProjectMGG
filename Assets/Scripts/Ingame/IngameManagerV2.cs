@@ -302,7 +302,7 @@ namespace ProjectMGG.Ingame
                 if (!_paused)
                 {
                     option.Ease = DefaultEase;
-                    option.CPS = 25f;
+                    option.CPS = 25f; //TODO: implement settings
 
                     LetsTextTag(ContentUI, out completed, ref option);
                     yield return TMPDOText(ContentUI, option.StartIndex, option.CPS, option.Ease);
@@ -334,6 +334,7 @@ namespace ProjectMGG.Ingame
                 LetsTextTag(ContentUI, out completed, ref option);
             }
             ContentUI.maxVisibleCharacters = ContentUI.text.Length;
+            _maxAllTextLength = text.Length;
             _readAll = true;
         }
 
