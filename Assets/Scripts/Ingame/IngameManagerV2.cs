@@ -250,8 +250,16 @@ namespace ProjectMGG.Ingame
         #region Texts
         public void LetsNarration(string content)
         {
-            NameUI.text = "";
+            NameUI.text = string.Empty;
             StartCoroutine(ProcessText(content));
+
+            _goToNext = false;
+        }
+
+        public void LetsNarrationImmediate(string content)
+        {
+            NameUI.text = string.Empty;
+            ProcessTextImmediate(content);
 
             _goToNext = false;
         }
@@ -320,7 +328,7 @@ namespace ProjectMGG.Ingame
         /// <summary>
         /// without Text Typing effect
         /// </summary>
-        public void ProcessTextImmediate(string text)
+        private void ProcessTextImmediate(string text)
         {
             bool completed = false;
             TextTagOption option = new TextTagOption();
