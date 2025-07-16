@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RenpyScriptor")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7fac68687fd61574b92cbb0217355f1e7caa5e91")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8c990e91d7c31008443a592dad06e8edc1767b35")]
 [assembly: System.Reflection.AssemblyProductAttribute("RenpyScriptor")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RenpyScriptor")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
