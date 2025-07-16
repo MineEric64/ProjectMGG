@@ -19,7 +19,6 @@ using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
 using ProjectMGG.Settings;
 
 using Path = System.IO.Path;
-using Unity.VisualScripting;
 
 namespace ProjectMGG.Ingame
 {
@@ -868,7 +867,7 @@ namespace ProjectMGG.Ingame
 
             while (time < pause.Delay)
             {
-                if (!_pausedHard && _readAll) yield break;
+                if (!_pausedHard && !string.IsNullOrEmpty(ContentUI.text) && _readAll) yield break; //for preventing duplicated pause (ex: {p}, {w}, {nw} etc)
 
                 time += Time.deltaTime;
                 yield return null;
