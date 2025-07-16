@@ -1,4 +1,8 @@
-﻿using System.IO;
+﻿/* This project was created because of converting the game's story (scenario, raw text in Notion) to Renpy language's script.
+ * You don't need to run this program if you don't use Notion to write the scenario like me (Project MGG developer, called MineEric64)
+ */
+
+using System.IO;
 using System.Text;
 using TextCopy;
 
