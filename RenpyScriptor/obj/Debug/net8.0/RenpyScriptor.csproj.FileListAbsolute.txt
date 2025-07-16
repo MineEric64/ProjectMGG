@@ -1,0 +1,14 @@
+D:\Visual Studio\Projects\MGGTools\RenpyScriptor\bin\Debug\net8.0\RenpyScriptor.exe
+D:\Visual Studio\Projects\MGGTools\RenpyScriptor\bin\Debug\net8.0\RenpyScriptor.deps.json
+D:\Visual Studio\Projects\MGGTools\RenpyScriptor\bin\Debug\net8.0\RenpyScriptor.runtimeconfig.json
+D:\Visual Studio\Projects\MGGTools\RenpyScriptor\bin\Debug\net8.0\RenpyScriptor.dll
+D:\Visual Studio\Projects\MGGTools\RenpyScriptor\bin\Debug\net8.0\RenpyScriptor.pdb
+D:\Visual Studio\Projects\MGGTools\RenpyScriptor\obj\Debug\net8.0\RenpyScriptor.GeneratedMSBuildEditorConfig.editorconfig
+D:\Visual Studio\Projects\MGGTools\RenpyScriptor\obj\Debug\net8.0\RenpyScriptor.AssemblyInfoInputs.cache
+D:\Visual Studio\Projects\MGGTools\RenpyScriptor\obj\Debug\net8.0\RenpyScriptor.AssemblyInfo.cs
+D:\Visual Studio\Projects\MGGTools\RenpyScriptor\obj\Debug\net8.0\RenpyScriptor.csproj.CoreCompileInputs.cache
+D:\Visual Studio\Projects\MGGTools\RenpyScriptor\obj\Debug\net8.0\RenpyScriptor.dll
+D:\Visual Studio\Projects\MGGTools\RenpyScriptor\obj\Debug\net8.0\refint\RenpyScriptor.dll
+D:\Visual Studio\Projects\MGGTools\RenpyScriptor\obj\Debug\net8.0\RenpyScriptor.pdb
+D:\Visual Studio\Projects\MGGTools\RenpyScriptor\obj\Debug\net8.0\RenpyScriptor.genruntimeconfig.cache
+D:\Visual Studio\Projects\MGGTools\RenpyScriptor\obj\Debug\net8.0\ref\RenpyScriptor.dll
