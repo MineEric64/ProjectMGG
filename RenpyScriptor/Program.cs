@@ -120,6 +120,8 @@ namespace RenpyScriptor
 
             foreach (string key in map.Keys)
             {
+                if (string.IsNullOrWhiteSpace(map[key])) continue;
+
                 sbDefine.Append("define ");
                 sbDefine.Append(map[key]);
                 sbDefine.Append(" = Character(\"");

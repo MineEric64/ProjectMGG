@@ -58,8 +58,9 @@ namespace RenpyScriptor
 
         public string ToRenpy(bool tab = true)
         {
+            const string TAB_CHAR = "    "; //4 blank characters, not \t
             var sb = new StringBuilder();
-            if (tab) sb.Append("\t");
+            if (tab) sb.Append(TAB_CHAR);
 
             switch (Method)
             {
