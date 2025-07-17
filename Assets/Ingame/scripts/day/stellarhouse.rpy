@@ -1,5 +1,5 @@
 # 캐릭터
-define player = Character("나", color="#6d858b")
+define player = Character("[playername]", color="#6d858b")
 define haeun = Character("하은", color="#ffd9e9")
 define yunseo = Character("윤서", color="#888888")
 
@@ -32,13 +32,13 @@ label start:
     "앞에는 TV도 있고··· 주방 쪽엔 가스레인지, 전자레인지······ 에어프라이기도 있네??"
     "그래, 이런 게 집이지. 이렇게 보니까 내 자취방은 사실 돼지우리였어."
     "그나저나, 내일이 개강이니깐 어서 짐정리나 해야지."
-    "······"
+    "······{nw}"
     # 툭툭
     # 호기심으로 쳐다보는 하은의 캐릭터 CG
     show haeun embarrassed1 at haeun_t1 with Dissolve(0.7)
     "???" "혹시 새롭게 들어온··· 룸메?"
     "이 사람이··· 이제부터 나랑 같이 살게 될 룸메이트라고??"
-    player "어··· 어어s······."
+    player "어··· 어{size=-15}어{/size}······."
     "머릿속이 온통 새하얘진 바람에 도저히 말을 이어나가지 못 하겠다······."
     # 환하게 웃는 하은의 캐릭터 CG
     show haeun happy1 at haeun_t1
@@ -55,7 +55,7 @@ label start:
     haeun "네, 우리 같은 룸메에요!"
     show haeun happy2 at haeun_t1
     haeun "그리구 말 편하게 해도 된다니깐 ㅎㅎ"
-    player "아, 아··· s응.s"
+    player "아, 아··· {size=-15}응.{/size}"
     "중학교 때부터 줄곧 기숙사 생활을 해왔지만"
     "룸메가 여자인 적은 처음이라 너무 당황스러워 무슨 말을 해야 할 지······"
     "······ 모르겠다."
