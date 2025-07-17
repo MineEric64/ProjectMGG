@@ -571,9 +571,10 @@ namespace ProjectMGG.Ingame.Script
                     var block = ParseBlock();
                     result.Blocks.Add(block);
                 }
-                
+
                 if (SkipCurrentIf(ArgumentKind.Colon)) s.Push(true);
                 else if (SkipCurrentIf(ArgumentKind.RightBrace)) s.Pop();
+                else if (_tokens[_index].Kind == ArgumentKind.EndOfToken) break;
             }
 
             return result;
