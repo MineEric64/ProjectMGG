@@ -94,7 +94,7 @@ namespace RenpyScriptor
                 {
                     if (!map.ContainsKey(script.Name))
                     {
-                        Console.Write($"Not found the name '{script.Name}'. Please choose the variable name : ");
+                        Console.Write($"Not found the name '{script.Name}'. Please choose the variable name (if blank, it will be processed to temporary character): ");
                         string? nameVar = Console.ReadLine() ?? string.Empty;
                         script.NameVar = nameVar;
                         map[script.Name] = nameVar;

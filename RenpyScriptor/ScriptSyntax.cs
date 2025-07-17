@@ -64,7 +64,16 @@ namespace RenpyScriptor
             switch (Method)
             {
                 case Methods.Dialog:
-                    sb.Append(NameVar);
+                    if (string.IsNullOrWhiteSpace(NameVar))
+                    {
+                        sb.Append("\"");
+                        sb.Append(Name);
+                        sb.Append("\"");
+                    }
+                    else
+                    {
+                        sb.Append(NameVar);
+                    }
                     sb.Append(" ");
                     sb.Append("\"");
                     sb.Append(Content);
