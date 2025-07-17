@@ -15,8 +15,8 @@ image home day = "$/images/bg_home_day_demo.png"
 
 transform haeun_t1:
     zoom 1.1
-    ycenter 0.5
-    xcenter 0.2
+    ycenter 0.8
+    xcenter 0.5
 
 label start:
     "셰어하우스란··· 대체 어떤 곳일까."
