@@ -103,6 +103,9 @@ namespace ProjectMGG.Ingame.Script
                 ExceptionManager.Throw("Something went wrong. The script is ended abnormally before end of token is processed. (Script Out of Range)", "Script/Scanner", _line);
             }
 
+            _tab = 0;
+            ProcessBlockEnd(ref result);
+
             result.Add(new Token(ArgumentKind.EndOfToken));
             return result;
         }
