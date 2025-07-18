@@ -24,6 +24,8 @@ transform half_size:
 label start:
     scene classroom
     "어떡하면 좋을까."
+
+    "1aaaaaaaaaaaa{p}2bbbbbbbb{p}3ccccccccccc{p}4ddddddddd"
     
     "윤서" "{size=-15}저{/size}... 저{size=-15}어어어어{/size}......"
     "윤서" "저기{size=-15}이이이이{/size}......"

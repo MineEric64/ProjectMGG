@@ -1,7 +1,7 @@
 # 캐릭터
-define player = Character("[playername]", color="#6d858b")
+define player = Character("[playername]", color="#ffffff")
 define haeun = Character("하은", color="#ffd9e9")
-define yunseo = Character("윤서", color="#888888")
+define yunseo = Character("윤서", color="#cccccc")
 
 image haeun default = "$/images/chr_haru/default.png"
 image haeun happy1 = "$/images/chr_haru/happy1.png"
@@ -14,8 +14,8 @@ image haeun anxious = "$/images/chr_haru/anxious.png"
 image home day = "$/images/bg_home_day_demo.png"
 
 transform haeun_t1:
-    zoom 1.1
-    ycenter 0.8
+    zoom 1.3
+    ycenter 0.9
     xcenter 0.5
 
 label start:
@@ -32,10 +32,10 @@ label start:
     "앞에는 TV도 있고··· 주방 쪽엔 가스레인지, 전자레인지······ 에어프라이기도 있네??"
     "그래, 이런 게 집이지. 이렇게 보니까 내 자취방은 사실 돼지우리였어."
     "그나저나, 내일이 개강이니깐 어서 짐정리나 해야지."
-    "······{nw}"
+    "······{nw=1.1}"
     # 툭툭
     # 호기심으로 쳐다보는 하은의 캐릭터 CG
-    show haeun embarrassed1 at haeun_t1 with Dissolve(0.7)
+    show haeun embarrassed2 at haeun_t1 with Dissolve(0.7)
     "???" "혹시 새롭게 들어온··· 룸메?"
     "이 사람이··· 이제부터 나랑 같이 살게 될 룸메이트라고??"
     player "어··· 어{size=-15}어{/size}······."
@@ -55,9 +55,10 @@ label start:
     haeun "네, 우리 같은 룸메에요!"
     show haeun happy2 at haeun_t1
     haeun "그리구 말 편하게 해도 된다니깐 ㅎㅎ"
+    show haeun happy1 at haeun_t1
     player "아, 아··· {size=-15}응.{/size}"
-    "중학교 때부터 줄곧 기숙사 생활을 해왔지만"
-    "룸메가 여자인 적은 처음이라 너무 당황스러워 무슨 말을 해야 할 지······"
+    "중학교 때부터 줄곧 기숙사 생활을 해왔지만,"
+    "룸메가 여자인 적은 처음이라 당황스러워 무슨 말을 해야 할 지······"
     "······ 모르겠다."
     "아무리 생각해봐도 해결책은 떠오르지 않는다."
     show haeun embarrassed1 at haeun_t1
@@ -85,32 +86,36 @@ label start:
     "애써 부정해도 하은의 얼굴엔 의심이 좀처럼 사라지지 않는다."
     "내가 거짓말을 좀 어설프게 했나···?"
     # 무심하면서도 살짝 호기심 있게 바라보는 표정을 짓는 하은
-    show haeun embarrassed1 at haeun_t1
+    show haeun default at haeun_t1
     haeun "나는 어때 보여?"
-    show haeun embarrassed2 at haeun_t1
+    show haeun anxious at haeun_t1
     haeun "처음 본 사람한테 이런 말은 잘 안 하는데···"
     "대답하기 매우 어려운 질문이다."
     "마음 같아선 못 들은 척하고 넘어가고 싶지만, 하은과 시선이 맞닿아버려 쉽게 그럴 순 없어 보였다."
     "···무슨 의도가 담긴 말은 아닌 것 같은데, 이럴 땐 무슨 말을 해야 하지?"
-
-    return
 
     menu:
         "잘 모르겠어.":
             "···에이, 모르겠다."
             player "잘 모르겠어."
             player "만난지 얼마 안 되기도 했고···."
+            show haeun happy1 at haeun_t1
             "내 말이 끝난 순간 하은의 얼굴에는 미소가 반겼다."
+            show haeun happy2 at haeun_t1
             haeun "아하하~ 알겠어."
 
         "예뻐.":
             "···에이, 모르겠다."
             player "솔직히··· 예뻐."
             "솔직하게 말하는 게 나쁜 건 아니잖아?"
+            show haeun embarrassed1 at haeun_t1
             haeun "정말?"
             player "응. 동시에 조금은 무섭기도 하고···."
+            show haeun happy1 at haeun_t1
             "내 말이 끝난 순간 하은의 얼굴에는 미소가 반겼다."
+            show haeun happy2 at haeun_t2
             haeun "아하하~ 정말 솔직하게 얘기해줘서 고마워."
+            show haeun happy1 at haeun_t1
             haeun "그 말을 이번엔 너한테 들으니까 좋네."
             player "이번에··· 라니?"
             haeun "아하하~ 아니야."
@@ -118,31 +123,39 @@ label start:
         "그런 건 왜 물어보는 거야?":
             "···에이, 모르겠다."
             player "그런 건 왜 물어보는 거야?"
+            show haeun default at haeun_t1
             "내 말을 듣곤 하은은 한 치의 망설임도 없이 단호하게 말을 꺼냈다."
             haeun "너라면 솔직하게 말해줄 것 같아서."
             haeun "다른 사람들은, 다 거짓말만 했거든."
             player "다른 사람들?"
             haeun "그리고 무엇보다, 네 반응이 재미있을 것 같아서."
             player "···으응?"
+            show haeun happy1 at haeun_t1
             "그 순간 하은의 얼굴에는 미소가 반겼다."
             haeun "아하하~ 아니야. 지금 반응도 충분히 재미있어~"
 
         "뭐라고 했는지 다시 말해줄 수 있어?":
             "···에이, 모르겠다. 못 들은 척하자."
             player "뭐라고 했는지 다시 말해줄 수 있어?"
+            show haeun anxious at haeun_t1
             "내 말이 끝나자 단호하게 이야기하는 하은. "
+            show haeun default at haeun_t1
             haeun "그런 건 왜 물어보는 거야?"
             player "으응?"
+            show haeun happy1 at haeun_t1
             haeun "아하하~ 아니야."
 
+    show haeun happy1 at haeun_t1
     "방금 웃음소리에는 무슨 뜻이 담겨져 있진 않겠지···?"
     "하은의 조용한 그 속마음은 도무지 알 수가 없다."
     "그건 그렇고, 일단 짐 정리 좀 해볼까···"
     "ㅡ라고 생각하던 찰나, 하은이 내 앞에 놓인 수많은 박스들을 보고 입을 연다."
+    show haeun default at haeun_t1
     haeun "짐 정리 좀 도와줄까?"
 
     menu:
         "응, 도와줘.":
+            show haeun happy2 at haeun_t1
             haeun "응! 그렇게 말해줘서 고마워!"
             "내 말을 들은 순간 하은의 표정에는 활기가 가득해진다."
             "짐정리 같이 하는 게 그 정도로 좋은 건가···?"
@@ -150,12 +163,15 @@ label start:
             player "아니야! 나야 고맙지."
 
         "아니, 괜찮아.":
+            show haeun anxious at haeun_t1
             haeun "알겠어···."
             "하은은 내 말을 듣곤 별 반응을 보이지 않다가······"
+            show haeun default at haeun_t1
             "아무 말 없이 짐을 옮겨주려고 한다?"
             "난 분명히 괜찮다고 말했는데···."
             player "괜찮다니까?"
             "그러자 하은은 별 말 없이 나를 한번 보고는, 결국 짐을 들었다."
+            show haeun happy1 at haeun_t1
             haeun "에이, 그래도 룸메이트인데 이 정돈 해야지~"
             "뭐··· 그래."
             "두 명이서 한다고 안 좋을 건 없으니까."

@@ -64,6 +64,7 @@ namespace ProjectMGG.Ingame
         public CanvasGroup CanvasDialogUI;
 
         public TextMeshProUGUI NameUI;
+        public RawImage NameBackgroundUI;
         public TextMeshProUGUI ContentUI;
         public RawImage CharacterSample;
         #endregion
@@ -119,6 +120,7 @@ namespace ProjectMGG.Ingame
 
             //UI
             NameUI.text = "";
+            NameBackgroundUI.enabled = false;
             ContentUI.text = "";
             CanvasDefault.alpha = 0f;
             Tween.Custom(0f, 1f, 1f, x => CanvasDefault.alpha = x, Ease.InSine);
@@ -150,20 +152,19 @@ namespace ProjectMGG.Ingame
             {
                 case 1: //Dialog
                     {
-                        if (_paused)
+                        if (!_readAll) //while reading
+                        {
+                            _readAll = true;
+                            ContentUI.maxVisibleCharacters = _maxAllTextLength;
+                            //ContentUI.maxVisibleCharacters = _maxTextLength; //uncomment this if you want to show users tag by tag
+                        }
+                        else if (_paused)
                         {
                             if (!_pausedHard)
                             {
                                 StopPause();
                                 if (ContentUI.maxVisibleCharacters >= _maxTextLength) break;
                             }
-                        }
-
-                        if (!_readAll) //while reading
-                        {
-                            _readAll = true;
-                            ContentUI.maxVisibleCharacters = _maxAllTextLength;
-                            //ContentUI.maxVisibleCharacters = _maxTextLength; //uncomment this if you want to show users tag by tag
                         }
                         else //if already read then need to go to next
                         {
@@ -250,6 +251,7 @@ namespace ProjectMGG.Ingame
         public void LetsNarration(string content)
         {
             NameUI.text = string.Empty;
+            NameBackgroundUI.enabled = false;
             StartCoroutine(ProcessText(content));
 
             _goToNext = false;
@@ -258,6 +260,7 @@ namespace ProjectMGG.Ingame
         public void LetsNarrationImmediate(string content)
         {
             NameUI.text = string.Empty;
+            NameBackgroundUI.enabled = false;
             ProcessTextImmediate(content);
 
             _goToNext = false;
@@ -283,6 +286,7 @@ namespace ProjectMGG.Ingame
 
             NameUI.text = chr.Name.Interpret() as string;
             NameUI.color = chr.Colour;
+            NameBackgroundUI.enabled = true;
             StartCoroutine(ProcessText(content));
 
             _goToNext = false;
@@ -294,6 +298,7 @@ namespace ProjectMGG.Ingame
         private IEnumerator ProcessText(string text)
         {
             bool completed = false;
+            bool skipNext = false;
             TextTagOption option = new TextTagOption();
 
             _tagIndex = 0;
@@ -311,8 +316,22 @@ namespace ProjectMGG.Ingame
                     option.Ease = DefaultEase;
                     option.CPS = 25f; //TODO: implement settings
 
-                    LetsTextTag(ContentUI, out completed, ref option);
+                    bool skip = _tagIndex < _textTags.Count && !string.IsNullOrEmpty(_textTags[_tagIndex].PrimaryData.Tag);
+                    if (skip) _readAll = false;
+                    if (skipNext)
+                    {
+                        _readAll = false;
+                        skipNext = false;
+                    }
+
+                        LetsTextTag(ContentUI, out completed, ref option);
                     yield return TMPDOText(ContentUI, option.StartIndex, option.CPS, option.Ease);
+
+                    if (skip)
+                    {
+                        _readAll = true;
+                        skipNext = true;
+                    }
 
                     option.StartIndex = _maxTextLength;
                 }
@@ -480,7 +499,6 @@ namespace ProjectMGG.Ingame
                             Pause pause = new Pause(delay, false);
                             _actionAfterPause = new Action(() =>
                             {
-                                textUI.text += "\n";
                                 _noWait = true;
                                 _goToNext = false;
                             });
@@ -771,6 +789,7 @@ namespace ProjectMGG.Ingame
             {
                 //Dialog
                 NameUI.text = "";
+                NameBackgroundUI.enabled = true;
                 ContentUI.text = "";
                 Tween.Alpha(CanvasDialogUI, 1f, 0f, 1f, Ease.InSine);
 
@@ -865,10 +884,8 @@ namespace ProjectMGG.Ingame
 
             float time = 0f;
 
-            while (time < pause.Delay)
+            while (_paused && time < pause.Delay)
             {
-                if (!_pausedHard && !string.IsNullOrEmpty(ContentUI.text) && _readAll) yield break; //for preventing duplicated pause (ex: {p}, {w}, {nw} etc)
-
                 time += Time.deltaTime;
                 yield return null;
             }
