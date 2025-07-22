@@ -23,7 +23,7 @@ namespace ProjectMGG.Ingame.Script
             List<Token> result = new List<Token>();
 
             sourceCode += '\0';
-            sourceCode = sourceCode.Replace("    ", "\t"); //indentation, TODO: is available for 3 space characters?
+            sourceCode = sourceCode.Replace("    ", "\t"); //indentation (4 spaces)
 
             bool needToExit = false;
 
