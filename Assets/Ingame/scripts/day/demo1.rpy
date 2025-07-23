@@ -1,7 +1,7 @@
 # 캐릭터
-define player = Character("[playername]", color="#000000")
+define player = Character("[playername]", color="#f2f2f2")
 
-define seah = Character("한세아", color="#3a3e4a")
+define seah = Character("한세아", color="#abb7db")
 image seah default = "$/images/chr_seah/1.png"
 image seah happy1 = "$/images/chr_seah/4.png"
 image seah happy2 = "$/images/chr_seah/5.png"

@@ -271,6 +271,9 @@ namespace ProjectMGG.Ingame
         {
             NameUI.text = string.Empty;
             NameBackgroundUI.enabled = false;
+            ContentUI.transform.localPosition = new Vector3(62.9156f, -22.304f, ContentUI.transform.position.z);
+            ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 1939.294f);
+            ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 301.8214f);
             CheckWindowAuto();
 
             StartCoroutine(ProcessText(content));
@@ -282,6 +285,9 @@ namespace ProjectMGG.Ingame
         {
             NameUI.text = string.Empty;
             NameBackgroundUI.enabled = false;
+            ContentUI.transform.localPosition = new Vector3(62.9156f, -22.304f, ContentUI.transform.position.z);
+            ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 1939.294f);
+            ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 301.8214f);
             CheckWindowAuto();
 
             ProcessTextImmediate(content);
@@ -312,6 +318,9 @@ namespace ProjectMGG.Ingame
             NameUI.text = chr.Name.Interpret() as string;
             NameUI.color = chr.Colour;
             NameBackgroundUI.enabled = true;
+            ContentUI.transform.localPosition = new Vector3(45.9257f, -22.304f, ContentUI.transform.position.z);
+            ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 1349.591f);
+            ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 301.8214f);
 
             StartCoroutine(ProcessText(content));
 

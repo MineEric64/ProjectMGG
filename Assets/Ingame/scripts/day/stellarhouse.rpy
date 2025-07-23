@@ -1,7 +1,7 @@
 # 캐릭터
-define player = Character("[playername]", color="#ffffff")
-define haeun = Character("하은", color="#ffd9e9")
-define yunseo = Character("윤서", color="#cccccc")
+define player = Character("[playername]", color="#f2f2f2")
+define haeun = Character("이하은", color="#ffd9e9")
+define yunseo = Character("조윤서", color="#999999")
 
 image haeun default = "$/images/chr_haru/default.png"
 image haeun happy1 = "$/images/chr_haru/happy1.png"

@@ -1,5 +1,5 @@
 # 캐릭터
-define player = Character("[playername]", color="#6d858b")
+define player = Character("[playername]", color="#8da9ab")
 define yunseul = Character("윤슬", color="#3a3e4a")
 
 image yunseul default = "$/images/chr_haru/default.png"

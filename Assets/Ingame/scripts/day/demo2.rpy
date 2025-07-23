@@ -1,4 +1,4 @@
- define player = Character("[playername]", color="#000000")
+ define player = Character("[playername]", color="#f2f2f2")
 
 define seah = Character("한세아", color="#abb7db")
 image seah default = "$/images/chr_seah/1.png"

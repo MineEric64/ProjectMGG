@@ -8,7 +8,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 {
     public class Character : IExpression
     {
-        public static Color DEFAULT_COLOUR { get; } = new Color(0.553f, 0.129f, 0.1568f);
+        public static Color DEFAULT_COLOUR { get; } = new Color(0.8f, 0.2f, 0.24f);
 
         public IExpression Name { get; set; }
         public Color Colour { get; set; } = DEFAULT_COLOUR;
