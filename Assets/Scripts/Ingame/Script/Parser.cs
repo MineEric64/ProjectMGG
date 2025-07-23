@@ -141,7 +141,7 @@ namespace ProjectMGG.Ingame.Script
                         result.Add(ParseNarration());
                         break;
 
-                    case ArgumentKind.Identifier: //dialog / scene
+                    case ArgumentKind.Identifier: //dialog
                         var dialog = ParseDialog();
                            
                         if (dialog == null) goto default; //it's real and pure identifier
@@ -177,6 +177,10 @@ namespace ProjectMGG.Ingame.Script
 
                     case ArgumentKind.With:
                         result.Add(ParseWith(true));
+                        break;
+
+                    case ArgumentKind.Window:
+                        result.Add(ParseWindow());
                         break;
 
                     case ArgumentKind.Play:
@@ -403,7 +407,14 @@ namespace ProjectMGG.Ingame.Script
             result.Line = _tokens[_index].Line;
             SkipCurrent();
 
-            result.Delay = ParseNumberLiteral();
+            if (IsUnknown(ArgumentKind.NumberLiteral, 0)) result.Delay = ParseNumberLiteral();
+            else
+            {
+                int line = result.Line;
+                result = Pause.GetInfinity();
+                result.Line = line;
+            }
+            
             return result;
         }
 
@@ -531,6 +542,54 @@ namespace ProjectMGG.Ingame.Script
             }
 
             SkipCurrentIf(ArgumentKind.RightBrace);
+            return result;
+        }
+
+        private IStatement ParseWindow()
+        {
+            var result = new Window();
+
+            result.Line = _tokens[_index].Line;
+            SkipCurrent(ArgumentKind.Window);
+            if (SkipCurrentIf(ArgumentKind.Show))
+            {
+                result.Method = 0;
+                result.Transition = ParseTransition(true);
+            }
+            else if (SkipCurrentIf(ArgumentKind.Hide))
+            {
+                result.Method = 1;
+                result.Transition = ParseTransition(true);
+            }
+            else
+            {
+                bool invalid = true;
+
+                if (_tokens[_index].Kind == ArgumentKind.Identifier)
+                {
+                    string name = ParseIdentifier();
+
+                    if (name == "auto")
+                    {
+                        var exp = ParseExpression();
+
+                        if (exp != null && exp.Interpret() is bool value)
+                        {
+                            invalid = false;
+
+                            if (value) result.Method = 2;
+                            else result.Method = 3;
+                        }
+                    }
+                }
+
+                if (invalid)
+                {
+                    ExceptionManager.Throw($"Invalid attribute '{_tokens[_index].Content}' on window keyword.", "Script/Parser");
+                    return null;
+                }
+            }
+
             return result;
         }
 
@@ -1065,7 +1124,9 @@ namespace ProjectMGG.Ingame.Script
             return result;
         }
 
-        private IPause ParseTransition()
+        private static string[] _transitionIdentifierNames = new string[] { "fade", "dissolve" };
+
+        private IPause ParseTransition(bool checkUnknown = false)
         {
             IPause result = null;
 
@@ -1080,6 +1141,7 @@ namespace ProjectMGG.Ingame.Script
                     break;
 
                 case ArgumentKind.Identifier:
+                    if (checkUnknown && (!IsUnknown(ArgumentKind.Identifier, 1) || !_transitionIdentifierNames.Contains(_tokens[_index].Content))) return null;
                     result = ParseIdentifier();
                     break;
             }

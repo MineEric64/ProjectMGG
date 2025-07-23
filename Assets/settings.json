@@ -1,5 +1,6 @@
 {
     "ui": {
+        "cps": 25.0,
         "text_ease": "Linear"
     },
     "debug": true

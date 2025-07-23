@@ -30,7 +30,7 @@ namespace ProjectMGG.Ingame
         public static string PlayerName { get; set; } //성이름
         public static string PlayerName2 { get; set; } //이름
 
-        public static Texture2D TextureDefault { get; private set; } = Texture2D.grayTexture;
+        public static Texture2D TextureDefault { get; private set; } = null;
 
         #region Script & TextTag
         private List<Token> _tokens;
@@ -69,6 +69,8 @@ namespace ProjectMGG.Ingame
         public RawImage NameBackgroundUI;
         public TextMeshProUGUI ContentUI;
         public RawImage CharacterSample;
+
+        public bool WindowAuto = true;
         #endregion
         #region Text & UI
         private GraphicRaycaster _raycaster;
@@ -87,6 +89,7 @@ namespace ProjectMGG.Ingame
         {
             // Get both of the components we need to do this
             _raycaster = GetComponent<GraphicRaycaster>();
+            if (TextureDefault == null) TextureDefault = Texture2D.grayTexture;
         }
 
         // Start is called before the first frame update
@@ -213,8 +216,7 @@ namespace ProjectMGG.Ingame
                     }
                     else if (script is Pause pause)
                     {
-                        LetsNarration(string.Empty);
-                        StartCoroutine(LetsPause(pause));
+                        StartCoroutine(LetsPause(pause, true));
                     }
                 }
                 else
@@ -265,6 +267,8 @@ namespace ProjectMGG.Ingame
         {
             NameUI.text = string.Empty;
             NameBackgroundUI.enabled = false;
+            CheckWindowAuto();
+
             StartCoroutine(ProcessText(content));
 
             _goToNext = false;
@@ -274,6 +278,8 @@ namespace ProjectMGG.Ingame
         {
             NameUI.text = string.Empty;
             NameBackgroundUI.enabled = false;
+            CheckWindowAuto();
+
             ProcessTextImmediate(content);
 
             _goToNext = false;
@@ -297,9 +303,12 @@ namespace ProjectMGG.Ingame
                 }
             }
 
+            CheckWindowAuto();
+
             NameUI.text = chr.Name.Interpret() as string;
             NameUI.color = chr.Colour;
             NameBackgroundUI.enabled = true;
+
             StartCoroutine(ProcessText(content));
 
             _goToNext = false;
@@ -319,6 +328,13 @@ namespace ProjectMGG.Ingame
             _readAll = false;
             _maxAllTextLength = text.Length;
 
+            if (string.IsNullOrEmpty(text))
+            {
+                ContentUI.text = string.Empty;
+                _readAll = true;
+                yield break;
+            }
+
             Script.Keywords.StringLiteral.ApplyTag(text, ref _textTags);
             //_textTagsDebug = _textTags.Select(x => x.ToString()).ToList();
 
@@ -327,7 +343,7 @@ namespace ProjectMGG.Ingame
                 if (!_paused)
                 {
                     option.Ease = DefaultEase;
-                    option.CPS = 25f; //TODO: implement settings
+                    option.CPS = SettingsManager.Settings.UI.CPS;
 
                     bool skip = _tagIndex < _textTags.Count && !string.IsNullOrEmpty(_textTags[_tagIndex].PrimaryData.Tag);
                     if (skip) _readAll = false;
@@ -337,7 +353,7 @@ namespace ProjectMGG.Ingame
                         skipNext = false;
                     }
 
-                        LetsTextTag(ContentUI, out completed, ref option);
+                    LetsTextTag(ContentUI, out completed, ref option);
                     yield return TMPDOText(ContentUI, option.StartIndex, option.CPS, option.Ease);
 
                     if (skip)
@@ -660,6 +676,42 @@ namespace ProjectMGG.Ingame
                 else Tween.StopAll(id);
             }, ease).ToYieldInstruction();
         }
+
+        public void LetsWindow(bool show, IPause transition = null, bool immediate = false)
+        {
+            if (!immediate)
+            {
+                if (transition == null) transition = new Dissolve(0.5f);
+                
+                With with = new With(true);
+                with.Transition = transition;
+
+                PauseBeforeShow(with);
+
+                if (transition is Dissolve dissolve)
+                {
+                    Debug.Log(dissolve.GetPauseTime());
+
+                    if (show) Tween.Alpha(CanvasDialogUI, 0f, 1f, dissolve.GetPauseTime(), Ease.OutSine);
+                    else Tween.Alpha(CanvasDialogUI, 1f, 0f, dissolve.GetPauseTime(), Ease.InSine);
+                }
+                else
+                {
+                    LetsWindow(show); //Fade Not Supported
+                }
+            }
+            else
+            {
+                if (show) CanvasDialogUI.alpha = 1f;
+                else CanvasDialogUI.alpha = 0f;
+            }
+        }
+
+        private void CheckWindowAuto()
+        {
+            if (_paused && string.IsNullOrEmpty(NameUI.text) && string.IsNullOrEmpty(ContentUI.text)) return;
+            if (CanvasDialogUI.alpha == 0f) LetsWindow(true, null, true);
+        }
         #endregion
         #region Images
         public IEnumerator LetsShow(Show show)
@@ -763,7 +815,7 @@ namespace ProjectMGG.Ingame
             }
 
             //Dialog
-            if (show?.With?.Transition is Fade) Tween.Alpha(CanvasDialogUI, 0f, 1f, 1f, Ease.OutSine);
+            if (show?.With?.Transition is Fade) LetsWindow(true);
 
             return prefab;
         }
@@ -778,7 +830,7 @@ namespace ProjectMGG.Ingame
             if (time > 0f)
             {
                 Pause pause = new Pause(time, true);
-                StartCoroutine(LetsPause(pause));
+                StartCoroutine(LetsPause(pause, true));
             }
         }
 
@@ -814,7 +866,7 @@ namespace ProjectMGG.Ingame
                 NameUI.text = "";
                 NameBackgroundUI.enabled = true;
                 ContentUI.text = "";
-                Tween.Alpha(CanvasDialogUI, 1f, 0f, 1f, Ease.InSine);
+                LetsWindow(false);
 
                 float outTime = fade.OutTime?.Interpret() as float? ?? 0f;
                 float holdTime = fade.HoldTime?.Interpret() as float? ?? 0f;
@@ -847,7 +899,7 @@ namespace ProjectMGG.Ingame
                 yield return Tween.Custom(start, end, result.GetPauseTime(), x =>
                 {
                     image.color = new Color(image.color.r, image.color.g, image.color.b, x);
-                }, Ease.Linear).ToYieldInstruction();
+                }, Ease.InSine).ToYieldInstruction();
                 sceneAction?.Invoke();
             }
         }
@@ -859,7 +911,7 @@ namespace ProjectMGG.Ingame
             var showAction = new Action(() =>
             {
                 Destroy(prefab.gameObject);
-                if (show?.With?.Transition is Fade) Tween.Alpha(CanvasDialogUI, 0f, 1f, 1f, Ease.OutSine); //Dialog
+                if (show?.With?.Transition is Fade) LetsWindow(true);
 
                 showed = true;
             });
@@ -919,10 +971,12 @@ namespace ProjectMGG.Ingame
         }
         #endregion
         #region Etc
-        public IEnumerator LetsPause(Pause pause)
+        public IEnumerator LetsPause(Pause pause, bool emptyDialog = false)
         {
             _paused = true;
             _pausedHard = pause.Hard;
+
+            if (emptyDialog) LetsNarration(string.Empty);
 
             float time = 0f;
 

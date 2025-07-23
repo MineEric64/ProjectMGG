@@ -26,7 +26,9 @@ label start:
     "······ 0414면 내 생일인데, 이런 우연이 다 있네."
     # 비밀번호를 눌러 현관문을 여는 SFX
     # 장소: 거실 / Camera Lens Blur FX가 2초동안 서서히 사라진다
+    window hide
     scene home day with Dissolve(2.0)
+    window show
     player "우와······."
     "확실히 집에서 누가 이미 살고 있어서 그런가, 사람 사는 느낌이 물씬 나네."
     "앞에는 TV도 있고··· 주방 쪽엔 가스레인지, 전자레인지······ 에어프라이기도 있네??"

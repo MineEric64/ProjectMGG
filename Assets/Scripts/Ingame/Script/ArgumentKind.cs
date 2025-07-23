@@ -52,6 +52,7 @@ namespace ProjectMGG.Ingame.Script
         [KindAttr("show")] Show,
         [KindAttr("hide")] Hide,
         [KindAttr("scene")] Scene,
+        [KindAttr("window")] Window,
         [KindAttr("at")] At,
 
         [KindAttr("with")] With,
