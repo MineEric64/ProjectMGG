@@ -1,8 +1,6 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace ProjectMGG.Ingame.Script.Keywords.Renpy
@@ -12,6 +10,10 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
         public int Line { get; set; } = 0;
         public float Delay { get; set; }
         public bool Hard { get; set; } = false;
+
+        //used for PauseManager, not internal
+        public float CurrentDelay { get; set; } = 0f;
+        public Action ActionAfter { get; set; } = null;
 
         public Pause()
         {

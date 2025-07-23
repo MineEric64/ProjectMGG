@@ -79,10 +79,6 @@ namespace ProjectMGG.Ingame
         private bool _readAll = false;
         private int _maxAllTextLength = 0; //used on set _readAll to true
         private int _maxTextLength = 0; //used on get _readAll
-
-        private bool _paused = false;
-        private bool _pausedHard = false;
-        private Action _actionAfterPause = null;
         #endregion
 
         void Awake()
@@ -104,6 +100,13 @@ namespace ProjectMGG.Ingame
                 UnityEngine.Color[] pixels = Enumerable.Repeat(colour, TextureDefault.width * TextureDefault.height).ToArray();
                 TextureDefault.SetPixels(pixels);
                 TextureDefault.Apply();
+
+                //Pause Manager
+                PauseManager.OnCompleted += (_, _) =>
+                {
+                    _goToNext = true;
+                };
+                StartCoroutine(PauseManager.Loop());
             }
 
             Instance = this;
@@ -130,6 +133,8 @@ namespace ProjectMGG.Ingame
 
             var syntaxTree = parser.Parse();
             Interpreter.Interpret(syntaxTree);
+
+            PauseManager.Clear();
 
             //Audio
             _reverbFilter = MusicPlayer.GetComponent<AudioReverbFilter>();
@@ -174,11 +179,10 @@ namespace ProjectMGG.Ingame
                             ContentUI.maxVisibleCharacters = _maxAllTextLength;
                             //ContentUI.maxVisibleCharacters = _maxTextLength; //uncomment this if you want to show users tag by tag
                         }
-                        else if (_paused)
+                        else if (PauseManager.Paused)
                         {
-                            if (!_pausedHard)
+                            if (PauseManager.Remove())
                             {
-                                StopPause();
                                 if (ContentUI.maxVisibleCharacters >= _maxTextLength) break;
                             }
                         }
@@ -194,7 +198,7 @@ namespace ProjectMGG.Ingame
                     break;
             }
 
-            if (_goToNext && !_paused)
+            if (_goToNext && !PauseManager.Paused)
             {
                 if (Interpreter.CurrentPoint == null) //error occured while scanning-parsing-interpreting
                 {
@@ -216,7 +220,7 @@ namespace ProjectMGG.Ingame
                     }
                     else if (script is Pause pause)
                     {
-                        StartCoroutine(LetsPause(pause, true));
+                        LetsPause(pause, true);
                     }
                 }
                 else
@@ -340,7 +344,7 @@ namespace ProjectMGG.Ingame
 
             while (!completed)
             {
-                if (!_paused)
+                if (!PauseManager.Paused)
                 {
                     option.Ease = DefaultEase;
                     option.CPS = SettingsManager.Settings.UI.CPS;
@@ -496,11 +500,11 @@ namespace ProjectMGG.Ingame
                         Pause pause = Pause.GetInfinity();
                         if (tag.PrimaryData.TagArgument != null) pause.Delay = (float)tag.PrimaryData.TagArgument;
 
-                        _actionAfterPause = new Action(() =>
+                        pause.ActionAfter = new Action(() =>
                         {
                             _goToNext = false;
                         });
-                        StartCoroutine(LetsPause(pause));
+                        LetsPause(pause);
                         break;
                     }
 
@@ -509,13 +513,13 @@ namespace ProjectMGG.Ingame
                         Pause pause = Pause.GetInfinity();
                         if (tag.PrimaryData.TagArgument != null) pause.Delay = (float)tag.PrimaryData.TagArgument;
 
-                        _actionAfterPause = new Action(() =>
+                        pause.ActionAfter = new Action(() =>
                         {
                             textUI.text += "\n";
                             _goToNext = false;
                         });
                         
-                        StartCoroutine(LetsPause(pause));
+                        LetsPause(pause);
                         break;
                     }
 
@@ -526,12 +530,12 @@ namespace ProjectMGG.Ingame
                             float delay = (float)tag.PrimaryData.TagArgument;
 
                             Pause pause = new Pause(delay, false);
-                            _actionAfterPause = new Action(() =>
+                            pause.ActionAfter = new Action(() =>
                             {
                                 _noWait = true;
                                 _goToNext = false;
                             });
-                            StartCoroutine(LetsPause(pause));
+                            LetsPause(pause);
                         }
                         else _noWait = true;
                         break;
@@ -690,8 +694,6 @@ namespace ProjectMGG.Ingame
 
                 if (transition is Dissolve dissolve)
                 {
-                    Debug.Log(dissolve.GetPauseTime());
-
                     if (show) Tween.Alpha(CanvasDialogUI, 0f, 1f, dissolve.GetPauseTime(), Ease.OutSine);
                     else Tween.Alpha(CanvasDialogUI, 1f, 0f, dissolve.GetPauseTime(), Ease.InSine);
                 }
@@ -709,7 +711,7 @@ namespace ProjectMGG.Ingame
 
         private void CheckWindowAuto()
         {
-            if (_paused && string.IsNullOrEmpty(NameUI.text) && string.IsNullOrEmpty(ContentUI.text)) return;
+            if (PauseManager.Paused && string.IsNullOrEmpty(NameUI.text) && string.IsNullOrEmpty(ContentUI.text)) return;
             if (CanvasDialogUI.alpha == 0f) LetsWindow(true, null, true);
         }
         #endregion
@@ -830,7 +832,7 @@ namespace ProjectMGG.Ingame
             if (time > 0f)
             {
                 Pause pause = new Pause(time, true);
-                StartCoroutine(LetsPause(pause, true));
+                LetsPause(pause, true);
             }
         }
 
@@ -971,37 +973,10 @@ namespace ProjectMGG.Ingame
         }
         #endregion
         #region Etc
-        public IEnumerator LetsPause(Pause pause, bool emptyDialog = false)
+        public void LetsPause(Pause pause, bool emptyDialog = false)
         {
-            _paused = true;
-            _pausedHard = pause.Hard;
-
+            PauseManager.Add(pause);
             if (emptyDialog) LetsNarration(string.Empty);
-
-            float time = 0f;
-
-            while (_paused && time < pause.Delay)
-            {
-                time += Time.deltaTime;
-                yield return null;
-            }
-
-            if (_paused) //if not paused already (for hard)
-            {
-                StopPause();
-            }
-        }
-
-        public void StopPause()
-        {
-            _paused = false;
-            _goToNext = true;
-
-            if (_actionAfterPause != null)
-            {
-                _actionAfterPause.Invoke();
-                _actionAfterPause = null;
-            }
         }
 
         public void CallInteriorBlock(IEnumerable<Script.Keywords.IStatement> block)

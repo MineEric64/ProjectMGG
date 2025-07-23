@@ -103,7 +103,7 @@ namespace ProjectMGG.Ingame
         public void OnClick(int index)
         {
             IngameManagerV2.Instance.CallInteriorBlock(_currentMenu.Blocks[index]);
-            IngameManagerV2.Instance.StopPause();
+            PauseManager.Remove(true);
             DeleteAllMenus();
         }
     }
