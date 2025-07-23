@@ -30,6 +30,8 @@ namespace ProjectMGG.Ingame
         public static string PlayerName { get; set; } //성이름
         public static string PlayerName2 { get; set; } //이름
 
+        public static Texture2D TextureDefault { get; private set; } = Texture2D.grayTexture;
+
         #region Script & TextTag
         private List<Token> _tokens;
         [SerializeField] private List<string> _tokensDebug;
@@ -91,6 +93,16 @@ namespace ProjectMGG.Ingame
         void Start()
         {
             //Initialize
+            if (Instance == null) //Initialize Once only
+            {
+                //Default Texture
+                TextureDefault = new Texture2D(634, 1636);
+                var colour = new UnityEngine.Color(0.5f, 0.5f, 0.5f); //Gray
+                UnityEngine.Color[] pixels = Enumerable.Repeat(colour, TextureDefault.width * TextureDefault.height).ToArray();
+                TextureDefault.SetPixels(pixels);
+                TextureDefault.Apply();
+            }
+
             Instance = this;
             Locals = new Dictionary<string, VariableCollection>();
             Global = new VariableCollection();
@@ -100,6 +112,7 @@ namespace ProjectMGG.Ingame
             var scanner = new Scanner();
             Parser parser;
             Interpreter = new Interpreter();
+            Interpreter.Initialize();
 
             if (!File.Exists(ScriptPath))
             {
@@ -671,6 +684,8 @@ namespace ProjectMGG.Ingame
             }
 
             var sceneImages = new List<GameObject>();
+            var prefabPrev = GameObject.Find(show.Tag);
+
             if (show.IsScene) //already adding image object to list (issue #18)
             {
                 var canvasImage = this.transform.Find("CanvasImage");
@@ -682,35 +697,41 @@ namespace ProjectMGG.Ingame
                 }
             }
 
-            RawImage prefab = GameObject.Find(show.Tag)?.GetComponent<RawImage>();
+            RawImage prefab = null;
             bool showed = false;
-
-            PauseBeforeShow(show.With);
-            yield return LetsWithBefore(show.With, true, prefab, () =>
+            var sceneAction = new Action(() =>
             {
-                ShowImage(show, texture, ref prefab);
+                //Destroy all images if scene
+                if (show.IsScene && sceneImages.Count > 0)
+                {
+                    foreach (var sceneImage in sceneImages) Destroy(sceneImage);
+                    sceneImages.Clear();
+                }
+
+                //Additionally, previous itself
+                if (prefabPrev != null) Destroy(prefabPrev);
+            });
+            var showActionBefore = new Action(() =>
+            {
+                sceneAction.Invoke();
+                prefab = ShowImage(show, texture);
+
                 showed = true;
             });
-            if (!showed) ShowImage(show, texture, ref prefab);
-            yield return LetsWithAfter(show.With, true, prefab);
 
-            //Destroy all images if scene
-            if (show.IsScene && sceneImages.Count > 0)
-            {
-                foreach (var sceneImage in sceneImages) Destroy(sceneImage);
-                sceneImages.Clear();
-            }
+            PauseBeforeShow(show.With);
+            yield return LetsWithBefore(show.With, true, showActionBefore);
+            if (!showed) prefab = ShowImage(show, texture); //equals to showActionAfter
+            yield return LetsWithAfter(show.With, true, prefab, sceneAction);
+            sceneAction?.Invoke();
         }
 
-        private void ShowImage(Show show, Texture2D texture, ref RawImage prefab)
+        private RawImage ShowImage(Show show, Texture2D texture)
         {
-            if (prefab == null)
-            {
-                prefab = Instantiate(CharacterSample, this.transform.Find("CanvasImage"));
-                prefab.transform.SetAsLastSibling();
-            }
-            if (texture == null) return;
+            if (texture == null) return null;
 
+            RawImage prefab = Instantiate(CharacterSample, this.transform.Find("CanvasImage"));
+            prefab.transform.SetAsLastSibling();
             prefab.texture = texture;
             prefab.name = show.Tag;
             prefab.rectTransform.sizeDelta = new Vector3(texture.width, texture.height);
@@ -721,7 +742,7 @@ namespace ProjectMGG.Ingame
                 if (transform == null)
                 {
                     ExceptionManager.Throw($"The transform '{show.At}' variable doesn't exists while interpreting 'show' statement.", "IngameManagerV2");
-                    return;
+                    return prefab;
                 }
 
                 if (transform.zoom != 1f)
@@ -743,6 +764,8 @@ namespace ProjectMGG.Ingame
 
             //Dialog
             if (show?.With?.Transition is Fade) Tween.Alpha(CanvasDialogUI, 0f, 1f, 1f, Ease.OutSine);
+
+            return prefab;
         }
 
         private void PauseBeforeShow(With with)
@@ -780,7 +803,7 @@ namespace ProjectMGG.Ingame
             return result;
         }
 
-        public IEnumerator LetsWithBefore(With with, bool isShow, RawImage image = null, Action showAction = null)
+        public IEnumerator LetsWithBefore(With with, bool isShow, Action showAction = null)
         {
             if (with == null) yield break;
             var result = with.Transition;
@@ -803,7 +826,7 @@ namespace ProjectMGG.Ingame
                 }, Ease.OutCubic).ToYieldInstruction();
 
                 showAction?.Invoke();
-                yield return Tween.Custom(0f, 1f, holdTime, _ => { }).ToYieldInstruction();
+                yield return Tween.Delay(holdTime).ToYieldInstruction();
                 yield return Tween.Custom(0f, 1f, inTime, x =>
                 {
                     CanvasDefault.alpha = x;
@@ -811,7 +834,7 @@ namespace ProjectMGG.Ingame
             }
         }
 
-        public IEnumerator LetsWithAfter(With with, bool isShow, RawImage image = null)
+        public IEnumerator LetsWithAfter(With with, bool isShow, RawImage image = null, Action sceneAction = null)
         {
             if (with == null) yield break;
             var result = with.Transition;
@@ -825,7 +848,26 @@ namespace ProjectMGG.Ingame
                 {
                     image.color = new Color(image.color.r, image.color.g, image.color.b, x);
                 }, Ease.Linear).ToYieldInstruction();
+                sceneAction?.Invoke();
             }
+        }
+
+        public IEnumerator LetsHide(Show show)
+        {
+            RawImage prefab = GameObject.Find(show.Tag)?.GetComponent<RawImage>();
+            bool showed = false;
+            var showAction = new Action(() =>
+            {
+                Destroy(prefab.gameObject);
+                if (show?.With?.Transition is Fade) Tween.Alpha(CanvasDialogUI, 0f, 1f, 1f, Ease.OutSine); //Dialog
+
+                showed = true;
+            });
+
+            PauseBeforeShow(show.With);
+            yield return LetsWithBefore(show.With, false, showAction);
+            yield return LetsWithAfter(show.With, false, prefab);
+            if (!showed) showAction.Invoke();
         }
         #endregion
         #region Audio

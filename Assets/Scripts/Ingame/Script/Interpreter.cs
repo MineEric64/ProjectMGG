@@ -18,6 +18,14 @@ namespace ProjectMGG.Ingame.Script
         public static Function CurrentPoint { get; set; }
         public static Stack<Function> FramePointers { get; private set; } = new Stack<Function>();
 
+        public static void Initialize()
+        {
+            FunctionTable.Clear();
+            EntryPoint = null;
+            CurrentPoint = null;
+            FramePointers = new Stack<Function>();
+        }
+
         public void Interpret(Program program)
         {
             FunctionTable.Clear();

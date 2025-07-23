@@ -45,6 +45,8 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
                 if (Data is StringLiteral path)
                 {
                     var texture = IngameManagerV2.LoadResource<Texture2D>(path);
+                    if (texture == null) texture = IngameManagerV2.TextureDefault; //comment this if you don't want to show when the image doesn't exists
+
                     return texture;
                 }
                 else if (Data is Solid solid)

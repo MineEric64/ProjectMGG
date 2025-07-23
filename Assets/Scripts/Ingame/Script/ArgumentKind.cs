@@ -50,6 +50,8 @@ namespace ProjectMGG.Ingame.Script
         [KindAttr("zoom")] Zoom,
 
         [KindAttr("show")] Show,
+        [KindAttr("hide")] Hide,
+        [KindAttr("scene")] Scene,
         [KindAttr("at")] At,
 
         [KindAttr("with")] With,

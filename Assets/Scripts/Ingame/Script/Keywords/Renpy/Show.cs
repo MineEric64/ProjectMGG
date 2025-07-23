@@ -18,7 +18,8 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 
         public void Interpret()
         {
-            IngameManagerV2.Instance.StartCoroutine(IngameManagerV2.Instance.LetsShow(this));
+            if (!IsHide) IngameManagerV2.Instance.StartCoroutine(IngameManagerV2.Instance.LetsShow(this)); //Show, Scene
+            else IngameManagerV2.Instance.StartCoroutine(IngameManagerV2.Instance.LetsHide(this)); //Hide
         }
     }
 }

@@ -142,17 +142,10 @@ namespace ProjectMGG.Ingame.Script
                         break;
 
                     case ArgumentKind.Identifier: //dialog / scene
-                        if (_tokens[_index].Content == "scene")
-                        {
-                            result.Add(ParseShow(true));
-                        }
-                        else
-                        {
-                            var dialog = ParseDialog();
+                        var dialog = ParseDialog();
                            
-                            if (dialog == null) goto default; //it's real and pure identifier
-                            else result.Add(dialog);
-                        }
+                        if (dialog == null) goto default; //it's real and pure identifier
+                        else result.Add(dialog);
                         break;
 
                     case ArgumentKind.If:
@@ -172,6 +165,14 @@ namespace ProjectMGG.Ingame.Script
 
                     case ArgumentKind.Show:
                         result.Add(ParseShow());
+                        break;
+
+                    case ArgumentKind.Hide:
+                        result.Add(ParseShow(false, true));
+                        break;
+
+                    case ArgumentKind.Scene:
+                        result.Add(ParseShow(true));
                         break;
 
                     case ArgumentKind.With:
