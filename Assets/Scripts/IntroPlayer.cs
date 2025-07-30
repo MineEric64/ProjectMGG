@@ -146,8 +146,8 @@ namespace ProjectMGG
 
         public void GoDay(string fileName)
         {
-            //GoDayInternal(@$"{Application.dataPath}/Ingame/scripts/day/{fileName}");
-            GoDayFromUrl("https://raw.githubusercontent.com/MineEric64/ProjectMGG/refs/heads/main/Assets/Ingame/scripts/day/stellarhouse.rpy");
+            GoDayInternal(@$"{Application.dataPath}/Ingame/scripts/day/{fileName}");
+            //GoDayFromUrl("https://raw.githubusercontent.com/MineEric64/ProjectMGG/refs/heads/main/Assets/Ingame/scripts/day/stellarhouse.rpy");
         }
 
         public void GoDayFromUrl(string url)
