@@ -147,10 +147,20 @@ namespace ProjectMGG
 
         public void GoDay(string fileName)
         {
-            IngameManagerV2.ScriptPath = @$"{Application.dataPath}/Ingame/scripts/day/{fileName}";
+            GoDayInternal(@$"{Application.dataPath}/Ingame/scripts/day/{fileName}");
+        }
+
+        public void GoDayFromUrl(string url)
+        {
+            GoDayInternal($"url:{url}");
+        }
+
+        private void GoDayInternal(string scriptPath)
+        {
+            IngameManagerV2.ScriptPath = scriptPath;
             ApplyPlayerName();
             SceneManager.LoadScene("Ingame");
-        }
+        } 
 
         void UseDynamicDLL()
         {

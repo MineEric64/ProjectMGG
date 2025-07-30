@@ -1,23 +1,20 @@
+using PrimeTween;
+using ProjectMGG.Ingame.Script;
+using ProjectMGG.Ingame.Script.Keywords.Renpy;
+using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
+using ProjectMGG.Settings;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-
-using TMPro;
-using PrimeTween;
-
-using ProjectMGG.Ingame.Script;
-using ProjectMGG.Ingame.Script.Keywords.Renpy;
-using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
-using ProjectMGG.Settings;
-
 using Path = System.IO.Path;
 
 namespace ProjectMGG.Ingame
@@ -115,26 +112,9 @@ namespace ProjectMGG.Ingame
             if (Enum.TryParse(SettingsManager.Settings.UI.TextEase, out Ease ease)) DefaultEase = ease;
 
             //Script
-            var scanner = new Scanner();
-            Parser parser;
-            Interpreter = new Interpreter();
-            Interpreter.Initialize();
-
-            if (!File.Exists(ScriptPath))
-            {
-                ExceptionManager.Throw($"Can't read the script because file doesn't exists.\n(File Path: '{ScriptPath}')", "IngameManagerV2/Script");
-                return;
-            }
-
-            string sourceCode = File.ReadAllText(ScriptPath);
-            _tokens = scanner.Scan(sourceCode);
-            //_tokensDebug = _tokens.Select(x => x.ToString()).ToList();
-            parser = new Parser(ref _tokens);
-
-            var syntaxTree = parser.Parse();
-            Interpreter.Interpret(syntaxTree);
-
             PauseManager.Clear();
+            PauseManager.Add(Pause.GetInfinity(true));
+            StartCoroutine(InitializeScript()); //Pause will automatically removed after init completed
 
             //Audio
             _reverbFilter = MusicPlayer.GetComponent<AudioReverbFilter>();
@@ -145,6 +125,61 @@ namespace ProjectMGG.Ingame
             ContentUI.text = "";
             CanvasDefault.alpha = 0f;
             Tween.Custom(0f, 1f, 1f, x => CanvasDefault.alpha = x, Ease.InSine);
+        }
+
+        private IEnumerator InitializeScript()
+        {
+            var scanner = new Scanner();
+            Parser parser;
+            Interpreter = new Interpreter();
+            Interpreter.Initialize();
+
+            int scriptType = 0; //0: file, 1: url
+            string sourceCode = string.Empty;
+
+            if (ScriptPath.StartsWith("url:"))
+            {
+                scriptType = 1;
+                ScriptPath = ScriptPath.Substring(4);
+            }
+
+            switch (scriptType)
+            {
+                case 0:
+                    {
+                        if (!File.Exists(ScriptPath))
+                        {
+                            ExceptionManager.Throw($"Can't read the script because file doesn't exists.\n(File Path: '{ScriptPath}')", "IngameManagerV2/Script");
+                            yield break;
+                        }
+                        sourceCode = File.ReadAllText(ScriptPath);
+                        break;
+                    }
+
+                case 1:
+                    {
+                        UnityWebRequest www = UnityWebRequest.Get(ScriptPath);
+                        www.timeout = 5;
+
+                        yield return www.SendWebRequest();
+                        if (www.result != UnityWebRequest.Result.Success)
+                        {
+                            ExceptionManager.Throw($"Can't read the script because of failed url response.\n(URL: '{ScriptPath}'\n(Result: '{www.result}')", "IngameManagerV2/Script");
+                            yield break;
+                        }
+                        sourceCode = www.downloadHandler.text;
+                        break;
+                    }
+            }
+
+            _tokens = scanner.Scan(sourceCode);
+            //_tokensDebug = _tokens.Select(x => x.ToString()).ToList();
+            parser = new Parser(ref _tokens);
+
+            var syntaxTree = parser.Parse();
+            Interpreter.Interpret(syntaxTree);
+
+            PauseManager.Remove(true);
         }
 
         // Update is called once per frame
