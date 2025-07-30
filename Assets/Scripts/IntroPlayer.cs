@@ -36,8 +36,7 @@ namespace ProjectMGG
         public GameObject seperators;
 
         public static IntroPlayer Instance { get; private set; } = null;
-        public static float SCREEN_WEIGHT_X = 1.0f;
-        public static float SCREEN_WEIGHT_Y = 1.0f;
+        public static float SCREEN_WEIGHT = 1.0f;
 
         public bool needToFadeIn = false;
         public bool needToFadeOut = false;
@@ -53,10 +52,10 @@ namespace ProjectMGG
         void Start()
         {
             Instance = this;
-            SCREEN_WEIGHT_X = Screen.width / (float)IngameManagerV2.SCREEN_WIDTH; //based on QHD
-            SCREEN_WEIGHT_Y = Screen.height / (float)IngameManagerV2.SCREEN_HEIGHT;
+            SCREEN_WEIGHT = Screen.width / (float)IngameManagerV2.SCREEN_WIDTH; //based on QHD
+            //SCREEN_WEIGHT = Screen.height / (float)IngameManagerV2.SCREEN_HEIGHT;
             var repeater = seperators.GetComponent<ObjectRepeater>();
-            repeater.Offset.y *= SCREEN_WEIGHT_Y;
+            repeater.Offset.y *= SCREEN_WEIGHT;
 
             Smart.Default.AddExtensions(new KoreanFormatter(Smart.Default));
             PrimeTweenConfig.warnZeroDuration = false;
@@ -147,7 +146,8 @@ namespace ProjectMGG
 
         public void GoDay(string fileName)
         {
-            GoDayInternal(@$"{Application.dataPath}/Ingame/scripts/day/{fileName}");
+            //GoDayInternal(@$"{Application.dataPath}/Ingame/scripts/day/{fileName}");
+            GoDayFromUrl("https://raw.githubusercontent.com/MineEric64/ProjectMGG/refs/heads/main/Assets/Ingame/scripts/day/stellarhouse.rpy");
         }
 
         public void GoDayFromUrl(string url)
@@ -261,10 +261,10 @@ namespace ProjectMGG
         {
             //Initialize
             textMenu.GetComponent<CanvasGroup>().alpha = 0f;
-            menu.transform.localPosition = new Vector3(1740f * SCREEN_WEIGHT_X, 0f, 0f);
+            menu.transform.localPosition = new Vector3(1740f * SCREEN_WEIGHT, 0f, 0f);
 
             var repeater = seperators.GetComponent<ObjectRepeater>();
-            repeater.Prefab.transform.localPosition = new Vector3(678f * SCREEN_WEIGHT_X, 0f, 0f);
+            repeater.Prefab.transform.localPosition = new Vector3(678f * SCREEN_WEIGHT, 0f, 0f);
             repeater.ApplyOffsetChanges();
 
             //Animation
@@ -286,13 +286,13 @@ namespace ProjectMGG
         void FadeInMainMenu2()
         {
             //Menu: Position
-            Tween.PositionX(menu.transform, 2188.46f * SCREEN_WEIGHT_X, 1f, Ease.OutQuart);
+            Tween.PositionX(menu.transform, 2188.46f * SCREEN_WEIGHT, 1f, Ease.OutQuart);
 
             //Seperator: Position 66.53
             var repeater = seperators.GetComponent<ObjectRepeater>();
 
-            Tween.LocalPositionX(repeater.Prefab.transform, 80f * SCREEN_WEIGHT_X, 1.3f, Ease.OutQuart);
-            Tween.Custom(237f * SCREEN_WEIGHT_X, 0f, 1.3f, x =>
+            Tween.LocalPositionX(repeater.Prefab.transform, 80f * SCREEN_WEIGHT, 1.3f, Ease.OutQuart);
+            Tween.Custom(237f * SCREEN_WEIGHT, 0f, 1.3f, x =>
             {
                 repeater.Offset = new Vector3(x, repeater.Offset.y, repeater.Offset.z);
                 repeater.ApplyOffsetChanges();

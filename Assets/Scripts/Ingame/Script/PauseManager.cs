@@ -47,13 +47,13 @@ namespace ProjectMGG.Ingame.Script
 
             while (true)
             {
-                yield return new WaitForSeconds(0.01f);
+                yield return null;
 
                 for (int i = 0; i < _pauses.Count; i++)
                 {
                     Pause pause = _pauses[i];
                     
-                    pause.CurrentDelay += 0.01f;
+                    pause.CurrentDelay += Time.deltaTime;
                     if (pause.CurrentDelay >= pause.Delay) _removed.Add(pause);
                 }
 
