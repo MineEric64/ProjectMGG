@@ -113,7 +113,7 @@ namespace ProjectMGG.Ingame
 
             //Script
             PauseManager.Clear();
-            PauseManager.Add(Pause.GetInfinity(true));
+            PauseManager.Add(new Pause(15f, true));
             StartCoroutine(InitializeScript()); //Pause will automatically removed after init completed
 
             //Audio
@@ -150,7 +150,7 @@ namespace ProjectMGG.Ingame
                         if (!File.Exists(ScriptPath))
                         {
                             ExceptionManager.Throw($"Can't read the script because file doesn't exists.\n(File Path: '{ScriptPath}')", "IngameManagerV2/Script");
-                            yield break;
+                            break;
                         }
                         sourceCode = File.ReadAllText(ScriptPath);
                         break;
@@ -165,7 +165,7 @@ namespace ProjectMGG.Ingame
                         if (www.result != UnityWebRequest.Result.Success)
                         {
                             ExceptionManager.Throw($"Can't read the script because of failed url response.\n(URL: '{ScriptPath}'\n(Result: '{www.result}')", "IngameManagerV2/Script");
-                            yield break;
+                            break;
                         }
                         sourceCode = www.downloadHandler.text;
                         break;
