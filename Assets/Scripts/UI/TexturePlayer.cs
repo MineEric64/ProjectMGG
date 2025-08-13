@@ -53,7 +53,8 @@ namespace ProjectMGG.UI
                         for (int i = 1; i <= 20; i++) paths.Add(string.Concat("$/images/texture/noise/", i.ToString(), ".png"));
                         foreach (string path in paths)
                         {
-                            _images.Add(IngameManagerV2.LoadResource<Texture2D>(path));
+                            var image = IngameManagerV2.LoadResource<Texture2D>(path);
+                            if (image != null) _images.Add(image);
                         }
                         break;
                     }
