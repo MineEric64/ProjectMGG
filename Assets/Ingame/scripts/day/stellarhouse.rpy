@@ -234,7 +234,7 @@ label start:
     "······ 그렇게 서로 조용히 짐을 정리하던 중, 문득 내 고개를 들었을 때."
     show haeun anxious at haeun_center
     "하은은 유난히 호기심 있는 표정으로 상자를 바라보고 있었다."
-    "그 상자에는 뭐, 특별한 건 딱히···? 아!"
+    "그 상자에는 뭐, {cps=*0.5}특별한 건 {/cps}{cps=*0.3}딱히{/cps}{cps=*0.06}··· {/cps}{cps=*0.8}어!?{/cps}"
     "팬티가 들어있는 속옷이 들어가 있다는 걸 깜빡했다!!"
     "절대로 하은에게 보여줘선 안 돼!!"
     player "하, 하은아!! 미안한데 이 상자 말고, 다른 상자 열어줄래?!"
@@ -253,7 +253,9 @@ label start:
     show haeun embarrassed2 at haeun_center
     haeun "이 상자는 열어도 되지?"
     player "어······ 잠시만, 생각할 시간 좀."
+    window hide
     pause 1.1
+    window show
     player "응, 열어도 돼."
     show haeun happy1 at haeun_center
     haeun "좋아~"
