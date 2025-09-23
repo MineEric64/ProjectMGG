@@ -2,7 +2,7 @@
 define player = Character("[playername]", color="#8da9ab")
 define yunseul = Character("윤슬", color="#3a3e4a")
 
-image yunseul default = "$/images/chr_haru/default.png"
+image yunseul default = "$/images/chr_haeun/default1.png"
 
 # 배경
 image home day = "$/images/bg_home_day_demo.png"
@@ -11,8 +11,8 @@ image home night = "$/images/bg_home_night_demo.png"
 image school gate = "$/images/bg_school_gate_demo.png"
 
 transform yunseul_t1:
-    zoom 1.1
-    ycenter 0.8
+    zoom 0.43
+    ycenter 0.65
     xcenter 0.2
 
 label start:

@@ -227,7 +227,7 @@ namespace ProjectMGG
 
             Tween.Custom(1f, 0f, 3f, x => canvasGroup.alpha = x, Ease.OutQuad).OnComplete(this, x =>
             {
-                x.GoDay("1.rpy");
+                x.GoDay("stellarhouse.rpy"); //for Project MGG: 1.rpy
             });
             //TODO: Blur?
 

@@ -17,6 +17,7 @@ namespace ProjectMGG.Ingame
 
         public GameObject Prefab;
         public Vector3 Offset = new Vector3(0, 0, 0);
+        public bool IsWorking { get; private set; } = false;
 
         private Menu _currentMenu = null;
 
@@ -27,6 +28,7 @@ namespace ProjectMGG.Ingame
 
         public void CreateMenu(Menu menu)
         {
+            IsWorking = true;
             _currentMenu = menu;
             Vector3 position = Prefab.transform.localPosition;
 
@@ -88,6 +90,7 @@ namespace ProjectMGG.Ingame
                 Destroy(child.gameObject);
             }
             _currentMenu = null;
+            IsWorking = false;
         }
 
         public void OnHover(int index)

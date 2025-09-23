@@ -32,7 +32,10 @@ namespace ProjectMGG.Ingame
         #region Script & TextTag
         private List<Token> _tokens;
         [SerializeField] private List<string> _tokensDebug;
+
         public static Ease DefaultEase { get; private set; } = Ease.Linear;
+        public static bool IsSkipping { get; private set; } = false; //Because of goto command
+
         public static Dictionary<string, VariableCollection> Locals { get; private set; } //Key: FunctionName
         public static VariableCollection Local => Locals?.GetValueOrDefault(Interpreter.CurrentPoint?.Name ?? string.Empty) ?? Global;
         public static VariableCollection Global { get; private set; } = new VariableCollection();
@@ -914,6 +917,13 @@ namespace ProjectMGG.Ingame
                 ContentUI.text = "";
                 LetsWindow(false);
 
+                if (IsSkipping) //No delay
+                {
+                    CanvasDefault.alpha = 1f;
+                    showAction?.Invoke();
+                    yield break;
+                }
+
                 float outTime = fade.OutTime?.Interpret() as float? ?? 0f;
                 float holdTime = fade.HoldTime?.Interpret() as float? ?? 0f;
                 float inTime = fade.InTime?.Interpret() as float? ?? 0f;
@@ -939,6 +949,13 @@ namespace ProjectMGG.Ingame
 
             if (result is Dissolve dissolve && image != null)
             {
+                if (IsSkipping) //No delay
+                {
+                    image.color = new Color(image.color.r, image.color.g, image.color.b, 1f);
+                    sceneAction?.Invoke();
+                    yield break;
+                }
+
                 float start = isShow ? 0f : 1f;
                 float end = isShow ? 1f : 0f;
 
@@ -1056,26 +1073,39 @@ namespace ProjectMGG.Ingame
         public IEnumerator LetsGoTo(int line)
         {
             int currentLine = 0;
+            IsSkipping = true;
 
             while (currentLine < line)
             {
                 var block = Interpreter.CurrentPoint?.GetCurrentBlock();
 
-                if (block == null) yield break;
+                if (block == null)
+                {
+                    IsSkipping = false;
+                    yield break;
+                }
 
                 currentLine = block.Line;
                 if (currentLine >= line)
                 {
                     _goToNext = true;
                     _readAll = false;
+
+                    IsSkipping = false;
                     yield break;
                 }
 
                 _goToNext = true;
                 _readAll = true;
 
+                //Warning: if pause is removed, some transitions (or animations) might not be work properly
+                if (PauseManager.Paused) PauseManager.Remove(true);
+                if (MenuChoiceManager.Instance.IsWorking) MenuChoiceManager.Instance.OnClick(0); //always click Menu Block 0
+
                 yield return null;
             }
+
+            IsSkipping = false;
         }
         #endregion
         #region UI: Button Events
