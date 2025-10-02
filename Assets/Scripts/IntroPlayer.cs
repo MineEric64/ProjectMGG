@@ -100,24 +100,30 @@ namespace ProjectMGG
                 needToFadeOut = true;
                 _isSkipped = true;
             }
-            if (Input.GetKeyDown(KeyCode.BackQuote))
+            if (SettingsManager.Settings.Debug) //Developer Mode Only
             {
-                canvasGroup.alpha = 0f;
-                _currentAlpha = 0f;
-                needToFadeIn = true;
-                needToFadeOut = false;
-                canvasGroup = canvasMain.GetComponent<CanvasGroup>();
-                _intensity = 2.4f;
-                _isSkipped = true;
+                //Input
+                if (Input.GetKeyDown(KeyCode.BackQuote))
+                {
+                    canvasGroup.alpha = 0f;
+                    _currentAlpha = 0f;
+                    needToFadeIn = true;
+                    needToFadeOut = false;
+                    canvasGroup = canvasMain.GetComponent<CanvasGroup>();
+                    _intensity = 2.4f;
+                    _isSkipped = true;
 
-                AnimateUI();
-            }
-            if (SettingsManager.Settings.Debug && Input.GetKeyDown(KeyCode.Slash))
-            {
-                bool active = commandInput.gameObject.activeSelf;
+                    AnimateUI();
+                }
+                else if (Input.GetKeyDown(KeyCode.Slash))
+                {
+                    bool active = commandInput.gameObject.activeSelf;
 
-                commandInput.gameObject.SetActive(!active);
-                if (!active) commandInput.ActivateInputField();
+                    commandInput.gameObject.SetActive(!active);
+                    if (!active) commandInput.ActivateInputField();
+                }
+
+
             }
 
             //Camera Moving (Issue #24)
