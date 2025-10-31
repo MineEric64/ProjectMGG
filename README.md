@@ -1,5 +1,5 @@
 # Project MGG
-
+![Main](https://i.imgur.com/bhjbD4qh.png)
  > [!NOTE]
  > Made by **MineEric64**
 > 
