@@ -124,7 +124,6 @@ label start:
     player "{color=#cccccc}{size=-10}(존나 예쁘잖아?){/size}{/color}"
     "???" "저기···?"
     player "어··· 어{size=-15}어{/size}······."
-    "막상 말하려고 보니 도저히 말이 안 나온다······."
     # 환하게 웃는 하은의 캐릭터 CG
     show haeun happy3 at haeun_center
     "머릿속이 새하얘진 내 모습을 본 건지, 살짝 미소 짓는 얼굴이 보인다."
@@ -146,7 +145,7 @@ label start:
     player "아, 아··· {size=-15}응.{/size}"
     show haeun happy1 at haeun_left
     "고등학교 때 기숙사 생활을 오래 해봤지만,"
-    "룸메이트가 여자인 적은 처음이라 당황스러워 무슨 말을 해야 할 지······"
+    "룸메이트가 여자인 적은 처음이라 무슨 말을 해야 할 지······"
     "······ 모르겠다."
     "아무리 생각해봐도 해결책은 떠오르지 않는다."
     show haeun curious at haeun_left
@@ -154,13 +153,11 @@ label start:
     player "어··· 셰어하우스는 처음이라서"
     player "뭔가 되게 새로운 느낌이 드네"
     show haeun happy1 at haeun_left
-    haeun "ㅎㅎ"
-    # 나레이션이 1인칭 화법이 아닌 독자에게 알려주기 위해 이야기하는 느낌. 자연스럽지 않고 오히려 위화감이 들고 어색함.
-
+    "그저 말없이 환하게 웃는 하은."
     show yunseo embarrassed6 at yunseo_right
     yunseo "그러엄··· 나는 머, 먼저 들어가 볼게······."
     show yunseo embarrassed3 at yunseo_right
-    yunseo "필요하면 불러어어······."
+    yunseo "필요하면 불러{size=-10}어어{/size}······."
     # 소심하게 한걸음씩 오른쪽으로 내딛으며 사라지는 윤서
     hide yunseo with Dissolve(1.0)
     # 작게 문을 닫는 SFX
@@ -174,7 +171,7 @@ label start:
     player "아, 아, 아닌데!?"
     # 환하게 웃는 하은의 캐릭터 CG
     show haeun happy5 at haeun_center
-    "곧바로 환하게 웃는 표정으로 변하는 하은."
+    "곧바로 씨익 웃는 표정으로 변하는 하은."
     haeun "정말??"
     player "으응."
     show haeun happy2 at haeun_center
@@ -185,7 +182,7 @@ label start:
     haeun "나는 어때 보여?"
     show haeun anxious1 at haeun_center
     haeun "처음 본 사람한테 이런 말은 잘 안 하는데···"
-    "하은이 내게 의미심장한 질문을 던졌다."
+    "하은이가 내게 의미심장한 질문을 던졌다."
     "마음 같아선 못 들은 척하고 넘어가고 싶지만, 하은과 시선이 맞닿아버려 쉽게 그럴 순 없어 보였다."
     "···무슨 의도가 담긴 말은 아닌 것 같은데, 이럴 땐 무슨 말을 해야 하지?"
 
@@ -195,7 +192,7 @@ label start:
             player "잘 모르겠어."
             player "만난지 얼마 안 되기도 했고···."
             show haeun happy1 at haeun_center
-            "내 말이 끝난 순간 하은의 얼굴에는 미소가 반겼다."
+            "내 말이 끝난 순간 하은이의 얼굴에는 미소가 반겼다."
             show haeun happy2 at haeun_center
             haeun "아하하~ 알겠어."
 
@@ -206,8 +203,8 @@ label start:
             haeun "정말?"
             player "응. 동시에 조금은 무섭기도 하고···."
             show haeun happy1 at haeun_center
-            "내 말이 끝난 순간 하은의 얼굴에는 미소가 반겼다."
-            haeun "아하하~ 정말 솔직하게 얘기해줘서 고마워."
+            "내 말이 끝난 순간 하은이의 얼굴에는 미소가 반겼다."
+            haeun "아하하~ 너 꽤 귀여운 구석이 있구나?"
             haeun "그 말을 이번엔 너한테 들으니까 좋네."
             player "이번에··· 라니?"
             show haeun happy2 at haeun_center
@@ -216,18 +213,22 @@ label start:
         "그런 건 왜······.":
             "···에이, 모르겠다."
             player "그런 건 왜······."
+            # 무심한 표정으로 곧바로 바뀌는 하은의 캐릭터 CG
             show haeun default1 at haeun_center
-            "내 말을 듣곤 하은은 한 치의 망설임도 없이 단호하게 말을 꺼냈다."
+            "내 말을 듣곤 하은이는 한 치의 망설임도 없이 단호하게 말을 꺼냈다."
             haeun "그냥. 너라면 솔직하게 말해줄 것 같아서."
+            # 11%의 확률로 경멸한 표정을 짓는 하은의 캐릭터 CG
             haeun "다른 사람들은, 다 거짓말만 했거든."
             player "다른 사람들?"
+            # 경멸한 경우 무심하면서도 호기심 있게 바라보는 하은의 캐릭터 CG로 바뀐다
             haeun "그리고 무엇보다, 네 반응이 재미있을 것 같아서."
             player "···으응?"
             show haeun happy2 at haeun_center
-            "그 순간 하은의 얼굴에는 미소가 반겼다."
+            "그 순간 하은이의 얼굴에는 미소가 반겼다."
             haeun "아하하~ 농담이야!"
 
         "뭐라고 했는지 다시 말해줄 수 있어?":
+            "···이럴 땐 못 들은 척하는 게 가장 나을지도 모르겠다."
             player "뭐라고 했는지 다시 말해줄 수 있어?"
             show haeun anxious1 at haeun_center
             "내 말이 끝나자 단호하게 이야기하는 하은. "
@@ -237,7 +238,7 @@ label start:
             show haeun happy2 at haeun_center
             haeun "아하하~ 아니야."
 
-    "그때, 하은이 내 앞에 놓인 수많은 박스들을 보고 말을 이어나간다."
+    "그때, 하은이는 내 앞에 놓인 수많은 박스들을 보고 말을 이어나간다."
     show haeun happy1 at haeun_center
     haeun "이 박스들 다 짐이야?"
     "맞다, 짐 정리를 한다는 걸 완전히 잊어먹고 있었지."
@@ -250,26 +251,26 @@ label start:
         "응, 도와줘.":
             show haeun happy2 at haeun_center
             haeun "응! 그렇게 말해줘서 고마워!"
-            "그 순간 하은의 표정에는 활기가 가득해졌다."
-            "뭐, 나도 이번 기회에 하은과 친해질 수 있어서 좋긴 하지만···"
+            "그 순간 하은이의 표정에는 활기가 가득해졌다."
+            "뭐, 나도 이번 기회에 하은이와 친해질 수 있어서 좋긴 하지만···"
             "보통 이런 건 내가 고마워해야 하는 거 아닌가···?"
             player "아니야, 나야 고맙지."
 
         "아니, 괜찮아.":
             show haeun anxious1 at haeun_center
             haeun "알겠어···."
-            "하은은 내 말을 듣곤 별 반응을 보이지 않다가······"
+            "하은이는 내 말을 듣곤 별 반응을 보이지 않다가······"
             show haeun default1 at haeun_center
             "아무 말 없이 짐을 옮겨주려고 한다?"
             "난 분명히 괜찮다고 말했는데···."
             player "괜찮다니까?"
-            "그러자 하은은 별 말 없이 나를 한번 보고는, 결국 짐을 들었다."
+            "그러자 하은이는 별 말 없이 나를 한번 보고는, 결국 짐을 들었다."
             show haeun happy1 at haeun_center
             haeun "에이, 그래도 룸메이트인데 이 정돈 해야지~"
             "뭐··· 그래."
             "두 명이서 한다고 안 좋을 건 없으니까."
 
-    player "그럼 하은, 너가 1호 상자좀 맡아줘."
+    player "그럼 하은아, 너가 1호 상자좀 맡아줘."
     player "그게 제일 작은 거니까 아무래도 들기에 더욱 수월할 거야."
     show haeun default1 at haeun_center
     haeun "맡아달란 이야기는··· 상자를 열어달란 소리지?"
@@ -281,7 +282,7 @@ label start:
     pause 1.1
     "······ 그렇게 서로 조용히 짐을 정리하던 중, 문득 내 고개를 들었을 때."
     show haeun curious at haeun_center
-    "하은은 유난히 호기심 있는 표정으로 상자를 바라보고 있었다."
+    "하은이는 유난히 호기심 있는 표정으로 상자를 바라보고 있었다."
     "그 상자에는 뭐, {cps=*0.5}특별한 건 {/cps}{cps=*0.3}딱히{/cps}{cps=*0.06}··· {/cps}{cps=*0.8}어!?{/cps}"
     "팬티가 들어있는 속옷이 들어가 있다는 걸 깜빡했다!!"
     "절대로 하은에게 보여줘선 안 돼!!"
@@ -291,7 +292,7 @@ label start:
     player "아, 알았어···!"
     player "휴우···."
     "다행히 내 인생 최대 큰 위기는 면했다."
-    "그대로 상자를 열었으면 하은이 날 뭐라고 생각했을지······."
+    "그대로 상자를 열었으면 하은이가 날 뭐라고 생각했을지······."
     "하은의 말대로, 들고 있던 상자를 살며시 건네준다."
     show haeun yandere1 at haeun_center
     haeun "고마워, 너가 만진 거라 따뜻하네."
@@ -307,7 +308,7 @@ label start:
     player "응, 열어도 돼."
     show haeun happy3 at haeun_center
     haeun "좋아~"
-    "이제 상자 뜯는 거에 능숙해진 하은은 재빠르게 테이프를 뜯어 상자를 연다."
+    "이제 상자 뜯는 거에 능숙해진 하은이는 재빠르게 테이프를 뜯어 상자를 연다."
     show haeun curious at haeun_center
     "내가 가져온 목걸이를 보자 놀란 토끼 눈으로 나를 지그시 바라본다."
     "어서 이야기를 꺼내고 싶다는 듯이···."
@@ -320,7 +321,7 @@ label start:
     show haeun anxious2 at haeun_center
     # (눈이 내려가 자신의 목걸이를 보는 하은의 캐릭터 CG, 이상하면 폐기)
     haeun "아, 이거······."
-    "내 말에 잠자코 있던 하은은 내 푸른 목걸이를 흘겨보곤 다시 말을 이어나갔다."
+    "내 말에 잠자코 있던 하은이는 내 푸른 목걸이를 흘겨보곤 다시 말을 이어나갔다."
     show haeun default1 at haeun_center
     haeun "사실··· 목걸이는 많으면 많을 수록 좋거든."
     "내 목걸이에 무슨 대단한 뜻이라도 있는 건가?"
@@ -329,8 +330,8 @@ label start:
     show haeun yandere1 at haeun_center
     haeun "응! [playername2:야] 고마워!"
     "무척 해맑은 눈으로 미소를 짓는 하은."
-    "하은이 이렇게 진심으로 웃는 모습은 만나서 처음으로 보는 듯하다."
-    "하은은, 목걸이를 정말로 좋아하는구나."
+    "하은이가 이렇게 진심으로 웃는 모습은 만나서 처음으로 보는 듯하다."
+    "하은이는, 목걸이를 정말로 좋아하는구나."
     show haeun yandere2 at haeun_center
     haeun "다른 사람들한텐 안 그러지? 나한테만 주는 거지?"
     player "어, 애초에 그 목걸이 언젠가 처분하려고 했어."
@@ -343,10 +344,10 @@ label start:
 
     scene home day with Fade(1.0, 1.0, 1.0)
     "···다행히 별일 없이 짐 정리를 수월하게 끝낼 수 있었다."
-    "특히 선반 조립할 때, 하은이 없었으면 지금쯤 낑낑대고 있었겠지."
+    "특히 선반 조립할 때, 하은이가 없었으면 지금쯤 낑낑대고 있었겠지."
     # 내 목걸이를 낀 하은의 캐릭터 CG 등장
     show haeun happy1 at haeun_center with Dissolve(0.8)
-    haeun "[playername2] 고생 많았어~ 난 잠깐 밖에 나갔다 올게!"
+    haeun "[playername2:야] 고생 많았어~ 난 잠깐 밖에 나갔다 올게!"
     # 현관문이 닫히고 도어락이 작동하는 SFX
     hide haeun with Dissolve(0.8)
     # 꼬르륵 SFX
@@ -394,7 +395,7 @@ label start:
     # 그저 멍하니 바라보는 윤서의 캐릭터 CG
     pause 1.5
     "아, 윤서가 있었지."
-    player "저기 윤서, 냄비받침이랑 식탁좀 세팅해 줄 수 있어? 손이 안 남아서 말이야."
+    player "저기, 냄비받침이랑 식탁 좀 세팅해 줄 수 있어? 손이 안 남아서 말이야."
     # 깜빡 잊고 있었다는 듯이 살짝 놀라는 윤서의 캐릭터 CG
     show yunseo embarrassed5 at yunseo_center
     yunseo "아! 으응."
@@ -437,8 +438,8 @@ label start:
     player "찾았다, 바로 앞에 있네."
     show yunseo embarrassed5 at yunseo_center
     yunseo "저, 정말···?"
+    yunseo "{size=-10}미{/size}, {size=-10}미안해{/size}······."
     show yunseo embarrassed3 at yunseo_center
-    yunseo "미, {size=-10}미안해{/size}······."
     show yunseo happy1 at yunseo_center
     "수저와 접시를 챙기자, 손에 얹어 달라는 듯 양손을 공손히 모으는 윤서."
     "그런 윤서의 손에 수저를 먼저 살며시 내려놓고, 접시는 앞에 놓아준다."
@@ -461,3 +462,32 @@ label start:
     "내가 만든 밥을 이렇게 맛있다고 말해준 사람은, 윤서가 처음이다."
     "아무리 요리에 자신 있다고는 해도, 혹여나 입맛에 안 맞을까 봐 걱정했는데···."
     player "칭찬해줘서 고마워."
+	
+    # 임시
+    player "그나저나 많이 배고팠어?"
+    yunseo "우음, 응, 진ㅡ진짜 배고팠어."
+    "그러다 밥을 한 번 곱씹어 먹은 뒤에, 말을 다시 이어나갔다."
+    yunseo "오늘만큼은 교회 쉬는 날이거든."
+    # 생각 전에 말이 먼저 튀어나와 순간 당황한 윤서의 캐릭터 CG / 윤서 특유 불안 표정 + o_o
+    "순간, 윤서의 하얀 얼굴이 붉게 달아오른다."
+    player "응?"
+    # 삐졌어요 그리고 놀랐어요 표정 참고
+    yunseo "아, sg그, 그게······."
+    "급기야 눈을 희번덕거리는 윤서."
+    "아무래도 무슨 생각에 잠긴 듯한 모양이다."
+    player "무슨 일이길래?"
+    # 점차 차가워지는 조명, White Balance 조정하면 될 듯
+    # N.C.
+    yunseo "······."
+    "윤서는 자꾸만 내 시선을 피하고 있는다."
+    "분명 아까까지만 해도 이런 분위기는 아니었던 것 같은데···."
+    "얼마 지나지 않아 윤서가 서서히 자리에서 일어선다."
+    "그런데 왜 나를 힐끔힐끔 보고 있는 걸까."
+    "말로는 못 하겠지만 무언가 전하고 싶은 표정이었다."
+    yunseo "···."
+    "윤서는 침을 삼키곤, 천천히 손을 뻗는다."
+    "···그러다 국자에서 잠깐 손이 멈춘다."
+    "잠시 망설이는 게 느껴졌지만, 그래도 조심스럽게 국자를 들었다."
+    "그러곤 내 그릇에 김치찌개를··· 한가득 담아준다."
+    yunseo "미, 미안··· 너도 많이 배고팠을텐데···"
+    yunseo "지, 짐정리하느라 많이··· 힘들었지······?"
