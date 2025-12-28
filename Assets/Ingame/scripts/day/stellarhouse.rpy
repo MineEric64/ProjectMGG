@@ -154,6 +154,7 @@ label start:
     player "뭔가 되게 새로운 느낌이 드네"
     show haeun happy1 at haeun_left
     "그저 말없이 환하게 웃는 하은."
+
     show yunseo embarrassed6 at yunseo_right
     yunseo "그러엄··· 나는 머, 먼저 들어가 볼게······."
     show yunseo embarrassed3 at yunseo_right
@@ -213,7 +214,7 @@ label start:
         "그런 건 왜······.":
             "···에이, 모르겠다."
             player "그런 건 왜······."
-            # 무심한 표정으로 곧바로 바뀌는 하은의 캐릭터 CG
+            # 무심하면서도 싸늘한 표정으로 곧바로 바뀌는 하은의 캐릭터 CG
             show haeun default1 at haeun_center
             "내 말을 듣곤 하은이는 한 치의 망설임도 없이 단호하게 말을 꺼냈다."
             haeun "그냥. 너라면 솔직하게 말해줄 것 같아서."
@@ -283,7 +284,7 @@ label start:
     "······ 그렇게 서로 조용히 짐을 정리하던 중, 문득 내 고개를 들었을 때."
     show haeun curious at haeun_center
     "하은이는 유난히 호기심 있는 표정으로 상자를 바라보고 있었다."
-    "그 상자에는 뭐, {cps=*0.5}특별한 건 {/cps}{cps=*0.3}딱히{/cps}{cps=*0.06}··· {/cps}{cps=*0.8}어!?{/cps}"
+    "그 상자에는 뭐, {cps=*0.5}특별한 건 {/cps}{cps=*0.3}딱히{/cps}{cps=*0.06}··· {/cps}{cps=*0.8}{size=+25}어!?{/size}{/cps}"
     "팬티가 들어있는 속옷이 들어가 있다는 걸 깜빡했다!!"
     "절대로 하은에게 보여줘선 안 돼!!"
     player "하, 하은아!! 미안한데 이 상자 말고, 다른 상자 열어줄래?!"
@@ -293,7 +294,8 @@ label start:
     player "휴우···."
     "다행히 내 인생 최대 큰 위기는 면했다."
     "그대로 상자를 열었으면 하은이가 날 뭐라고 생각했을지······."
-    "하은의 말대로, 들고 있던 상자를 살며시 건네준다."
+    "하은이의 말대로, 들고 있던 상자를 살며시 건네준다."
+    
     show haeun yandere1 at haeun_center
     haeun "고마워, 너가 만진 거라 따뜻하네."
     player "아, 으응."
@@ -363,14 +365,20 @@ label start:
     "일단··· 물을 1컵 정도 부어주고······."
     "그 다음에 레시피에선 볶은 김치 넣으라고 하네, 원래 순서가 이게 맞나?"
     # 작은 방문이 열리는 SFX
-    # 배고픈데 먹을 것을 발견한 윤서, 입에 침이 고여있고 초롱해진 눈으로 헤벌레 웃는 윤서의 캐릭터 CG
+    # 배고픈데 먹을 것을 발견한 윤서, 주위에서 계속 어슬렁거린다
     show yunseo happy7 at yunseo_center with Dissolve(0.4)
     player "어··· 윤서?"
     show yunseo happy3 at yunseo_center
     yunseo "으응······ 나, 나도··· 배고파서··· 헤헤······."
     "냄새가 윤서 방까지 스며 들어간 건가."
     show yunseo happy1 at yunseo_center
+    window hide
     # 요리 SFX
+    pause 1.0
+    # 입에 침이 고여있고 초롱해진 눈으로 헤벌레 웃는 윤서의 캐릭터 CG
+    show yunseo happy5 at yunseo_center
+    pause 0.5
+    window show
     "찌개를 휘저을 때마다··· 옆에서 자꾸만 인기척이 느껴진다."
     "윤서는, 내가 보글보글 끓인 김치찌개를 쳐다보고 있는 걸까."
     "···아니면 나를 뚫어지게 바라보고 있는 걸까."
@@ -386,6 +394,7 @@ label start:
     yunseo "지, 진짜···?"
     player "응, 거의 다 끝났어. 이제 소금만 뿌려주면······"
     player "끝!"
+
     # 다시 헤벌레 웃는 표정을 짓는 윤서의 캐릭터 CG
     show yunseo happy5 at yunseo_center
     yunseo "으헤헤······"
@@ -415,7 +424,6 @@ label start:
     yunseo "······."
     "아무 말 없이 냄비만 멀뚱멀뚱 쳐다보는 윤서."
     player "밥 안 먹어?"
-    show yunseo anxious at yunseo_center
     yunseo "먹, 먹어야 되는데··· 나한테 수저가 없어서······."
     player "집에 수저 있지 않아?"
     show yunseo embarrassed3 at yunseo_center
@@ -429,6 +437,7 @@ label start:
     player "어··· 그냥 내가 접시랑 수저 갖고 올게."
     show yunseo embarrassed5 at yunseo_center
     yunseo "아, 아!··· 으응."
+
     show yunseo embarrassed4 at yunseo_center
     player "어디 있으려나···."
     window hide
@@ -438,8 +447,8 @@ label start:
     player "찾았다, 바로 앞에 있네."
     show yunseo embarrassed5 at yunseo_center
     yunseo "저, 정말···?"
-    yunseo "{size=-10}미{/size}, {size=-10}미안해{/size}······."
     show yunseo embarrassed3 at yunseo_center
+    yunseo "{size=-10}미{/size}, {size=-10}미안해{/size}······."
     show yunseo happy1 at yunseo_center
     "수저와 접시를 챙기자, 손에 얹어 달라는 듯 양손을 공손히 모으는 윤서."
     "그런 윤서의 손에 수저를 먼저 살며시 내려놓고, 접시는 앞에 놓아준다."
@@ -463,31 +472,64 @@ label start:
     "아무리 요리에 자신 있다고는 해도, 혹여나 입맛에 안 맞을까 봐 걱정했는데···."
     player "칭찬해줘서 고마워."
 	
-    # 임시
+    show yunseo eating2 at yunseo_center
     player "그나저나 많이 배고팠어?"
     yunseo "우음, 응, 진ㅡ진짜 배고팠어."
     "그러다 밥을 한 번 곱씹어 먹은 뒤에 말을 다시 이어나갔다."
+    show yunseo default1 at yunseo_center
     yunseo "오늘만큼은 교회 쉬는 날이거든."
+    window hide
+    pause 1.0
     # 생각 전에 말이 먼저 튀어나와 순간 당황한 윤서의 캐릭터 CG / 윤서 특유 불안 표정 + o_o
+    show yunseo embarrassed1 at yunseo_center
+    window show
     "순간, 윤서의 하얀 얼굴이 붉게 달아오른다."
     player "응?"
-    # 삐졌어요 그리고 놀랐어요 표정 참고
-    yunseo "아, sg그, 그게······."
-    "급기야 눈을 희번덕거리는 윤서."
-    "아무래도 무슨 생각에 잠긴 듯한 모양이다."
-    player "무슨 일이길래?"
+    # 삐졌어요 그리고 놀랐어요 표정 / 소스라치게 놀라는 모습 참고 
+    show yunseo embarrassed6 at yunseo_center
+    yunseo "아, {sg=*0.93}그, 그ㅡ그게······.{/sg}"
+    show yunseo embarrassed3 at yunseo_center
+    "윤서의 말끝이 흐려졌다."
+    player "무슨 일이길래?" # or 뭐라고?
     # 점차 차가워지는 조명, White Balance 조정하면 될 듯
     # N.C.
+    show yunseo embarrassed1 at yunseo_center
     yunseo "······."
-    "윤서는 자꾸만 내 시선을 피하고 있는다."
-    "분명 아까까지만 해도 이런 분위기는 아니었던 것 같은데···."
-    "얼마 지나지 않아 윤서가 서서히 자리에서 일어선다."
+    "어색한 분위기가 흐르자 윤서는 서서히 자리에서 일어선다."
+    show yunseo embarrassed2 at yunseo_center
     "그런데 왜 나를 힐끔힐끔 보고 있는 걸까."
     "말로는 못 하겠지만 무언가 전하고 싶은 표정이었다."
+    show yunseo embarrassed4 at yunseo_center
     yunseo "···."
     "윤서는 침을 삼키곤, 천천히 손을 뻗는다."
     "···그러다 국자에서 잠깐 손이 멈춘다."
+    show yunseo embarrassed7 at yunseo_center
     "잠시 망설이는 게 느껴졌지만, 그래도 조심스럽게 국자를 들었다."
+    # 다시 천천히 따뜻해지는 조명
     "그러곤 내 그릇에 김치찌개를··· 한가득 담아준다."
-    yunseo "미, 미안··· 너도 많이 배고팠을텐데···"
+    yunseo "{size=-5}미,{/size} 미안··· 너도 많이 배고팠을텐데···"
     yunseo "지, 짐정리하느라 많이··· 힘들었지······?"
+    # 참고: 이 부분은 윤서의 표정으로 드러나는 세부 감정들이 잘 전달되어야 한다.
+
+    menu:
+        "(윤서가 내 걱정을 해주다니······)":
+            pass
+        "응, 되게 힘들었지.":
+            pass
+
+    # N.C.
+    # 볼이 확 빨개질 정도로 매우 수줍어 하는 윤서
+    show yunseo embarrassed5 at yunseo_center
+    yunseo "무ㅡ무리하지 마······."
+    player "···."
+    show yunseo happy7 at yunseo_center
+    yunseo "그, 그리고 덕분에 잘 먹었어······."
+    show yunseo happy5 at yunseo_center
+    yunseo "고마워······ {size=-10}으헤헤{/size}······."
+    window hide
+    # 방문으로 들어가는 윤서, Dissolve
+    hide yunseo with Dissolve(1.5)
+    # 작게 문을 닫는 SFX
+    pause 3.0
+    window show
+    player "갑자기 왜 김치찌개에 단맛이 나는 거지······."
