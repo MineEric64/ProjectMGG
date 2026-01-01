@@ -67,6 +67,8 @@ image yunseo anxious1 = "$/images/chr_yunseo/anxious1.png"
 image yunseo anxious2 = "$/images/chr_yunseo/anxious2.png"
 
 # 배경
+image black = Solid("#000000")
+
 image home day = "$/images/bg_home_day_demo.png"
 
 # 위치
@@ -103,15 +105,15 @@ label start:
     player "새로운 집 비밀번호가 뭐였더라······ 0915?"
     "비밀번호가 마침 내 생일이랑 같네, 우연치곤 신기하다."
     # 비밀번호를 눌러 현관문을 여는 SFX
-    # 장소: 거실 / Camera Lens Blur FX + Lens Flare FX가 2초동안 서서히 사라진다
+    # 장소: 거실 / Camera Lens Blur FX + Lens Flare FX가 2초 동안 서서히 사라진다
     window hide
     scene home day with Dissolve(2.0)
     window show
     player "우와······."
-    "생활용품들이 가지런히 정돈되어 있는 거실."
-    "따뜻한 조명과 정돈되어 있는 가구들이 만들어내는 아늑한 공기."
+    "생활용품들이 가지런히 정돈된 거실."
+    "따뜻한 조명과 정돈된 가구들이 만들어내는 아늑한 공기."
     "게다가 창문 너머로 스며드는 아련한 햇살까지."
-    "순간 분위기에 압도되어 그저 앞을 멍하니 바라볼 수 밖에 없었다."
+    "순간 분위기에 압도되어 그저 앞을 멍하니 바라볼 수밖에 없었다."
     player "여기서 살게 되는구나···."
 
     "······{nw=1.1}"
@@ -127,7 +129,7 @@ label start:
     # 환하게 웃는 하은의 캐릭터 CG
     show haeun happy3 at haeun_center
     "머릿속이 새하얘진 내 모습을 본 건지, 살짝 미소 짓는 얼굴이 보인다."
-    "???" "괜찮아요, 말 편하게 해요 ㅎㅎ"
+    "???" "괜찮아요, 말 편하게 해요!"
     "처음 보는 사이인데도, 이렇게 친근하게 대해주다니······"
     "완전 착하잖아!"
     show haeun happy1 at haeun_left # TODO: 캐릭터 동적 애니메이션
@@ -145,9 +147,9 @@ label start:
     player "아, 아··· {size=-15}응.{/size}"
     show haeun happy1 at haeun_left
     "고등학교 때 기숙사 생활을 오래 해봤지만,"
-    "룸메이트가 여자인 적은 처음이라 무슨 말을 해야 할 지······"
+    "룸메이트가 여자인 적은 처음이라 무슨 말을 해야 할지······"
     "······ 모르겠다."
-    "아무리 생각해봐도 해결책은 떠오르지 않는다."
+    "아무리 생각해 봐도 해결책은 떠오르지 않는다."
     show haeun curious at haeun_left
     haeun "무슨 생각해?"
     player "어··· 셰어하우스는 처음이라서"
@@ -159,7 +161,7 @@ label start:
     yunseo "그러엄··· 나는 머, 먼저 들어가 볼게······."
     show yunseo embarrassed3 at yunseo_right
     yunseo "필요하면 불러{size=-10}어어{/size}······."
-    # 소심하게 한걸음씩 오른쪽으로 내딛으며 사라지는 윤서
+    # 소심하게 한 걸음씩 오른쪽으로 내디디며 사라지는 윤서
     hide yunseo with Dissolve(1.0)
     # 작게 문을 닫는 SFX
     pause 0.3
@@ -168,9 +170,9 @@ label start:
     "···그것도 이성이라면 더더욱."
     # 음흉한 눈빛으로 쳐다보는 하은의 캐릭터 CG
     show haeun yandere4 at haeun_center
-    haeun "너 지금 윤서 보고 소심하다 생각했지!?"
+    haeun "너 지금 윤서 보고 소심하다고 생각했지!?"
     player "아, 아, 아닌데!?"
-    # 환하게 웃는 하은의 캐릭터 CG
+    # 환하게 웃으면서도 씨익 웃는 하은의 캐릭터 CG
     show haeun happy5 at haeun_center
     "곧바로 씨익 웃는 표정으로 변하는 하은."
     haeun "정말??"
@@ -191,7 +193,7 @@ label start:
         "잘 모르겠어.":
             "···에이, 모르겠다."
             player "잘 모르겠어."
-            player "만난지 얼마 안 되기도 했고···."
+            player "만난 지 얼마 안 되기도 했고···."
             show haeun happy1 at haeun_center
             "내 말이 끝난 순간 하은이의 얼굴에는 미소가 반겼다."
             show haeun happy2 at haeun_center
@@ -239,10 +241,10 @@ label start:
             show haeun happy2 at haeun_center
             haeun "아하하~ 아니야."
 
-    "그때, 하은이는 내 앞에 놓인 수많은 박스들을 보고 말을 이어나간다."
+    "그때, 하은이는 내 앞에 놓인 수많은 박스를 보고 말을 이어나간다."
     show haeun happy1 at haeun_center
     haeun "이 박스들 다 짐이야?"
-    "맞다, 짐 정리를 한다는 걸 완전히 잊어먹고 있었지."
+    "맞다, 짐 정리한다는 걸 완전히 잊어먹고 있었지."
     player "응, 이제 정리하려고."
     "일단 작은 것부터 시작해볼까ㅡ라고 생각하던 찰나."
     show haeun default2 at haeun_center
@@ -265,13 +267,13 @@ label start:
             "아무 말 없이 짐을 옮겨주려고 한다?"
             "난 분명히 괜찮다고 말했는데···."
             player "괜찮다니까?"
-            "그러자 하은이는 별 말 없이 나를 한번 보고는, 결국 짐을 들었다."
+            "그러자 하은이는 별말 없이 나를 한번 보고는, 결국 짐을 들었다."
             show haeun happy1 at haeun_center
             haeun "에이, 그래도 룸메이트인데 이 정돈 해야지~"
             "뭐··· 그래."
-            "두 명이서 한다고 안 좋을 건 없으니까."
+            "둘이서 한다고 안 좋을 건 없으니까."
 
-    player "그럼 하은아, 너가 1호 상자좀 맡아줘."
+    player "그럼 하은아, 네가 1호 상자 좀 맡아줘."
     player "그게 제일 작은 거니까 아무래도 들기에 더욱 수월할 거야."
     show haeun default1 at haeun_center
     haeun "맡아달란 이야기는··· 상자를 열어달란 소리지?"
@@ -289,15 +291,15 @@ label start:
     "절대로 하은에게 보여줘선 안 돼!!"
     player "하, 하은아!! 미안한데 이 상자 말고, 다른 상자 열어줄래?!"
     show haeun default2 at haeun_center
-    haeun "응? 너가 지금 들고 있는 상자 준다면야."
+    haeun "응? 네가 지금 들고 있는 상자 준다면야."
     player "아, 알았어···!"
     player "휴우···."
-    "다행히 내 인생 최대 큰 위기는 면했다."
+    "다행히 내 인생 최대로 큰 위기는 면했다."
     "그대로 상자를 열었으면 하은이가 날 뭐라고 생각했을지······."
     "하은이의 말대로, 들고 있던 상자를 살며시 건네준다."
     
     show haeun yandere1 at haeun_center
-    haeun "고마워, 너가 만진 거라 따뜻하네."
+    haeun "고마워, 네가 만진 거라 따뜻하네."
     player "아, 으응."
     show haeun default1 at haeun_center
     "내가 건네준 상자를 바라보곤 잠깐 멈칫하는 하은."
@@ -321,11 +323,11 @@ label start:
     haeun "그러면 혹시 내가 당분간 써도 될까?"
     player "너 지금 목걸이 쓰고 있는 거 아니야?"
     show haeun anxious2 at haeun_center
-    # (눈이 내려가 자신의 목걸이를 보는 하은의 캐릭터 CG, 이상하면 폐기)
+    # (눈이 내려가 자기 목걸이를 보는 하은의 캐릭터 CG, 이상하면 폐기)
     haeun "아, 이거······."
     "내 말에 잠자코 있던 하은이는 내 푸른 목걸이를 흘겨보곤 다시 말을 이어나갔다."
     show haeun default1 at haeun_center
-    haeun "사실··· 목걸이는 많으면 많을 수록 좋거든."
+    haeun "사실··· 목걸이는 많으면 많을수록 좋거든."
     "내 목걸이에 무슨 대단한 뜻이라도 있는 건가?"
     player "뭐, 알겠어."
     "아예 주는 것도 아니고 당분간 빌려 쓴다고 했으니까."
@@ -344,7 +346,7 @@ label start:
 
     # 파스 이벤트를 여기에 넣는 대신 하은 중간 루트 때 넣기로 했음.
 
-    scene home day with Fade(1.0, 1.0, 1.0)
+    scene home day with Fade(1.0, 2.0, 2.0)
     "···다행히 별일 없이 짐 정리를 수월하게 끝낼 수 있었다."
     "특히 선반 조립할 때, 하은이가 없었으면 지금쯤 낑낑대고 있었겠지."
     # 내 목걸이를 낀 하은의 캐릭터 CG 등장
@@ -363,7 +365,7 @@ label start:
     pause 0.5
     window show
     "일단··· 물을 1컵 정도 부어주고······."
-    "그 다음에 레시피에선 볶은 김치 넣으라고 하네, 원래 순서가 이게 맞나?"
+    "그다음에 레시피에선 볶은 김치 넣으라고 하네, 원래 순서가 이게 맞나?"
     # 작은 방문이 열리는 SFX
     # 배고픈데 먹을 것을 발견한 윤서, 주위에서 계속 어슬렁거린다
     show yunseo happy7 at yunseo_center with Dissolve(0.4)
@@ -375,7 +377,7 @@ label start:
     window hide
     # 요리 SFX
     pause 1.0
-    # 입에 침이 고여있고 초롱해진 눈으로 헤벌레 웃는 윤서의 캐릭터 CG
+    # 입에 침이 고여있고 초롱초롱해진 눈으로 헤벌레 웃는 윤서의 캐릭터 CG
     show yunseo happy5 at yunseo_center
     pause 0.5
     window show
@@ -409,9 +411,9 @@ label start:
     show yunseo embarrassed5 at yunseo_center
     yunseo "아! 으응."
     show yunseo embarrassed8 at yunseo_center
-    "내 말을 듣곤 그제서야 분주하게 움직이는 윤서."
-    "···뭐 냄비받침이 바로 눈 앞에 있어서 ‘분주하게’라고 말할 것까진 아니지만."
-    # 둥툭한 SFX 
+    "내 말을 듣곤 그제야 분주하게 움직이는 윤서."
+    "···뭐 냄비받침이 바로 눈앞에 있어서 ‘분주하게’라고 말할 것까진 아니지만."
+    # 뭉툭한 SFX 
     show yunseo embarrassed2 at yunseo_center
     "좋아, 윤서가 준 냄비받침에다 둔 뒤에 이제 먹으면······ 어라?"
     "정작 냄비를 뜰 수저가 없네."
@@ -424,10 +426,10 @@ label start:
     yunseo "······."
     "아무 말 없이 냄비만 멀뚱멀뚱 쳐다보는 윤서."
     player "밥 안 먹어?"
-    yunseo "먹, 먹어야 되는데··· 나한테 수저가 없어서······."
+    yunseo "먹, 먹어야 하는데··· 나한테 수저가 없어서······."
     player "집에 수저 있지 않아?"
     show yunseo embarrassed3 at yunseo_center
-    yunseo "어··· 집밥은 오, 오랜만이라서··· 어디있는지 잘······"
+    yunseo "어··· 집밥은 오, 오랜만이라서··· 어디 있는지 잘······"
     show yunseo embarrassed4 at yunseo_center
     yunseo "이럴 땐 보, 보통 나눠주긴 하거든······."
     # N.C.
@@ -448,7 +450,7 @@ label start:
     show yunseo embarrassed5 at yunseo_center
     yunseo "저, 정말···?"
     show yunseo embarrassed3 at yunseo_center
-    yunseo "{size=-10}미{/size}, {size=-10}미안해{/size}······."
+    yunseo "{size=-10}미{/size}, {size=-10}미안해{/size}···."
     show yunseo happy1 at yunseo_center
     "수저와 접시를 챙기자, 손에 얹어 달라는 듯 양손을 공손히 모으는 윤서."
     "그런 윤서의 손에 수저를 먼저 살며시 내려놓고, 접시는 앞에 놓아준다."
@@ -467,10 +469,10 @@ label start:
     yunseo "맛, 맛있어···"
     player "진짜로?"
     show yunseo happy5 at yunseo_center
-    yunseo "으응, 콩나물국만 먹다 와서 그런가······ 진, 진짜 맛있다 이거."
+    yunseo "으응, 콩나물국만 먹다 와서 그런가··· 진, 진짜 맛있다 이거."
     "내가 만든 밥을 이렇게 맛있다고 말해준 사람은, 윤서가 처음이다."
     "아무리 요리에 자신 있다고는 해도, 혹여나 입맛에 안 맞을까 봐 걱정했는데···."
-    player "칭찬해줘서 고마워."
+    player "칭찬해 줘서 고마워."
 	
     show yunseo eating2 at yunseo_center
     player "그나저나 많이 배고팠어?"
@@ -495,33 +497,40 @@ label start:
     # N.C.
     show yunseo embarrassed1 at yunseo_center
     yunseo "······."
-    "어색한 분위기가 흐르자 윤서는 서서히 자리에서 일어선다."
-    show yunseo embarrassed2 at yunseo_center
+    "아무래도 무슨 생각에 잠긴 듯한 모양이다."
+    player "괜찮아, 천천히 이야기해도 돼."
+    "하지만 붉게 물든 윤서의 얼굴은 좀처럼 사라지지 않았다."
     "그런데 왜 나를 힐끔힐끔 보고 있는 걸까."
     "말로는 못 하겠지만 무언가 전하고 싶은 표정이었다."
+    show yunseo embarrassed2 at yunseo_center
+    "이런 어색한 분위기 속 윤서는 서서히 자리에서 일어선다."
     show yunseo embarrassed4 at yunseo_center
     yunseo "···."
     "윤서는 침을 삼키곤, 천천히 손을 뻗는다."
     "···그러다 국자에서 잠깐 손이 멈춘다."
-    show yunseo embarrassed7 at yunseo_center
-    "잠시 망설이는 게 느껴졌지만, 그래도 조심스럽게 국자를 들었다."
+    show yunseo embarrassed8 at yunseo_center
+    "잠시 망설이는 게 느껴졌지만, 결심이 섰는지 결국 국자를 뜬다."
     # 다시 천천히 따뜻해지는 조명
+    show yunseo embarrassed2 at yunseo_center
     "그러곤 내 그릇에 김치찌개를··· 한가득 담아준다."
-    yunseo "{size=-5}미,{/size} 미안··· 너도 많이 배고팠을텐데···"
-    yunseo "지, 짐정리하느라 많이··· 힘들었지······?"
+    show yunseo happy3 at yunseo_center
+    yunseo "{size=-5}미,{/size} 미안··· 내가 할 수 있는 게 이것밖에 없어서······."
+    yunseo "너도 많이 배고팠을 텐데···."
+    show yunseo happy4 at yunseo_center
+    yunseo "지, 짐 정리하느라 많이 힘들었지······?"
     # 참고: 이 부분은 윤서의 표정으로 드러나는 세부 감정들이 잘 전달되어야 한다.
 
     menu:
-        "(윤서가 내 걱정을 해주다니······)":
+        "(윤서가 내 걱정해주다니······)":
             pass
         "응, 되게 힘들었지.":
             pass
 
     # N.C.
-    # 볼이 확 빨개질 정도로 매우 수줍어 하는 윤서
+    # 볼이 확 빨개질 정도로 매우 수줍어하는 윤서
     show yunseo embarrassed5 at yunseo_center
     yunseo "무ㅡ무리하지 마······."
-    player "···."
+    "예상치 못한 배려에 순간 말문이 막혔다."
     show yunseo happy7 at yunseo_center
     yunseo "그, 그리고 덕분에 잘 먹었어······."
     show yunseo happy5 at yunseo_center
@@ -533,3 +542,36 @@ label start:
     pause 3.0
     window show
     player "갑자기 왜 김치찌개에 단맛이 나는 거지······."
+
+    scene black with Fade(2.0, 2.0, 1.5)
+    # 소리가 크지만 뭉툭하게 난다, 마치 ‘쿵쿵쿵!’ 비스무리 SFX
+    player "어우······."
+    "밥 먹고 그대로 쭉 자버리고 말았다."
+    player "아침부터 너무 무리한 탓인가, 몸이 아직도 뻐근하네···."
+    # 아까와 같지만 작게 나는 SFX
+    player "일단 일어난 김에 물 좀 마셔야겠다."
+    "침대에서 일어나 곧장 거실로 발걸음을 옮겼다."
+    window hide
+    pause 1.5
+    scene home day with Dissolve(2.5) # TODO: 시간대가 새벽인 거실 배경
+    pause 1.0
+    window show
+    "이렇게 어두운 거 보니 한창 새벽인 모양이야."
+    # 이번엔 크게 나는 SFX, 4~8초마다 주기적으로 한 번씩 SFX 재생, 랜덤 이용
+    "······그나저나 아까부터 이게 무슨 소리지?"
+    # 화면이 흔들리며, wiggle FX
+    "???" "으악!"
+    "무언가 넘어지는 소리와 함께 짧은 비명이 났다."
+    "아무래도 누가 다친 게 분명하다."
+    "일단 소리가 방 안에서 난 건 확실한데, 중요한 문제가 있었다."
+    "이게 하은이 방에서 들린 건지, 아니면 윤서 방인지 모르겠다는 것···."
+    "이대로 무시하기엔 위험한 상황 같은데··· 누구를 먼저 확인해야 하지······?"
+
+    menu:
+        "하은이 방을 확인한다.":
+            pass
+
+        "윤서 방을 확인한다.":
+            pass
+
+    return
