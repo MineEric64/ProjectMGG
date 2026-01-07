@@ -247,7 +247,7 @@ namespace ProjectMGG.Ingame.Script
             string content = string.Empty;
             _index++;
 
-            while (Loop(sourceCode) && sourceCode[_index] != '\n')
+            while (Loop(sourceCode) && sourceCode[_index] != '\n' && sourceCode[_index] != '\0')
             {
                 if (sourceCode[_index] == '\r')
                 {

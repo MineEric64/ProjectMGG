@@ -24,8 +24,8 @@ namespace ProjectMGG.Ingame
         public static IngameManagerV2 Instance { get; private set; } = null;
 
         public static string ScriptPath { get; set; }
-        public static string PlayerName { get; set; } //성이름
-        public static string PlayerName2 { get; set; } //이름
+        public static string PlayerName { get; set; } //Full name (성이름, ex: 한세아)
+        public static string PlayerName2 { get; set; } //First name (이름, ex: 세아)
 
         public static Texture2D TextureDefault { get; private set; } = null;
 

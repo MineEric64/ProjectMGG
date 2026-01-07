@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+using ProjectMGG.UI;
+
 namespace ProjectMGG.Ingame
 {
     public class ExceptionManager : MonoBehaviour
@@ -33,6 +35,7 @@ namespace ProjectMGG.Ingame
             }
 
             Debug.LogError(message2);
+            MessageBox.Instance.Error(message2);
 
             //if (UnityEditor.EditorUtility.DisplayDialog(scriptName, message3, "OK"))
             //{
