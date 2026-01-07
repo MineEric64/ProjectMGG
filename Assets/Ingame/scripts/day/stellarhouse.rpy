@@ -200,6 +200,7 @@ label start:
             haeun "아하하~ 알겠어."
 
         "예뻐.":
+            # 하은이가 좋아할 만한 선택지, 호감도 +1
             "···솔직하게 말하는 게 나쁜 건 아니잖아?"
             player "···예뻐."
             show haeun curious at haeun_center
@@ -220,26 +221,29 @@ label start:
             show haeun default1 at haeun_center
             "내 말을 듣곤 하은이는 한 치의 망설임도 없이 단호하게 말을 꺼냈다."
             haeun "그냥. 너라면 솔직하게 말해줄 것 같아서."
-            # 11%의 확률로 경멸한 표정을 짓는 하은의 캐릭터 CG
+            # 경멸한 표정을 짓는 하은의 캐릭터 CG, 얀데레 특유 표정 like [얀데레 경멸]
+            # 경멸할 때, 시선이 아래를 향하는 것도 나쁘지 않다. 적용해 보고 이상하면 폐기
             haeun "다른 사람들은, 다 거짓말만 했거든."
             player "다른 사람들?"
-            # 경멸한 경우 무심하면서도 호기심 있게 바라보는 하은의 캐릭터 CG로 바뀐다
+            # 다시 무심하면서도 호기심 있게 바라보는 하은의 캐릭터 CG로 바뀐다
             haeun "그리고 무엇보다, 네 반응이 재미있을 것 같아서."
             player "···으응?"
             show haeun happy2 at haeun_center
             "그 순간 하은이의 얼굴에는 미소가 반겼다."
             haeun "아하하~ 농담이야!"
 
-        "뭐라고 했는지 다시 말해줄 수 있어?":
+        "응? 뭐라고?":
+            # 호감도 -1
             "···이럴 땐 못 들은 척하는 게 가장 나을지도 모르겠다."
-            player "뭐라고 했는지 다시 말해줄 수 있어?"
+            player "응? 뭐라고?"
             show haeun anxious1 at haeun_center
-            "내 말이 끝나자 단호하게 이야기하는 하은. "
+            "내 말이 끝나자 단호하게 이야기하는 하은."
+            # 경멸한 표정을 짓는 하은의 캐릭터 CG, 얀데레 특유 표정 like [얀데레 경멸]
             show haeun default1 at haeun_center
             haeun "그런 건 왜 물어보는 거야?"
             player "으응?"
-            show haeun happy2 at haeun_center
-            haeun "아하하~ 아니야."
+            "···그런 눈으로 바라보니 하은이가 조금 무서워졌다."
+            # 무심하면서도 호기심 있게 바라보는 하은의 캐릭터 CG로 바뀐다
 
     "그때, 하은이는 내 앞에 놓인 수많은 박스를 보고 말을 이어나간다."
     show haeun happy1 at haeun_center
@@ -252,6 +256,7 @@ label start:
 
     menu:
         "응, 도와줘.":
+            # 하은이가 좋아할 만한 선택지, 호감도 +1
             show haeun happy2 at haeun_center
             haeun "응! 그렇게 말해줘서 고마워!"
             "그 순간 하은이의 표정에는 활기가 가득해졌다."
@@ -288,7 +293,7 @@ label start:
     "하은이는 유난히 호기심 있는 표정으로 상자를 바라보고 있었다."
     "그 상자에는 뭐, {cps=*0.5}특별한 건 {/cps}{cps=*0.3}딱히{/cps}{cps=*0.06}··· {/cps}{cps=*0.8}{size=+25}어!?{/size}{/cps}"
     "팬티가 들어있는 속옷이 들어가 있다는 걸 깜빡했다!!"
-    "절대로 하은에게 보여줘선 안 돼!!"
+    "절대로 하은이에게 보여줘선 안 돼!!"
     player "하, 하은아!! 미안한데 이 상자 말고, 다른 상자 열어줄래?!"
     show haeun default2 at haeun_center
     haeun "응? 네가 지금 들고 있는 상자 준다면야."
@@ -316,18 +321,32 @@ label start:
     show haeun curious at haeun_center
     "내가 가져온 목걸이를 보자 놀란 토끼 눈으로 나를 지그시 바라본다."
     "어서 이야기를 꺼내고 싶다는 듯이···."
-    haeun "오? 너도 목걸이 써?"
-    player "목걸이 예전에 샀는데, 지금은 잘 안 써."
-    "언제부터 장식용으로 전락했을까··· 그래도 그때 꽤 주고 산 것 같은데."
+    haeun "오? 목걸이네?"
+    player "목걸이 예전에 좀 썼다가, 지금은 잘 안 써."
+    "언제부터 장식용으로 전락했을까··· 그래도 그때 꽤 걸고 다녔던 것 같은데."
     show haeun default2 at haeun_center
     haeun "그러면 혹시 내가 당분간 써도 될까?"
-    player "너 지금 목걸이 쓰고 있는 거 아니야?"
-    show haeun anxious2 at haeun_center
-    # (눈이 내려가 자기 목걸이를 보는 하은의 캐릭터 CG, 이상하면 폐기)
-    haeun "아, 이거······."
-    "내 말에 잠자코 있던 하은이는 내 푸른 목걸이를 흘겨보곤 다시 말을 이어나갔다."
-    show haeun default1 at haeun_center
-    haeun "사실··· 목걸이는 많으면 많을수록 좋거든."
+
+    menu:
+        "왜?":
+            show haeun anxious2 at haeun_center
+            # 눈이 내려가 자기 목걸이를 보는 하은의 캐릭터 CG, 이상하면 폐기
+            window hide
+            pause 1.5
+            window show
+            "잠시 얼어있던 하은이는 내 유리 목걸이를 슬쩍 쳐다본다."
+            show haeun default1 at haeun_center
+            haeun "이 목걸이, {size=-1}예전부터{/size} 한번 써보고 싶었거든."
+            haeun "유리라서 더욱 의미 있을 것 같기도 하고."
+
+        "너 지금 목걸이 쓰고 있는 거 아니야?":
+            show haeun anxious2 at haeun_center
+            # 눈이 내려가 자기 목걸이를 보는 하은의 캐릭터 CG, 이상하면 폐기
+            haeun "아, 이거······."
+            "내 말에 잠자코 있던 하은이는 내 유리 목걸이를 흘겨보곤 다시 말을 이어나갔다."
+            show haeun default1 at haeun_center
+            haeun "사실··· 목걸이는 {size=-1}많으면 많을수록{/size} 좋거든."
+    
     "내 목걸이에 무슨 대단한 뜻이라도 있는 건가?"
     player "뭐, 알겠어."
     "아예 주는 것도 아니고 당분간 빌려 쓴다고 했으니까."
@@ -344,16 +363,9 @@ label start:
     haeun "그리고 생필품은 첫 번째 서랍에 넣어둘게~"
     player "응."
 
-    # 파스 이벤트를 여기에 넣는 대신 하은 중간 루트 때 넣기로 했음.
-
     scene home day with Fade(1.0, 2.0, 2.0)
-    "···다행히 별일 없이 짐 정리를 수월하게 끝낼 수 있었다."
-    "특히 선반 조립할 때, 하은이가 없었으면 지금쯤 낑낑대고 있었겠지."
-    # 내 목걸이를 낀 하은의 캐릭터 CG 등장
-    show haeun happy1 at haeun_center with Dissolve(0.8)
-    haeun "[playername2:야] 고생 많았어~ 난 잠깐 밖에 나갔다 올게!"
-    # 현관문이 닫히고 도어락이 작동하는 SFX
-    hide haeun with Dissolve(0.8)
+    "···그렇게 어제 온종일 짐 정리만 하고 잤다."
+    "같이 정리해서 망정이지, 하은이가 없었으면 선반 조립은 어떻게 했으려나."
     # 꼬르륵 SFX
     pause 1.1
     player "아··· 너무 배고프다."
