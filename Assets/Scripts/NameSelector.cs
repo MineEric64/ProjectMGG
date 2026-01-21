@@ -42,6 +42,7 @@ namespace ProjectMGG
                 string defaultName = SettingsManager.Settings.Debug ? "남주" : "이주용";
 
                 IngameManagerV2.PlayerName = string.IsNullOrWhiteSpace(text) ? defaultName : text;
+                IngameManagerV2.PlayerName = IngameManagerV2.PlayerName.Trim(); //excluding Whitespace
                 IngameManagerV2.PlayerName2 = GetPlayerName2Korean(IngameManagerV2.PlayerName);
 
                 if (!string.IsNullOrEmpty(IngameManagerV2.PlayerName2)) PlayGame();

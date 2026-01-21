@@ -44,7 +44,7 @@ image haeun yandere14 = "$/images/chr_haeun/yandere14.png"
 
 image yunseo default1 = "$/images/chr_yunseo/default1.png"
 image yunseo default2 = "$/images/chr_yunseo/default2.png"
-image yunseo eating1 = "$/images/chr_yunseo/eating1.png"
+# image yunseo eating1 = "$/images/chr_yunseo/eating1.png"
 image yunseo eating2 = "$/images/chr_yunseo/eating2.png"
 image yunseo embarrassed1 = "$/images/chr_yunseo/embarrassed1.png"
 image yunseo embarrassed2 = "$/images/chr_yunseo/embarrassed2.png"
@@ -54,41 +54,55 @@ image yunseo embarrassed5 = "$/images/chr_yunseo/embarrassed5.png"
 image yunseo embarrassed6 = "$/images/chr_yunseo/embarrassed6.png"
 image yunseo embarrassed7 = "$/images/chr_yunseo/embarrassed7.png"
 image yunseo embarrassed8 = "$/images/chr_yunseo/embarrassed8.png"
-image yunseo embarrassed9 = "$/images/chr_yunseo/embarrassed9.png"
+# image yunseo embarrassed9 = "$/images/chr_yunseo/embarrassed9.png"
 image yunseo happy1 = "$/images/chr_yunseo/happy1.png"
 image yunseo happy2 = "$/images/chr_yunseo/happy2.png"
 image yunseo happy3 = "$/images/chr_yunseo/happy3.png"
 image yunseo happy4 = "$/images/chr_yunseo/happy4.png"
 image yunseo happy5 = "$/images/chr_yunseo/happy5.png"
-image yunseo happy6 = "$/images/chr_yunseo/happy6.png"
+# image yunseo happy6 = "$/images/chr_yunseo/happy6.png"
 image yunseo happy7 = "$/images/chr_yunseo/happy7.png"
-image yunseo happy8 = "$/images/chr_yunseo/happy8.png"
-image yunseo anxious1 = "$/images/chr_yunseo/anxious1.png"
-image yunseo anxious2 = "$/images/chr_yunseo/anxious2.png"
+# image yunseo happy8 = "$/images/chr_yunseo/happy8.png"
+# image yunseo anxious1 = "$/images/chr_yunseo/anxious1.png"
+# image yunseo anxious2 = "$/images/chr_yunseo/anxious2.png"
+
+image yunseo a1 = "$/images/chr_yunseo/a1.png"
+image yunseo a6 = "$/images/chr_yunseo/a6.png"
+image yunseo a7 = "$/images/chr_yunseo/a7.png"
+image yunseo embarrassed1_blush = "$/images/chr_yunseo/embarrassed1_blush.png"
+image yunseo embarrassed2_blush = "$/images/chr_yunseo/embarrassed2_blush.png"
+image yunseo embarrassed3_blush = "$/images/chr_yunseo/embarrassed3_blush.png"
+image yunseo embarrassed4_blush = "$/images/chr_yunseo/embarrassed4_blush.png"
+image yunseo happy5_blush = "$/images/chr_yunseo/happy5_blush.png"
+image yunseo happy7_blush = "$/images/chr_yunseo/happy7_blush.png"
+image yunseo embarrassed52 = "$/images/chr_yunseo/embarrassed52.png"
+image yunseo embarrassed53 = "$/images/chr_yunseo/embarrassed53.png"
+image yunseo happysuper2 = "$/images/chr_yunseo/happysuper2.png"
 
 # 배경
 image black = Solid("#000000")
 
 image home day = "$/images/bg_home_day_demo.png"
+image home night = "$/images/bg_home_night_demo.png"
 
 # 위치
 transform haeun_center:
-    zoom 0.43
+    zoom 0.46
     xcenter 0.5
-    ycenter 0.66
+    ycenter 0.7
 
 transform haeun_left:
-    zoom 0.43
+    zoom 0.46
     xcenter 0.35
-    ycenter 0.66
+    ycenter 0.7
 
 transform yunseo_center:
-    zoom 0.38
+    zoom 0.8
     xcenter 0.5
     ycenter 0.6
 
 transform yunseo_right:
-    zoom 0.38
+    zoom 0.8
     xcenter 0.63
     ycenter 0.6
 
@@ -380,7 +394,8 @@ label start:
     "그다음에 레시피에선 볶은 김치 넣으라고 하네, 원래 순서가 이게 맞나?"
     # 작은 방문이 열리는 SFX
     # 배고픈데 먹을 것을 발견한 윤서, 주위에서 계속 어슬렁거린다
-    show yunseo happy7 at yunseo_center with Dissolve(0.4)
+    play music "$/audio/Roomie Rookie.mp3" # 임시
+    show yunseo a1 at yunseo_center with Dissolve(0.4)
     player "어··· 윤서?"
     show yunseo happy3 at yunseo_center
     yunseo "으응······ 나, 나도··· 배고파서··· 헤헤······."
@@ -390,7 +405,7 @@ label start:
     # 요리 SFX
     pause 1.0
     # 입에 침이 고여있고 초롱초롱해진 눈으로 헤벌레 웃는 윤서의 캐릭터 CG
-    show yunseo happy5 at yunseo_center
+    show yunseo a1 at yunseo_center
     pause 0.5
     window show
     "찌개를 휘저을 때마다··· 옆에서 자꾸만 인기척이 느껴진다."
@@ -404,13 +419,13 @@ label start:
     "······진심으로 배고팠구나."
     show yunseo embarrassed4 at yunseo_center
     player "윤서, 김치찌개 같이 먹어."
-    show yunseo embarrassed5 at yunseo_center
+    show yunseo embarrassed52 at yunseo_center
     yunseo "지, 진짜···?"
     player "응, 거의 다 끝났어. 이제 소금만 뿌려주면······"
     player "끝!"
 
     # 다시 헤벌레 웃는 표정을 짓는 윤서의 캐릭터 CG
-    show yunseo happy5 at yunseo_center
+    show yunseo happysuper2 at yunseo_center
     yunseo "으헤헤······"
     "먼저 냄비를 들어 올리고···{w} 식탁에 놓기 위해서는 냄비받침이 필요한데···."
     show yunseo default1 at yunseo_center
@@ -495,28 +510,28 @@ label start:
     window hide
     pause 1.0
     # 생각 전에 말이 먼저 튀어나와 순간 당황한 윤서의 캐릭터 CG / 윤서 특유 불안 표정 + o_o
-    show yunseo embarrassed1 at yunseo_center
+    show yunseo embarrassed53 at yunseo_center
     window show
     "순간, 윤서의 하얀 얼굴이 붉게 달아오른다."
     player "응?"
     # 삐졌어요 그리고 놀랐어요 표정 / 소스라치게 놀라는 모습 참고 
-    show yunseo embarrassed6 at yunseo_center
+    show yunseo a6 at yunseo_center
     yunseo "아, {sg=*0.93}그, 그ㅡ그게······.{/sg}"
-    show yunseo embarrassed3 at yunseo_center
+    show yunseo embarrassed3_blush at yunseo_center
     "윤서의 말끝이 흐려졌다."
     player "무슨 일이길래?" # or 뭐라고?
     # 점차 차가워지는 조명, White Balance 조정하면 될 듯
     # N.C.
-    show yunseo embarrassed1 at yunseo_center
+    show yunseo embarrassed1_blush at yunseo_center
     yunseo "······."
     "아무래도 무슨 생각에 잠긴 듯한 모양이다."
     player "괜찮아, 천천히 이야기해도 돼."
     "하지만 붉게 물든 윤서의 얼굴은 좀처럼 사라지지 않았다."
     "그런데 왜 나를 힐끔힐끔 보고 있는 걸까."
     "말로는 못 하겠지만 무언가 전하고 싶은 표정이었다."
-    show yunseo embarrassed2 at yunseo_center
+    show yunseo embarrassed2_blush at yunseo_center
     "이런 어색한 분위기 속 윤서는 서서히 자리에서 일어선다."
-    show yunseo embarrassed4 at yunseo_center
+    show yunseo embarrassed4_blush at yunseo_center
     yunseo "···."
     "윤서는 침을 삼키곤, 천천히 손을 뻗는다."
     "···그러다 국자에서 잠깐 손이 멈춘다."
@@ -540,12 +555,12 @@ label start:
 
     # N.C.
     # 볼이 확 빨개질 정도로 매우 수줍어하는 윤서
-    show yunseo embarrassed5 at yunseo_center
+    show yunseo a7 at yunseo_center
     yunseo "무ㅡ무리하지 마······."
     "예상치 못한 배려에 순간 말문이 막혔다."
-    show yunseo happy7 at yunseo_center
+    show yunseo happy7_blush at yunseo_center
     yunseo "그, 그리고 덕분에 잘 먹었어······."
-    show yunseo happy5 at yunseo_center
+    show yunseo happy5_blush at yunseo_center
     yunseo "고마워······ {size=-10}으헤헤{/size}······."
     window hide
     # 방문으로 들어가는 윤서, Dissolve
@@ -554,6 +569,7 @@ label start:
     pause 3.0
     window show
     player "갑자기 왜 김치찌개에 단맛이 나는 거지······."
+    stop music
 
     scene black with Fade(2.0, 2.0, 1.5)
     # 소리가 크지만 뭉툭하게 난다, 마치 ‘쿵쿵쿵!’ 비스무리 SFX
@@ -565,7 +581,7 @@ label start:
     "침대에서 일어나 곧장 거실로 발걸음을 옮겼다."
     window hide
     pause 1.5
-    scene home day with Dissolve(2.5) # TODO: 시간대가 새벽인 거실 배경
+    scene home night with Dissolve(2.5) # TODO: 시간대가 새벽인 거실 배경
     pause 1.0
     window show
     "이렇게 어두운 거 보니 한창 새벽인 모양이야."
