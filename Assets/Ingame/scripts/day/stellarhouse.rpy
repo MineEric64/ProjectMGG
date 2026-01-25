@@ -457,6 +457,7 @@ label start:
     yunseo "으, 으응?"
     show yunseo embarrassed2 at yunseo_center
     window hide
+    # TODO?: SFX 구현할 때 N.C.도 SFX 넣는 게 어울릴지 고민해보기
     fx nc at yunseo_nc
     pause 2.5
     window show
