@@ -21,9 +21,19 @@ transform half_size:
     ycenter 0.9
     xcenter 0.5
 
+transform nc_test:
+    zoom 0.3
+    xanchor 1.0
+    yanchor 1.0
+    xpos 0.42
+    ypos 0.3
+
 label start:
     scene classroom
     "어떡하면 좋을까."
+
+    show haru default at half_size
+    fx nc at nc_test
 
     "1aaaaaaaaaaaa{p}2bbbbbbbb{p}3ccccccccccc{p}4ddddddddd"
 

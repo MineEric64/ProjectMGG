@@ -45,15 +45,13 @@ namespace ProjectMGG.Ingame.Script
         [KindAttr("Solid")] Solid,
 
         [KindAttr("transform")] Transform,
-        [KindAttr("xalign")] XAlign,
-        [KindAttr("yalign")] YAlign,
-        [KindAttr("zoom")] Zoom,
 
         [KindAttr("show")] Show,
         [KindAttr("hide")] Hide,
         [KindAttr("scene")] Scene,
         [KindAttr("window")] Window,
         [KindAttr("at")] At,
+        [KindAttr("fx")] Fx,
 
         [KindAttr("with")] With,
         [KindAttr("Dissolve")] Dissolve,

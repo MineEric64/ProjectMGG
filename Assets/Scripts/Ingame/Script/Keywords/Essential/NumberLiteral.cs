@@ -7,6 +7,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
     public class NumberLiteral : IExpression
     {
         public float Value { get; set; } = 0.0f;
+        public static explicit operator int(NumberLiteral s) => (int)s.Value;
         public static implicit operator double(NumberLiteral s) => s.Value;
         public static implicit operator float(NumberLiteral s) => s.Value;
 

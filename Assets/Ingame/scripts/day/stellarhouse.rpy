@@ -106,6 +106,13 @@ transform yunseo_right:
     xcenter 0.63
     ycenter 0.6
 
+transform yunseo_nc:
+    zoom 0.3
+    xanchor 1.0
+    yanchor 1.0
+    xpos 0.42
+    ypos 0.3
+
 label start:
     "셰어하우스란··· 대체 어떤 곳일까."
     "그런 생각이 든 이유는 갑작스레 자취방을 비우게 됐기 때문이다."
@@ -433,14 +440,14 @@ label start:
     # 그저 멍하니 바라보는 윤서의 캐릭터 CG
     pause 1.5
     "아, 윤서가 있었지."
-    player "저기, 냄비받침이랑 식탁 좀 세팅해 줄 수 있어? 손이 안 남아서 말이야."
+    player "저기, 냄비받침이랑 식탁 좀 세팅해 줄 수 있어?\n손이 안 남아서 말이야."
     # 깜빡 잊고 있었다는 듯이 살짝 놀라는 윤서의 캐릭터 CG
     show yunseo embarrassed5 at yunseo_center
     yunseo "아! 으응."
     show yunseo embarrassed8 at yunseo_center
     "내 말을 듣곤 그제야 분주하게 움직이는 윤서."
     "···뭐 냄비받침이 바로 눈앞에 있어서 ‘분주하게’라고 말할 것까진 아니지만."
-    # 뭉툭한 SFX 
+    # 뭉툭한 SFX
     show yunseo embarrassed2 at yunseo_center
     "좋아, 윤서가 준 냄비받침에다 둔 뒤에 이제 먹으면······ 어라?"
     "정작 냄비를 뜰 수저가 없네."
@@ -448,7 +455,11 @@ label start:
     player "윤서?"
     show yunseo default2 at yunseo_center
     yunseo "으, 으응?"
-    # N.C.
+    show yunseo embarrassed2 at yunseo_center
+    window hide
+    fx nc at yunseo_nc
+    pause 2.5
+    window show
     show yunseo embarrassed7 at yunseo_center
     yunseo "······."
     "아무 말 없이 냄비만 멀뚱멀뚱 쳐다보는 윤서."
@@ -459,7 +470,10 @@ label start:
     yunseo "어··· 집밥은 오, 오랜만이라서··· 어디 있는지 잘······"
     show yunseo embarrassed4 at yunseo_center
     yunseo "이럴 땐 보, 보통 나눠주긴 하거든······."
-    # N.C.
+    window hide
+    fx nc at yunseo_nc
+    pause 2.2
+    window show
     show yunseo embarrassed7 at yunseo_center
     yunseo "······."
     "언제까지 이러고 있을 순 없지···."
@@ -521,8 +535,12 @@ label start:
     "윤서의 말끝이 흐려졌다."
     player "무슨 일이길래?" # or 뭐라고?
     # 점차 차가워지는 조명, White Balance 조정하면 될 듯
-    # N.C.
+    window hide
+    fx nc_once at yunseo_nc
+    pause 2.2
+    window show
     show yunseo embarrassed1_blush at yunseo_center
+    # TODO: 이 중간에 embarrassed1_blush로 대체하고, 기존은 시선을 아래로 향하자. (조윤서 문서 참고)
     yunseo "······."
     "아무래도 무슨 생각에 잠긴 듯한 모양이다."
     player "괜찮아, 천천히 이야기해도 돼."
@@ -545,7 +563,6 @@ label start:
     yunseo "너도 많이 배고팠을 텐데···."
     show yunseo happy4 at yunseo_center
     yunseo "지, 짐 정리하느라 많이 힘들었지······?"
-    # 참고: 이 부분은 윤서의 표정으로 드러나는 세부 감정들이 잘 전달되어야 한다.
 
     menu:
         "(윤서가 내 걱정해주다니······)":
@@ -553,7 +570,6 @@ label start:
         "응, 되게 힘들었지.":
             pass
 
-    # N.C.
     # 볼이 확 빨개질 정도로 매우 수줍어하는 윤서
     show yunseo a7 at yunseo_center
     yunseo "무ㅡ무리하지 마······."

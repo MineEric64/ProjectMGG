@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Networking;
@@ -763,7 +764,7 @@ namespace ProjectMGG.Ingame
         }
         #endregion
         #region Images
-        public IEnumerator LetsShow(Show show)
+        public IEnumerator LetsShow(Show show, bool emptyDialog = true, string parent = "CanvasImage")
         {
             var image = GetVariable(show.Tag, ref Local.Images, ref Global.Images);
             Texture2D texture = null;
@@ -815,23 +816,23 @@ namespace ProjectMGG.Ingame
             var showActionBefore = new Action(() =>
             {
                 sceneAction.Invoke();
-                prefab = ShowImage(show, texture);
+                prefab = ShowImage(show, texture, parent);
 
                 showed = true;
             });
 
-            PauseBeforeShow(show.With);
+            PauseBeforeShow(show.With, emptyDialog);
             yield return LetsWithBefore(show.With, true, showActionBefore);
-            if (!showed) prefab = ShowImage(show, texture); //equals to showActionAfter
+            if (!showed) prefab = ShowImage(show, texture, parent); //equals to showActionAfter
             yield return LetsWithAfter(show.With, true, prefab, sceneAction);
             sceneAction?.Invoke();
         }
 
-        private RawImage ShowImage(Show show, Texture2D texture)
+        private RawImage ShowImage(Show show, Texture2D texture, string parent = "CanvasImage")
         {
             if (texture == null) return null;
 
-            RawImage prefab = Instantiate(CharacterSample, this.transform.Find("CanvasImage"));
+            RawImage prefab = Instantiate(CharacterSample, this.transform.Find(parent));
             prefab.transform.SetAsLastSibling();
             prefab.texture = texture;
             prefab.name = show.Tag;
@@ -846,17 +847,63 @@ namespace ProjectMGG.Ingame
                     return prefab;
                 }
 
+                float width = texture.width * transform.zoom;
+                float height = texture.height * transform.zoom;
+
                 if (transform.zoom != 1f)
                 {
-                    float width = texture.width * transform.zoom;
-                    float height = texture.height * transform.zoom;
-
                     prefab.transform.localScale = new Vector3(transform.zoom, transform.zoom);
                     prefab.transform.localPosition = new Vector3(0f, -(720 - height / 2));
                 }
-                //TODO: xpos, ypos, xalign, yalign
-                if (transform.xcenter != -1f) prefab.transform.localPosition = new Vector3(1280 * (transform.xcenter - 0.5f) * 2, prefab.transform.localPosition.y); //TODO: 0~1: ratio, 1~: absolute value
-                if (transform.ycenter != -1f) prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(720 * (transform.ycenter - 0.5f) * 2));
+
+                //0~1: ratio, 1~: absolute value
+                //pos
+                if (transform.xpos != -1f)
+                {
+                    float offset = (transform.xanchor - 0.5f) * width;
+                    if (transform.xanchor > 1f) offset = transform.xanchor - (texture.width / 2);
+
+                    if (transform.xpos >= 0f && transform.xpos <= 1f) prefab.transform.localPosition = new Vector3((1280 * (transform.xpos - 0.5f) * 2) - offset, prefab.transform.localPosition.y);
+                    else prefab.transform.localPosition = new Vector3(transform.xpos - offset - 1280, prefab.transform.localPosition.y);
+                }
+                if (transform.ypos != -1f)
+                {
+                    float offset = (transform.yanchor - 0.5f) * height;
+                    if (transform.yanchor > 1f) offset = transform.yanchor - (texture.height / 2);
+
+                    if (transform.ypos >= 0f && transform.ypos <= 1f) prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, (-(720 * (transform.ypos - 0.5f) * 2)) + offset);
+                    else prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(transform.ypos - offset - 720));
+                }
+                
+                //center
+                if (transform.xcenter != -1f)
+                {
+                    if (transform.xcenter >= 0f && transform.xcenter <= 1f) prefab.transform.localPosition = new Vector3(1280 * (transform.xcenter - 0.5f) * 2, prefab.transform.localPosition.y);
+                    else prefab.transform.localPosition = new Vector3(transform.xcenter - 1280, prefab.transform.localPosition.y);
+                }
+                if (transform.ycenter != -1f)
+                {
+                    if (transform.ycenter >= 0f && transform.ycenter <= 1f) prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(720 * (transform.ycenter - 0.5f) * 2));
+                    else prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(transform.ycenter - 720));
+                }
+
+                //align
+                if (transform.xalign != -1f)
+                {
+                    float offset = (transform.xalign - 0.5f) * width;
+                    if (transform.xalign > 1f) offset = transform.xalign - (texture.width / 2);
+
+                    if (transform.xalign >= 0f && transform.xalign <= 1f) prefab.transform.localPosition = new Vector3((1280 * (transform.xalign - 0.5f) * 2) - offset, prefab.transform.localPosition.y);
+                    else prefab.transform.localPosition = new Vector3(transform.xalign - offset - 1280, prefab.transform.localPosition.y);
+                }
+                if (transform.yalign != -1f)
+                {
+                    float offset = (transform.yalign - 0.5f) * height;
+                    if (transform.yalign > 1f) offset = transform.yalign - (texture.height / 2);
+
+                    if (transform.yalign >= 0f && transform.yalign >= 1f) prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, (-(720 * (transform.yalign - 0.5f) * 2)) - offset);
+                    else prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(transform.yalign - offset - 720));
+                }
             }
             else
             {
@@ -869,7 +916,7 @@ namespace ProjectMGG.Ingame
             return prefab;
         }
 
-        private void PauseBeforeShow(With with)
+        private void PauseBeforeShow(With with, bool emptyDialog = true)
         {
             if (with == null) return;
 
@@ -879,7 +926,7 @@ namespace ProjectMGG.Ingame
             if (time > 0f)
             {
                 Pause pause = new Pause(time, true);
-                LetsPause(pause, true);
+                LetsPause(pause, emptyDialog);
             }
         }
 
@@ -967,7 +1014,7 @@ namespace ProjectMGG.Ingame
             }
         }
 
-        public IEnumerator LetsHide(Show show)
+        public IEnumerator LetsHide(Show show, bool emptyDialog = true)
         {
             RawImage prefab = GameObject.Find(show.Tag)?.GetComponent<RawImage>();
             bool showed = false;
@@ -975,14 +1022,240 @@ namespace ProjectMGG.Ingame
             {
                 Destroy(prefab.gameObject);
                 if (show?.With?.Transition is Fade) LetsWindow(true);
-
                 showed = true;
             });
 
-            PauseBeforeShow(show.With);
+            PauseBeforeShow(show.With, emptyDialog);
             yield return LetsWithBefore(show.With, false, showAction);
             yield return LetsWithAfter(show.With, false, prefab);
             if (!showed) showAction.Invoke();
+        }
+
+        public IEnumerator LetsFX(string name, string at)
+        {
+            if (!string.IsNullOrEmpty(at))
+            {
+                var transform = GetVariable(at, ref Local.Transforms, ref Global.Transforms);
+                if (transform == null)
+                {
+                    ExceptionManager.Throw($"The transform '{at}' variable doesn't exists while interpreting 'fx' statement.", "IngameManagerV2");
+                    yield break;
+                }
+            }
+
+            switch (name)
+            {
+                #region N.C.
+                case "nc":
+                    {
+                        ApplyInternalImage("$nc_frame", "$/images/fx_nc_frame.png");
+                        ApplyInternalImage("$nc_circle1", "$/images/fx_nc_circle.png");
+                        ApplyInternalImage("$nc_circle2", "$/images/fx_nc_circle.png");
+                        ApplyInternalImage("$nc_circle3", "$/images/fx_nc_circle.png");
+
+                        Show frame = new Show();
+                        frame.Tag = "$nc_frame";
+                        frame.At = at;
+                        frame.With = new With(false);
+                        frame.With.Transition = new Dissolve(0.16f);
+
+                        RpyTransform t1 = new RpyTransform();
+                        t1.Name = "$nc_circle1_t";
+                        t1.IsGlobal = true;
+                        t1.zoom = 0.12f;
+                        t1.xcenter = 0.428f;
+                        t1.ycenter = 0.5f;
+                        t1.Interpret(); //Add
+
+                        RpyTransform t2 = new RpyTransform();
+                        t2.Name = "$nc_circle2_t";
+                        t2.IsGlobal = true;
+                        t2.zoom = 0.12f;
+                        t2.xcenter = 0.498f;
+                        t2.ycenter = 0.5f;
+                        t2.Interpret();
+
+                        RpyTransform t3 = new RpyTransform();
+                        t3.Name = "$nc_circle3_t";
+                        t3.IsGlobal = true;
+                        t3.zoom = 0.12f;
+                        t3.xcenter = 0.568f;
+                        t3.ycenter = 0.5f;
+                        t3.Interpret();
+
+                        Show circle1 = new Show();
+                        circle1.Tag = "$nc_circle1";
+                        circle1.At = "$nc_circle1_t";
+                        circle1.With = new With(false);
+                        circle1.With.Transition = new Dissolve(0.275f);
+
+                        Show circle2 = new Show();
+                        circle2.Tag = "$nc_circle2";
+                        circle2.At = "$nc_circle2_t";
+                        circle2.With = new With(false);
+                        circle2.With.Transition = new Dissolve(0.275f);
+
+                        Show circle3 = new Show();
+                        circle3.Tag = "$nc_circle3";
+                        circle3.At = "$nc_circle3_t";
+                        circle3.With = new With(false);
+                        circle3.With.Transition = new Dissolve(0.275f);
+
+                        yield return LetsShow(frame, false);
+
+                        for (int i = 0; i < 2; i++)
+                        {
+                            circle1.With = null;
+                            Coroutine a = StartCoroutine(LetsShow(circle1, false, "CanvasImage/$nc_frame"));
+                            Coroutine b = StartCoroutine(ParallelWaitForSeconds(0.33f));
+
+                            yield return a;
+                            yield return b;
+
+                            circle1.With = new With(false);
+                            circle1.With.Transition = new Dissolve(0.275f);
+                            circle2.With = null;
+                            Coroutine c = StartCoroutine(LetsHide(circle1, false));
+                            Coroutine d = StartCoroutine(LetsShow(circle2, false, "CanvasImage/$nc_frame"));
+                            Coroutine e = StartCoroutine(ParallelWaitForSeconds(0.33f));
+
+                            yield return c;
+                            yield return d;
+                            yield return e;
+
+                            circle2.With = new With(false);
+                            circle2.With.Transition = new Dissolve(0.275f);
+                            circle3.With = null;
+                            Coroutine f = StartCoroutine(LetsHide(circle2, false));
+                            Coroutine g = StartCoroutine(LetsShow(circle3, false, "CanvasImage/$nc_frame"));
+                            Coroutine h = StartCoroutine(ParallelWaitForSeconds(0.33f));
+
+                            yield return f;
+                            yield return g;
+                            yield return h;
+
+                            circle3.With = new With(false);
+                            circle3.With.Transition = new Dissolve(0.275f);
+                            if (i != 1) StartCoroutine(LetsHide(circle3, false));
+                            else yield return LetsHide(circle3, false);
+                        }
+
+                        yield return LetsHide(frame, false);
+                        break;
+                    }
+
+                case "nc_once":
+                    {
+                        ApplyInternalImage("$nc_frame", "$/images/fx_nc_frame.png");
+                        ApplyInternalImage("$nc_circle1", "$/images/fx_nc_circle.png");
+                        ApplyInternalImage("$nc_circle2", "$/images/fx_nc_circle.png");
+                        ApplyInternalImage("$nc_circle3", "$/images/fx_nc_circle.png");
+
+                        Show frame = new Show();
+                        frame.Tag = "$nc_frame";
+                        frame.At = at;
+                        frame.With = new With(false);
+                        frame.With.Transition = new Dissolve(0.16f);
+
+                        RpyTransform t1 = new RpyTransform();
+                        t1.Name = "$nc_circle1_t";
+                        t1.IsGlobal = true;
+                        t1.zoom = 0.12f;
+                        t1.xcenter = 0.428f;
+                        t1.ycenter = 0.5f;
+                        t1.Interpret(); //Add
+
+                        RpyTransform t2 = new RpyTransform();
+                        t2.Name = "$nc_circle2_t";
+                        t2.IsGlobal = true;
+                        t2.zoom = 0.12f;
+                        t2.xcenter = 0.498f;
+                        t2.ycenter = 0.5f;
+                        t2.Interpret();
+
+                        RpyTransform t3 = new RpyTransform();
+                        t3.Name = "$nc_circle3_t";
+                        t3.IsGlobal = true;
+                        t3.zoom = 0.12f;
+                        t3.xcenter = 0.568f;
+                        t3.ycenter = 0.5f;
+                        t3.Interpret();
+
+                        Show circle1 = new Show();
+                        circle1.Tag = "$nc_circle1";
+                        circle1.At = "$nc_circle1_t";
+                        circle1.With = new With(false);
+                        circle1.With.Transition = new Dissolve(0.275f);
+
+                        Show circle2 = new Show();
+                        circle2.Tag = "$nc_circle2";
+                        circle2.At = "$nc_circle2_t";
+                        circle2.With = new With(false);
+                        circle2.With.Transition = new Dissolve(0.275f);
+
+                        Show circle3 = new Show();
+                        circle3.Tag = "$nc_circle3";
+                        circle3.At = "$nc_circle3_t";
+                        circle3.With = new With(false);
+                        circle3.With.Transition = new Dissolve(0.275f);
+
+                        yield return LetsShow(frame, false);
+
+                        circle1.With = null;
+                        Coroutine a = StartCoroutine(LetsShow(circle1, false, "CanvasImage/$nc_frame"));
+                        Coroutine b = StartCoroutine(ParallelWaitForSeconds(0.66f));
+
+                        yield return a;
+                        yield return b;
+
+                        circle1.With = new With(false);
+                        circle1.With.Transition = new Dissolve(0.275f);
+                        circle2.With = null;
+                        Coroutine c = StartCoroutine(LetsHide(circle1, false));
+                        Coroutine d = StartCoroutine(LetsShow(circle2, false, "CanvasImage/$nc_frame"));
+                        Coroutine e = StartCoroutine(ParallelWaitForSeconds(0.66f));
+
+                        yield return c;
+                        yield return d;
+                        yield return e;
+
+                        circle2.With = new With(false);
+                        circle2.With.Transition = new Dissolve(0.275f);
+                        circle3.With = null;
+                        Coroutine f = StartCoroutine(LetsHide(circle2, false));
+                        Coroutine g = StartCoroutine(LetsShow(circle3, false, "CanvasImage/$nc_frame"));
+                        Coroutine h = StartCoroutine(ParallelWaitForSeconds(0.66f));
+
+                        yield return f;
+                        yield return g;
+                        yield return h;
+
+                        circle3.With = new With(false);
+                        circle3.With.Transition = new Dissolve(0.275f);
+                        yield return LetsHide(circle3, false);
+
+                        yield return LetsHide(frame, false);
+                        break;
+                    }
+                    #endregion
+            }
+        }
+
+        public void ApplyInternalImage(string name, string path)
+        {
+            if (Global.Images.ContainsKey(name)) return; //overlapped
+
+            var image = new Script.Keywords.Renpy.Image();
+            image.Tag = name;
+            image.Data = new Script.Keywords.StringLiteral(path);
+            image.IsGlobal = true;
+
+            image.Interpret();
+        }
+
+        private IEnumerator ParallelWaitForSeconds(float seconds)
+        {
+            yield return new WaitForSeconds(seconds);
         }
         #endregion
         #region Audio

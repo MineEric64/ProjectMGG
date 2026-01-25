@@ -22,7 +22,8 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
             {
                 if (vars.Images[Tag].SubImages.ContainsKey(Attributes))
                 {
-                    ExceptionManager.Throw($"The image '{Tag}' that has a attribute '{Attributes}' variable already exists.", "Script/Interpret");
+                    //ExceptionManager.Throw($"The image '{Tag}' that has a attribute '{Attributes}' variable already exists.", "Script/Interpret");
+                    vars.Images[Tag].SubImages[Attributes] = ConvertDataToTexture(); //overwrite
                     return;
                 }
 

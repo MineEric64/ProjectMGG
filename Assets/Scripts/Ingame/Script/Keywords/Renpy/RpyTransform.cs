@@ -17,6 +17,8 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
         public float yalign = -1f;
         public float xcenter = -1f;
         public float ycenter = -1f;
+        public float xanchor = 0f;
+        public float yanchor = 0f;
 
         public float zoom = 1f;
 
@@ -27,8 +29,16 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 
         public void Interpret()
         {
+            if (string.IsNullOrEmpty(Name))
+            {
+                ExceptionManager.Throw("The transform name can't be empty.", "Script/RpyTransform", Line);
+                return;
+            }
+
             var vars = IsGlobal ? IngameManagerV2.Global : IngameManagerV2.Local;
-            vars.Transforms.Add(Name, this);
+
+            if (vars.Transforms.ContainsKey(Name)) vars.Transforms[Name] = this; //overwrite
+            else vars.Transforms.Add(Name, this);
         }
     }
 }

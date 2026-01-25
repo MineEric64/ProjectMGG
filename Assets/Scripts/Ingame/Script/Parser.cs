@@ -19,6 +19,8 @@ namespace ProjectMGG.Ingame.Script
         private int _index;
         private List<Token> _tokens = new List<Token>();
 
+        private bool _skipPostfix = false; //ex: is 'fx nc [360, 360]' index access? or identifier & list?
+
         public Parser(ref List<Token> tokens)
         {
             _tokens = new List<Token>(tokens);
@@ -193,6 +195,10 @@ namespace ProjectMGG.Ingame.Script
 
                     case ArgumentKind.Reeverb:
                         result.Add(ParseReeverb());
+                        break;
+
+                    case ArgumentKind.Fx:
+                        result.Add(ParseFX());
                         break;
 
                     case ArgumentKind.Pause:
@@ -401,6 +407,28 @@ namespace ProjectMGG.Ingame.Script
             return result;
         }
 
+        private FX ParseFX()
+        {
+            FX result = new FX();
+            result.Line = _tokens[_index].Line;
+            SkipCurrent();
+
+            _skipPostfix = true;
+
+            if (IsUnknown(ArgumentKind.Identifier, 0) || IsUnknown(ArgumentKind.StringLiteral, 0))
+                result.Name = ParseExpression();
+
+            if (_tokens[_index].Kind == ArgumentKind.At)
+            {
+                SkipCurrent();
+                result.At = ParseIdentifier();
+            }
+
+            _skipPostfix = false;
+
+            return result;
+        }
+
         private Pause ParsePause()
         {
             Pause result = new Pause();
@@ -526,6 +554,18 @@ namespace ProjectMGG.Ingame.Script
                     case "yalign":
                         SkipCurrent();
                         result.yalign = float.Parse(_tokens[_index].Content);
+                        SkipCurrent();
+                        break;
+
+                    case "xanchor":
+                        SkipCurrent();
+                        result.xanchor = float.Parse(_tokens[_index].Content);
+                        SkipCurrent();
+                        break;
+
+                    case "yanchor":
+                        SkipCurrent();
+                        result.yanchor = float.Parse(_tokens[_index].Content);
                         SkipCurrent();
                         break;
 
@@ -983,6 +1023,8 @@ namespace ProjectMGG.Ingame.Script
 
         private IExpression ParsePostfix(IExpression sub) //identifier : (), []
         {
+            if (_skipPostfix) return sub;
+
             while (true)
             {
                 switch (_tokens[_index].Kind)
