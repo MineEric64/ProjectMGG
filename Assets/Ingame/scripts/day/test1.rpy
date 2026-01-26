@@ -27,14 +27,19 @@ transform nc_test:
     yanchor 1.0
     xpos 0.42
     ypos 0.3
-    colour "#313131"
+
+transform lc_test:
+    zoom 0.4
+    xcenter 0.45
+    ycenter 0.2
 
 label start:
     scene classroom
     "어떡하면 좋을까."
 
     show haru default at half_size
-    fx lc at nc_test
+    "테스트"
+    fx lc_frame at nc_test
 
     "1aaaaaaaaaaaa{p}2bbbbbbbb{p}3ccccccccccc{p}4ddddddddd"
 

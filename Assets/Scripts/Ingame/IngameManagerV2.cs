@@ -45,6 +45,8 @@ namespace ProjectMGG.Ingame
         public static VariableCollection Global { get; private set; } = new VariableCollection();
         public Interpreter Interpreter;
 
+        public Dictionary<string, RawImage> ImageChild { get; private set; } = new Dictionary<string, RawImage>(); //key: gameobject's name, cached & using on show
+
         private List<TextTag> _textTags = new List<TextTag>();
         [SerializeField] private List<string> _textTagsDebug;
         private int _tagIndex = 0;
@@ -100,8 +102,8 @@ namespace ProjectMGG.Ingame
             {
                 //Default Texture
                 TextureDefault = new Texture2D(634, 1636);
-                var colour = new UnityEngine.Color(0.5f, 0.5f, 0.5f); //Gray
-                UnityEngine.Color[] pixels = Enumerable.Repeat(colour, TextureDefault.width * TextureDefault.height).ToArray();
+                var colour = new Color(0.5f, 0.5f, 0.5f); //Gray
+                Color[] pixels = Enumerable.Repeat(colour, TextureDefault.width * TextureDefault.height).ToArray();
                 TextureDefault.SetPixels(pixels);
                 TextureDefault.Apply();
 
@@ -831,15 +833,18 @@ namespace ProjectMGG.Ingame
             sceneAction?.Invoke();
         }
 
-        private RawImage ShowImage(Show show, Texture2D texture, string parent = "CanvasImage")
+        private RawImage ShowImage(Show show, Texture2D texture, string parent = "CanvasImage", bool allowEmptyTexture = false, int defaultWidth = 350, int defaultHeight = 350)
         {
-            if (texture == null) return null;
+            if (!allowEmptyTexture && texture == null) return null;
+
+            float width = texture?.width ?? defaultWidth;
+            float height = texture?.height ?? defaultHeight;
 
             RawImage prefab = Instantiate(CharacterSample, this.transform.Find(parent));
             prefab.transform.SetAsLastSibling();
             prefab.texture = texture;
             prefab.name = show.Tag;
-            prefab.rectTransform.sizeDelta = new Vector3(texture.width, texture.height);
+            prefab.rectTransform.sizeDelta = new Vector3(width, height);
 
             if (!string.IsNullOrEmpty(show.At))
             {
@@ -850,29 +855,29 @@ namespace ProjectMGG.Ingame
                     return prefab;
                 }
 
-                float width = texture.width * transform.zoom;
-                float height = texture.height * transform.zoom;
+                float widthScaled = width * transform.zoom;
+                float heightScaled = height * transform.zoom;
 
                 if (transform.zoom != 1f)
                 {
                     prefab.transform.localScale = new Vector3(transform.zoom, transform.zoom);
-                    prefab.transform.localPosition = new Vector3(0f, -(720 - height / 2));
+                    prefab.transform.localPosition = new Vector3(0f, -(720 - heightScaled / 2));
                 }
 
                 //0~1: ratio, 1~: absolute value
                 //pos
                 if (transform.xpos != -1f)
                 {
-                    float offset = (transform.xanchor - 0.5f) * width;
-                    if (transform.xanchor > 1f) offset = transform.xanchor - (texture.width / 2);
+                    float offset = (transform.xanchor - 0.5f) * widthScaled;
+                    if (transform.xanchor > 1f) offset = transform.xanchor - (width / 2);
 
                     if (transform.xpos >= 0f && transform.xpos <= 1f) prefab.transform.localPosition = new Vector3((1280 * (transform.xpos - 0.5f) * 2) - offset, prefab.transform.localPosition.y);
                     else prefab.transform.localPosition = new Vector3(transform.xpos - offset - 1280, prefab.transform.localPosition.y);
                 }
                 if (transform.ypos != -1f)
                 {
-                    float offset = (transform.yanchor - 0.5f) * height;
-                    if (transform.yanchor > 1f) offset = transform.yanchor - (texture.height / 2);
+                    float offset = (transform.yanchor - 0.5f) * heightScaled;
+                    if (transform.yanchor > 1f) offset = transform.yanchor - (height / 2);
 
                     if (transform.ypos >= 0f && transform.ypos <= 1f) prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, (-(720 * (transform.ypos - 0.5f) * 2)) + offset);
                     else prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(transform.ypos - offset - 720));
@@ -893,16 +898,16 @@ namespace ProjectMGG.Ingame
                 //align
                 if (transform.xalign != -1f)
                 {
-                    float offset = (transform.xalign - 0.5f) * width;
-                    if (transform.xalign > 1f) offset = transform.xalign - (texture.width / 2);
+                    float offset = (transform.xalign - 0.5f) * widthScaled;
+                    if (transform.xalign > 1f) offset = transform.xalign - (width / 2);
 
                     if (transform.xalign >= 0f && transform.xalign <= 1f) prefab.transform.localPosition = new Vector3((1280 * (transform.xalign - 0.5f) * 2) - offset, prefab.transform.localPosition.y);
                     else prefab.transform.localPosition = new Vector3(transform.xalign - offset - 1280, prefab.transform.localPosition.y);
                 }
                 if (transform.yalign != -1f)
                 {
-                    float offset = (transform.yalign - 0.5f) * height;
-                    if (transform.yalign > 1f) offset = transform.yalign - (texture.height / 2);
+                    float offset = (transform.yalign - 0.5f) * heightScaled;
+                    if (transform.yalign > 1f) offset = transform.yalign - (height / 2);
 
                     if (transform.yalign >= 0f && transform.yalign >= 1f) prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, (-(720 * (transform.yalign - 0.5f) * 2)) - offset);
                     else prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(transform.yalign - offset - 720));
@@ -920,11 +925,14 @@ namespace ProjectMGG.Ingame
             }
             else
             {
-                prefab.transform.localPosition = new Vector3(0f, -(720 - texture.height / 2));
+                prefab.transform.localPosition = new Vector3(0f, -(720 - height / 2));
             }
 
             //Dialog
             if (show?.With?.Transition is Fade) LetsWindow(true);
+
+            if (ImageChild.ContainsKey(show.Tag)) ImageChild[show.Tag] = prefab;
+            else ImageChild.Add(show.Tag, prefab);
 
             return prefab;
         }
@@ -1033,6 +1041,7 @@ namespace ProjectMGG.Ingame
             bool showed = false;
             var showAction = new Action(() =>
             {
+                ImageChild.Remove(show.Tag);
                 Destroy(prefab.gameObject);
                 if (show?.With?.Transition is Fade) LetsWindow(true);
                 showed = true;
@@ -1260,24 +1269,35 @@ namespace ProjectMGG.Ingame
                 #region L.C.
                 case "lc":
                     {
+                        float currentWhole = 0f;
                         float current = 0f;
-                        const float RADIUS = 120f;
-                        var circles = new Show[8];
-                        var transforms = new RpyTransform[8];
-                        var status = new int[8];
 
-                        var parent = new GameObject("$lc_blank");
-                        parent.transform.parent = this.transform.Find("CanvasImage");
-                        parent.transform.localPosition = new Vector3(0, 0, 0);
-                        parent.AddComponent<RectTransform>().sizeDelta = new Vector2(1000, 1000);
+                        const float RADIUS = 120f;
+
+                        var circles = new RawImage[8];
+                        var circleShows = new Show[8];
+                        var status = new int[8];
+                        var colorTable1 = new string[8] { "#E9EAEB", "#D2D4D6", "#D2D3D4", "#A7A9AB", "#919395", "#7D7C7F", "#4E4E50", "#4E4E50" };
+                        var colorTable2 = new Color[8] {
+                            new Color(0.914f, 0.918f, 0.922f), new Color(0.824f, 0.831f, 0.839f), new Color(0.824f, 0.827f, 0.831f), new Color(0.655f, 0.663f, 0.671f),
+                            new Color(0.569f, 0.576f, 0.584f), new Color(0.49f, 0.486f, 0.498f), new Color(0.306f, 0.306f, 0.314f), new Color(0.306f, 0.306f, 0.314f)
+                        };
+
+                        Show parentShow = new Show();
+                        parentShow.Tag = "$lc_blank";
+                        parentShow.At = at;
+
+                        var parent = ShowImage(parentShow, null, allowEmptyTexture: true);
+                        parent.color = new Color(0f, 0f, 0f, 0f);
+                        parent.transform.SetAsLastSibling();
 
                         for (int i = 0; i < 8; i++)
                         {
                             string circleName = $"$lc_circle{i + 1}";
                             float progress = i / 8f;
                             float t = progress * 2 * Mathf.PI;
-                            float x = Mathf.Cos(t);
-                            float y = Mathf.Sin(t);
+                            float x = -Mathf.Sin(t);
+                            float y = -Mathf.Cos(t);
 
                             ApplyInternalImage(circleName, "$/images/fx_circle.png");
 
@@ -1287,29 +1307,144 @@ namespace ProjectMGG.Ingame
                             tr.zoom = 0.1f;
                             tr.xcenter = 1280 + x * RADIUS;
                             tr.ycenter = 720 + y * RADIUS;
+                            tr.colour = colorTable1[i];
                             tr.Interpret(); //Add
 
                             Show circle = new Show();
                             circle.Tag = circleName;
                             circle.At = tr.Name;
 
-                            circles[i] = circle;
-                            transforms[i] = tr;
-                            status[i] = i;
-
                             yield return LetsShow(circle, false, "CanvasImage/$lc_blank");
-                            yield return new WaitForSeconds(0.3f);
+
+                            RawImage circle2 = null;
+
+                            if (!ImageChild.TryGetValue(circleName, out circle2)) circle2 = GameObject.Find(circleName)?.GetComponent<RawImage>(); //alternative, but expensive cost
+                            circles[i] = circle2;
+                            circleShows[i] = circle;
+                            status[i] = i;
                         }
 
-                        while (current <= 2f)
+                        while (currentWhole <= 2.2f)
                         {
+                            currentWhole += Time.deltaTime;
                             current += Time.deltaTime;
+
+                            if (current >= 0.13f)
+                            {
+                                for (int i = 0; i < 8; i++)
+                                {
+                                    status[i]++;
+                                    if (status[i] >= 8) status[i] = 0;
+
+                                    if (circles[i] == null) continue; //something went wrong... maybe synchronization issue?
+                                    circles[i].color = colorTable2[status[i]];
+                                }
+
+                                current = 0f;
+                            }
 
                             yield return null;
                         }
+
+                        for (int i = 0; i < 8; i++) yield return LetsHide(circleShows[i], false);
                         break;
                     }
-                #endregion
+
+                case "lc_frame":
+                    {
+                        float currentWhole = 0f;
+                        float current = 0f;
+
+                        const float RADIUS = 150f;
+
+                        var circles = new RawImage[8];
+                        var circleShows = new Show[8];
+                        var status = new int[8];
+                        var colorTable1 = new string[8] { "#E9EAEB", "#D2D4D6", "#D2D3D4", "#A7A9AB", "#919395", "#7D7C7F", "#4E4E50", "#4E4E50" };
+                        var colorTable2 = new Color[8] {
+                            new Color(0.914f, 0.918f, 0.922f), new Color(0.824f, 0.831f, 0.839f), new Color(0.824f, 0.827f, 0.831f), new Color(0.655f, 0.663f, 0.671f),
+                            new Color(0.569f, 0.576f, 0.584f), new Color(0.49f, 0.486f, 0.498f), new Color(0.306f, 0.306f, 0.314f), new Color(0.306f, 0.306f, 0.314f)
+                        };
+
+                        ApplyInternalImage("$lc_frame", "$/images/fx_nc_frame.png");
+
+                        Show frame = new Show();
+                        frame.Tag = "$lc_frame";
+                        frame.At = at;
+                        frame.With = new With(false);
+                        frame.With.Transition = new Dissolve(0.16f);
+
+                        yield return LetsShow(frame, false);
+
+                        for (int i = 0; i < 8; i++)
+                        {
+                            string circleName = $"$lc_circle{i + 1}";
+                            float progress = i / 8f;
+                            float t = progress * 2 * Mathf.PI;
+                            float x = -Mathf.Sin(t);
+                            float y = -Mathf.Cos(t);
+
+                            ApplyInternalImage(circleName, "$/images/fx_circle.png");
+
+                            RpyTransform tr = new RpyTransform();
+                            tr.Name = $"{circleName}_t";
+                            tr.IsGlobal = true;
+                            tr.zoom = 0.13f;
+                            tr.xcenter = 1280 + x * RADIUS;
+                            tr.ycenter = 720 + y * RADIUS;
+                            tr.colour = colorTable1[i];
+                            tr.Interpret(); //Add
+
+                            Show circle = new Show();
+                            circle.Tag = circleName;
+                            circle.At = tr.Name;
+
+                            yield return LetsShow(circle, false, "CanvasImage/$lc_frame");
+
+                            RawImage circle2 = null;
+
+                            if (!ImageChild.TryGetValue(circleName, out circle2)) circle2 = GameObject.Find(circleName)?.GetComponent<RawImage>(); //alternative, but expensive cost
+                            circles[i] = circle2;
+                            circleShows[i] = circle;
+                            status[i] = i;
+                        }
+
+                        while (currentWhole <= 2.2f)
+                        {
+                            currentWhole += Time.deltaTime;
+                            current += Time.deltaTime;
+
+                            if (current >= 0.13f)
+                            {
+                                for (int i = 0; i < 8; i++)
+                                {
+                                    status[i]++;
+                                    if (status[i] >= 8) status[i] = 0;
+
+                                    if (circles[i] == null) continue; //something went wrong... maybe synchronization issue?
+                                    circles[i].color = colorTable2[status[i]];
+                                }
+
+                                current = 0f;
+                            }
+
+                            yield return null;
+                        }
+
+                        var coroutines = new Coroutine[9];
+
+                        for (int i = 0; i < 8; i++)
+                        {
+                            circleShows[i].With = new With(false);
+                            circleShows[i].With.Transition = new Dissolve(0.16f);
+                            coroutines[i] = StartCoroutine(LetsHide(circleShows[i], false));
+                        }
+                        coroutines[8] = StartCoroutine(LetsHide(frame, false));
+                        for (int i = 0; i < 9; i++) yield return coroutines[i];
+
+                        break;
+                    }
+                    #endregion
             }
         }
 

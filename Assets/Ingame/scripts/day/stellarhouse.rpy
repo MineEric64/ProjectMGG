@@ -537,7 +537,7 @@ label start:
     player "무슨 일이길래?" # or 뭐라고?
     # 점차 차가워지는 조명, White Balance 조정하면 될 듯
     window hide
-    fx nc_once at yunseo_nc
+    fx lc_frame at yunseo_nc
     pause 2.2 hard
     window show
     show yunseo embarrassed1_blush at yunseo_center
