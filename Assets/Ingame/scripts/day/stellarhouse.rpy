@@ -459,7 +459,7 @@ label start:
     window hide
     # TODO?: SFX 구현할 때 N.C.도 SFX 넣는 게 어울릴지 고민해보기
     fx nc at yunseo_nc
-    pause 2.5
+    pause 2.5 hard
     window show
     show yunseo embarrassed7 at yunseo_center
     yunseo "······."
@@ -473,7 +473,7 @@ label start:
     yunseo "이럴 땐 보, 보통 나눠주긴 하거든······."
     window hide
     fx nc at yunseo_nc
-    pause 2.2
+    pause 2.2 hard
     window show
     show yunseo embarrassed7 at yunseo_center
     yunseo "······."
@@ -538,7 +538,7 @@ label start:
     # 점차 차가워지는 조명, White Balance 조정하면 될 듯
     window hide
     fx nc_once at yunseo_nc
-    pause 2.2
+    pause 2.2 hard
     window show
     show yunseo embarrassed1_blush at yunseo_center
     # TODO: 이 중간에 embarrassed1_blush로 대체하고, 기존은 시선을 아래로 향하자. (조윤서 문서 참고)

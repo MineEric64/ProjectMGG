@@ -1,21 +1,24 @@
-using PrimeTween;
-using ProjectMGG.Ingame.Script;
-using ProjectMGG.Ingame.Script.Keywords.Renpy;
-using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
-using ProjectMGG.Settings;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using TMPro;
-using Unity.VisualScripting;
+
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
+
+using PrimeTween;
+
+using ProjectMGG.Ingame.Script;
+using ProjectMGG.Ingame.Script.Keywords.Renpy;
+using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
+using ProjectMGG.Settings;
+
 using Path = System.IO.Path;
 
 namespace ProjectMGG.Ingame
@@ -904,6 +907,16 @@ namespace ProjectMGG.Ingame
                     if (transform.yalign >= 0f && transform.yalign >= 1f) prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, (-(720 * (transform.yalign - 0.5f) * 2)) - offset);
                     else prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(transform.yalign - offset - 720));
                 }
+
+                //Custom syntax
+                if (!string.IsNullOrEmpty(transform.colour))
+                {
+                    Color color = Color.white;
+
+                    if (UnityEngine.ColorUtility.TryParseHtmlString(transform.colour, out color)) prefab.color = color;
+                    else if (!transform.colour.StartsWith('#') && UnityEngine.ColorUtility.TryParseHtmlString(string.Concat("#", transform.colour), out color)) prefab.color = color; //Concat #
+                    else ExceptionManager.Throw($"Color Hex '{transform.colour}' parsing failed while interpreting 'show'/'fx' statement.", "IngameManagerV2");
+                }
             }
             else
             {
@@ -1049,9 +1062,9 @@ namespace ProjectMGG.Ingame
                 case "nc":
                     {
                         ApplyInternalImage("$nc_frame", "$/images/fx_nc_frame.png");
-                        ApplyInternalImage("$nc_circle1", "$/images/fx_nc_circle.png");
-                        ApplyInternalImage("$nc_circle2", "$/images/fx_nc_circle.png");
-                        ApplyInternalImage("$nc_circle3", "$/images/fx_nc_circle.png");
+                        ApplyInternalImage("$nc_circle1", "$/images/fx_circle.png");
+                        ApplyInternalImage("$nc_circle2", "$/images/fx_circle.png");
+                        ApplyInternalImage("$nc_circle3", "$/images/fx_circle.png");
 
                         Show frame = new Show();
                         frame.Tag = "$nc_frame";
@@ -1062,6 +1075,7 @@ namespace ProjectMGG.Ingame
                         RpyTransform t1 = new RpyTransform();
                         t1.Name = "$nc_circle1_t";
                         t1.IsGlobal = true;
+                        t1.colour = "#313131";
                         t1.zoom = 0.12f;
                         t1.xcenter = 0.428f;
                         t1.ycenter = 0.5f;
@@ -1070,6 +1084,7 @@ namespace ProjectMGG.Ingame
                         RpyTransform t2 = new RpyTransform();
                         t2.Name = "$nc_circle2_t";
                         t2.IsGlobal = true;
+                        t2.colour = "#313131";
                         t2.zoom = 0.12f;
                         t2.xcenter = 0.498f;
                         t2.ycenter = 0.5f;
@@ -1078,6 +1093,7 @@ namespace ProjectMGG.Ingame
                         RpyTransform t3 = new RpyTransform();
                         t3.Name = "$nc_circle3_t";
                         t3.IsGlobal = true;
+                        t3.colour = "#313131";
                         t3.zoom = 0.12f;
                         t3.xcenter = 0.568f;
                         t3.ycenter = 0.5f;
@@ -1147,9 +1163,9 @@ namespace ProjectMGG.Ingame
                 case "nc_once":
                     {
                         ApplyInternalImage("$nc_frame", "$/images/fx_nc_frame.png");
-                        ApplyInternalImage("$nc_circle1", "$/images/fx_nc_circle.png");
-                        ApplyInternalImage("$nc_circle2", "$/images/fx_nc_circle.png");
-                        ApplyInternalImage("$nc_circle3", "$/images/fx_nc_circle.png");
+                        ApplyInternalImage("$nc_circle1", "$/images/fx_circle.png");
+                        ApplyInternalImage("$nc_circle2", "$/images/fx_circle.png");
+                        ApplyInternalImage("$nc_circle3", "$/images/fx_circle.png");
 
                         Show frame = new Show();
                         frame.Tag = "$nc_frame";
@@ -1160,6 +1176,7 @@ namespace ProjectMGG.Ingame
                         RpyTransform t1 = new RpyTransform();
                         t1.Name = "$nc_circle1_t";
                         t1.IsGlobal = true;
+                        t1.colour = "#313131";
                         t1.zoom = 0.12f;
                         t1.xcenter = 0.428f;
                         t1.ycenter = 0.5f;
@@ -1168,6 +1185,7 @@ namespace ProjectMGG.Ingame
                         RpyTransform t2 = new RpyTransform();
                         t2.Name = "$nc_circle2_t";
                         t2.IsGlobal = true;
+                        t2.colour = "#313131";
                         t2.zoom = 0.12f;
                         t2.xcenter = 0.498f;
                         t2.ycenter = 0.5f;
@@ -1176,6 +1194,7 @@ namespace ProjectMGG.Ingame
                         RpyTransform t3 = new RpyTransform();
                         t3.Name = "$nc_circle3_t";
                         t3.IsGlobal = true;
+                        t3.colour = "#313131";
                         t3.zoom = 0.12f;
                         t3.xcenter = 0.568f;
                         t3.ycenter = 0.5f;
@@ -1237,7 +1256,60 @@ namespace ProjectMGG.Ingame
                         yield return LetsHide(frame, false);
                         break;
                     }
-                    #endregion
+                #endregion
+                #region L.C.
+                case "lc":
+                    {
+                        float current = 0f;
+                        const float RADIUS = 120f;
+                        var circles = new Show[8];
+                        var transforms = new RpyTransform[8];
+                        var status = new int[8];
+
+                        var parent = new GameObject("$lc_blank");
+                        parent.transform.parent = this.transform.Find("CanvasImage");
+                        parent.transform.localPosition = new Vector3(0, 0, 0);
+                        parent.AddComponent<RectTransform>().sizeDelta = new Vector2(1000, 1000);
+
+                        for (int i = 0; i < 8; i++)
+                        {
+                            string circleName = $"$lc_circle{i + 1}";
+                            float progress = i / 8f;
+                            float t = progress * 2 * Mathf.PI;
+                            float x = Mathf.Cos(t);
+                            float y = Mathf.Sin(t);
+
+                            ApplyInternalImage(circleName, "$/images/fx_circle.png");
+
+                            RpyTransform tr = new RpyTransform();
+                            tr.Name = $"{circleName}_t";
+                            tr.IsGlobal = true;
+                            tr.zoom = 0.1f;
+                            tr.xcenter = 1280 + x * RADIUS;
+                            tr.ycenter = 720 + y * RADIUS;
+                            tr.Interpret(); //Add
+
+                            Show circle = new Show();
+                            circle.Tag = circleName;
+                            circle.At = tr.Name;
+
+                            circles[i] = circle;
+                            transforms[i] = tr;
+                            status[i] = i;
+
+                            yield return LetsShow(circle, false, "CanvasImage/$lc_blank");
+                            yield return new WaitForSeconds(0.3f);
+                        }
+
+                        while (current <= 2f)
+                        {
+                            current += Time.deltaTime;
+
+                            yield return null;
+                        }
+                        break;
+                    }
+                #endregion
             }
         }
 

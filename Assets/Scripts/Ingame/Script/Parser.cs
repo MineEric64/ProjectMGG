@@ -442,6 +442,9 @@ namespace ProjectMGG.Ingame.Script
                 result = Pause.GetInfinity();
                 result.Line = line;
             }
+
+            //Custom syntax
+            if (IsUnknown(ArgumentKind.Identifier, 0) && _tokens[_index].Content.ToLower() == "hard") result.Hard = true;
             
             return result;
         }
@@ -573,6 +576,12 @@ namespace ProjectMGG.Ingame.Script
                         SkipCurrent();
                         result.zoom = float.Parse(_tokens[_index].Content);
                         SkipCurrent();
+                        break;
+
+                    //Custom syntax
+                    case "colour":
+                        SkipCurrent();
+                        result.colour = ParseStringLiteral();
                         break;
 
                     default:

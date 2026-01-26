@@ -22,6 +22,9 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 
         public float zoom = 1f;
 
+        //Custom syntax
+        public string colour = "";
+
         public RpyTransform()
         {
 
