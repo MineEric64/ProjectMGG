@@ -107,7 +107,7 @@ transform yunseo_right:
     ycenter 0.6
 
 transform yunseo_nc:
-    zoom 0.3
+    zoom 0.34
     xanchor 1.0
     yanchor 1.0
     xpos 0.42
