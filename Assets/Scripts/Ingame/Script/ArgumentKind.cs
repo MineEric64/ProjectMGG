@@ -3,16 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Xml.Linq;
 
 namespace ProjectMGG.Ingame.Script
 {
     class KindAttr : Attribute
     {
-        internal KindAttr(string content)
+        internal KindAttr(string content, bool isCustomSyntax = false)
         {
             this.Content = content;
+            this.IsCustomSyntax = isCustomSyntax;
         }
         public string Content { get; private set; }
+        public bool IsCustomSyntax { get; private set; }
     }
     public enum ArgumentKind
     {
@@ -51,7 +54,7 @@ namespace ProjectMGG.Ingame.Script
         [KindAttr("scene")] Scene,
         [KindAttr("window")] Window,
         [KindAttr("at")] At,
-        [KindAttr("fx")] Fx,
+        [KindAttr("fx", true)] Fx,
 
         [KindAttr("with")] With,
         [KindAttr("Dissolve")] Dissolve,
@@ -59,7 +62,7 @@ namespace ProjectMGG.Ingame.Script
 
         [KindAttr("play")] Play,
         [KindAttr("stop")] Stop,
-        [KindAttr("reeverb")] Reeverb,
+        [KindAttr("reeverb", true)] Reeverb,
 
         [KindAttr("and")] LogicalAnd,
         [KindAttr("or")] LogicalOr,
@@ -90,6 +93,7 @@ namespace ProjectMGG.Ingame.Script
     public static class ArgumentKinds
     {
         private static Dictionary<string, ArgumentKind> map = new Dictionary<string, ArgumentKind>();
+        private static Dictionary<ArgumentKind, bool> mapForCustomSyntax = new Dictionary<ArgumentKind, bool>();
 
         public static bool IsInitialized() => map.Count > 0;
         public static void Initialize()
@@ -105,7 +109,9 @@ namespace ProjectMGG.Ingame.Script
         public static void Register(this ArgumentKind k)
         {
             var attr = GetAttr(k);
+
             map.Add(attr.Content, k);
+            mapForCustomSyntax.Add(k, attr.IsCustomSyntax);
         }
 
         public static ArgumentKind ToKind(string name)
@@ -115,6 +121,15 @@ namespace ProjectMGG.Ingame.Script
                 return map[name];
             }
             return ArgumentKind.Unknown;
+        }
+
+        public static bool IsCustomSyntaxKind(ArgumentKind kind)
+        {
+            if (mapForCustomSyntax.ContainsKey(kind))
+            {
+                return mapForCustomSyntax[kind];
+            }
+            return false;
         }
 
         public static string GetContent(this ArgumentKind k)

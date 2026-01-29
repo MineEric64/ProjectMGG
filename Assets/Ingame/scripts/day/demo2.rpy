@@ -1,31 +1,29 @@
  define player = Character("[playername]", color="#f2f2f2")
 
 define seah = Character("한세아", color="#abb7db")
-image seah default = "$/images/chr_seah/1.png"
-image seah happy1 = "$/images/chr_seah/4.png"
-image seah happy2 = "$/images/chr_seah/5.png"
-image seah blush1 = "$/images/chr_seah/2-1-1.png"
-image seah blush2 = "$/images/chr_seah/2-1-2.png"
-image seah blush3 = "$/images/chr_seah/2-1-3.png"
-image seah blush4 = "$/images/chr_seah/2-2-1.png"
-image seah blush5 = "$/images/chr_seah/2-2-2.png"
-image seah blush6 = "$/images/chr_seah/2-2-3.png"
-image seah blush7 = "$/images/chr_seah/2extend.png"
-image seah blush8 = "$/images/chr_seah/3.png"
+image seah default = "images/chr_seah/"
+image seah happy1 = "images/chr_seah/"
+image seah happy2 = "images/chr_seah/"
+image seah blush1 = "images/chr_seah/"
+image seah blush2 = "images/chr_seah/"
+image seah blush3 = "images/chr_seah/"
+image seah blush4 = "images/chr_seah/"
+image seah blush5 = "images/chr_seah/"
+image seah blush6 = "images/chr_seah/"
+image seah blush7 = "images/chr_seah/"
+image seah blush8 = "images/chr_seah/"
 
 transform seah_t1:
 	zoom 0.41
 	xcenter 0.5
 	ycenter 0.6
 
-image homebase = "$/images/bg_homebase_demo.png"
-
-image cg_seah1 = "$/images/cg_demo.png"
+image homebase = "images/bg_homebase_demo.png"
 
 label start:
 	scene homebase
 	show seah default at seah_t1
-	play music "$/audio/Adorkable Love v3.mp3"
+	play music "audio/Adorkable Love v3.mp3"
 	seah "여기가 홈베이스에요."
 	seah "홈베이스 벽면 쪽에 우리 포스터를 붙이면 될 것 같아요."
 	"세아 선배는 포스터를 붙이러 홈베이스 안으로 들어갔다."
@@ -86,7 +84,7 @@ label start:
 	"세아 선배는 그동안 본 적이 없던 밝은 미소를 내게 처음 지었다."
 	"뭐랄까, 마음 속에서 뒤섞인 감정이 함께 우러나오는 이 기분···."
 	"이상하다."
-	play music "$/audio/Sweet Haru.mp3"
+	play music "audio/Sweet Haru.mp3"
 	# 포스터를 잡으면서 세아가 나를 위로 쳐다보며 밝은 표정을 짓는 구도인 CG 등장
 	show seah default at seah_t1
 	"세아 선배는 주머니에서 커터칼과 테이프를 꺼내 내게 건냈다."

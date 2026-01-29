@@ -1,12 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Linq;
+
 using UnityEngine;
 
 using ProjectMGG.Ingame.Script.Keywords.Renpy;
-using System;
 
-namespace ProjectMGG.Ingame.Script
+namespace ProjectMGG.Ingame
 {
     public class PauseManager
     {
@@ -15,7 +17,7 @@ namespace ProjectMGG.Ingame.Script
         public static event EventHandler OnCompleted;
 
         private static List<Pause> _pauses = new List<Pause>();
-        private static List<Pause> _removed = new List<Pause>();
+        private static SortedSet<Pause> _removed = new SortedSet<Pause>();
 
         public static void Add(Pause pause)
         {
@@ -30,7 +32,7 @@ namespace ProjectMGG.Ingame.Script
             {
                 Pause pause = _pauses[i];
 
-                if (includeHard || !pause.Hard)
+                if ((includeHard || !pause.Hard) && !_removed.Contains(pause))
                 {
                     _removed.Add(pause);
                     remove = true;
@@ -57,12 +59,10 @@ namespace ProjectMGG.Ingame.Script
                     if (pause.CurrentDelay >= pause.Delay) _removed.Add(pause);
                 }
 
-                if (countPrev > 0 && Count - _removed.Count == 0) OnCompleted.Invoke(null, null);
+                if (countPrev > 0 && Count - _removed.Count == 0) OnCompleted?.Invoke(null, null);
 
-                for (int i = 0; i < _removed.Count; i++)
+                foreach (var pause in _removed)
                 {
-                    Pause pause = _removed[i];
-
                     pause.ActionAfter?.Invoke();
                     _pauses.Remove(pause);
                 }

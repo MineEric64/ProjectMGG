@@ -211,6 +211,13 @@ namespace ProjectMGG.Ingame.Script
 
             ArgumentKind kind = ArgumentKinds.ToKind(content);
 
+            //Check for custom syntax, it's free to uppercase or lowercase
+            //Uncomment this if you chose that the custom syntax is uppercase
+            //Before uncomment this, please make sure that you changed ArgumentKind name to UPPERCASE
+            //ArgumentKind kind2 = ArgumentKinds.ToKind(content.ToUpper());
+            //bool isCustomSyntax = ArgumentKinds.IsCustomSyntaxKind(kind2);
+            //if (kind2 != ArgumentKind.Unknown && isCustomSyntax) kind = kind2;
+
             if (kind == ArgumentKind.Unknown)
             {
                 kind = ArgumentKind.Identifier;

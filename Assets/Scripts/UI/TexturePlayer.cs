@@ -50,10 +50,10 @@ namespace ProjectMGG.UI
                 case TextureKind.Noise:
                     {
                         var paths = new List<string>();
-                        for (int i = 1; i <= 20; i++) paths.Add(string.Concat("$/images/texture/noise/", i.ToString(), ".png"));
+                        for (int i = 1; i <= 20; i++) paths.Add(string.Concat("images/texture/noise/", i.ToString(), ".png"));
                         foreach (string path in paths)
                         {
-                            var image = IngameManagerV2.LoadResource<Texture2D>(path);
+                            var image = IngameManagerV2.LoadResource<Texture2D>(path, "images");
                             if (image != null) _images.Add(image);
                         }
                         break;

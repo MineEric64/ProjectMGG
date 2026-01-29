@@ -3,87 +3,87 @@ define player = Character("[playername]", color="#f2f2f2")
 define haeun = Character("이하은", color="#ffd9e9")
 define yunseo = Character("조윤서", color="#aaaaaa")
 
-image haeun angry1 = "$/images/chr_haeun/angry1.png"
-image haeun angry2 = "$/images/chr_haeun/angry2.png"
-image haeun angry3 = "$/images/chr_haeun/angry3.png"
-image haeun anxious1 = "$/images/chr_haeun/anxious1.png"
-image haeun anxious2 = "$/images/chr_haeun/anxious2.png"
-image haeun anxious3 = "$/images/chr_haeun/anxious3.png"
-image haeun curious = "$/images/chr_haeun/curious.png"
-image haeun default1 = "$/images/chr_haeun/default1.png"
-image haeun default2 = "$/images/chr_haeun/default2.png"
-image haeun default3 = "$/images/chr_haeun/default3.png"
-image haeun default4 = "$/images/chr_haeun/default4.png"
-image haeun default5 = "$/images/chr_haeun/default5.png"
-image haeun disgust1 = "$/images/chr_haeun/disgust1.png"
-image haeun disgust2 = "$/images/chr_haeun/disgust2.png"
-image haeun happy1 = "$/images/chr_haeun/happy1.png"
-image haeun happy2 = "$/images/chr_haeun/happy2.png"
-image haeun happy3 = "$/images/chr_haeun/happy3.png"
-image haeun happy4 = "$/images/chr_haeun/happy4.png"
-image haeun happy5 = "$/images/chr_haeun/happy5.png"
-image haeun happy6 = "$/images/chr_haeun/happy6.png"
-image haeun happy7 = "$/images/chr_haeun/happy7.png"
-image haeun happy8 = "$/images/chr_haeun/happy8.png"
-image haeun happy9 = "$/images/chr_haeun/happy9.png"
-image haeun happy10 = "$/images/chr_haeun/happy10.png"
-image haeun yandere1 = "$/images/chr_haeun/yandere1.png"
-image haeun yandere2 = "$/images/chr_haeun/yandere2.png"
-image haeun yandere3 = "$/images/chr_haeun/yandere3.png"
-image haeun yandere4 = "$/images/chr_haeun/yandere4.png"
-image haeun yandere5 = "$/images/chr_haeun/yandere5.png"
-image haeun yandere6 = "$/images/chr_haeun/yandere6.png"
-image haeun yandere7 = "$/images/chr_haeun/yandere7.png"
-image haeun yandere8 = "$/images/chr_haeun/yandere8.png"
-image haeun yandere9 = "$/images/chr_haeun/yandere9.png"
-image haeun yandere10 = "$/images/chr_haeun/yandere10.png"
-image haeun yandere11 = "$/images/chr_haeun/yandere11.png"
-image haeun yandere12 = "$/images/chr_haeun/yandere12.png"
-image haeun yandere13 = "$/images/chr_haeun/yandere13.png"
-image haeun yandere14 = "$/images/chr_haeun/yandere14.png"
+image haeun angry1 = "images/chr_haeun/angry1.png"
+image haeun angry2 = "images/chr_haeun/angry2.png"
+image haeun angry3 = "images/chr_haeun/angry3.png"
+image haeun anxious1 = "images/chr_haeun/anxious1.png"
+image haeun anxious2 = "images/chr_haeun/anxious2.png"
+image haeun anxious3 = "images/chr_haeun/anxious3.png"
+image haeun curious = "images/chr_haeun/curious.png"
+image haeun default1 = "images/chr_haeun/default1.png"
+image haeun default2 = "images/chr_haeun/default2.png"
+image haeun default3 = "images/chr_haeun/default3.png"
+image haeun default4 = "images/chr_haeun/default4.png"
+image haeun default5 = "images/chr_haeun/default5.png"
+image haeun disgust1 = "images/chr_haeun/disgust1.png"
+image haeun disgust2 = "images/chr_haeun/disgust2.png"
+image haeun happy1 = "images/chr_haeun/happy1.png"
+image haeun happy2 = "images/chr_haeun/happy2.png"
+image haeun happy3 = "images/chr_haeun/happy3.png"
+image haeun happy4 = "images/chr_haeun/happy4.png"
+image haeun happy5 = "images/chr_haeun/happy5.png"
+image haeun happy6 = "images/chr_haeun/happy6.png"
+image haeun happy7 = "images/chr_haeun/happy7.png"
+image haeun happy8 = "images/chr_haeun/happy8.png"
+image haeun happy9 = "images/chr_haeun/happy9.png"
+image haeun happy10 = "images/chr_haeun/happy10.png"
+image haeun yandere1 = "images/chr_haeun/yandere1.png"
+image haeun yandere2 = "images/chr_haeun/yandere2.png"
+image haeun yandere3 = "images/chr_haeun/yandere3.png"
+image haeun yandere4 = "images/chr_haeun/yandere4.png"
+image haeun yandere5 = "images/chr_haeun/yandere5.png"
+image haeun yandere6 = "images/chr_haeun/yandere6.png"
+image haeun yandere7 = "images/chr_haeun/yandere7.png"
+image haeun yandere8 = "images/chr_haeun/yandere8.png"
+image haeun yandere9 = "images/chr_haeun/yandere9.png"
+image haeun yandere10 = "images/chr_haeun/yandere10.png"
+image haeun yandere11 = "images/chr_haeun/yandere11.png"
+image haeun yandere12 = "images/chr_haeun/yandere12.png"
+image haeun yandere13 = "images/chr_haeun/yandere13.png"
+image haeun yandere14 = "images/chr_haeun/yandere14.png"
 
-image yunseo default1 = "$/images/chr_yunseo/default1.png"
-image yunseo default2 = "$/images/chr_yunseo/default2.png"
-# image yunseo eating1 = "$/images/chr_yunseo/eating1.png"
-image yunseo eating2 = "$/images/chr_yunseo/eating2.png"
-image yunseo embarrassed1 = "$/images/chr_yunseo/embarrassed1.png"
-image yunseo embarrassed2 = "$/images/chr_yunseo/embarrassed2.png"
-image yunseo embarrassed3 = "$/images/chr_yunseo/embarrassed3.png"
-image yunseo embarrassed4 = "$/images/chr_yunseo/embarrassed4.png"
-image yunseo embarrassed5 = "$/images/chr_yunseo/embarrassed5.png"
-image yunseo embarrassed6 = "$/images/chr_yunseo/embarrassed6.png"
-image yunseo embarrassed7 = "$/images/chr_yunseo/embarrassed7.png"
-image yunseo embarrassed8 = "$/images/chr_yunseo/embarrassed8.png"
-# image yunseo embarrassed9 = "$/images/chr_yunseo/embarrassed9.png"
-image yunseo happy1 = "$/images/chr_yunseo/happy1.png"
-image yunseo happy2 = "$/images/chr_yunseo/happy2.png"
-image yunseo happy3 = "$/images/chr_yunseo/happy3.png"
-image yunseo happy4 = "$/images/chr_yunseo/happy4.png"
-image yunseo happy5 = "$/images/chr_yunseo/happy5.png"
-# image yunseo happy6 = "$/images/chr_yunseo/happy6.png"
-image yunseo happy7 = "$/images/chr_yunseo/happy7.png"
-# image yunseo happy8 = "$/images/chr_yunseo/happy8.png"
-# image yunseo anxious1 = "$/images/chr_yunseo/anxious1.png"
-# image yunseo anxious2 = "$/images/chr_yunseo/anxious2.png"
+image yunseo default1 = "images/chr_yunseo/default1.png"
+image yunseo default2 = "images/chr_yunseo/default2.png"
+# image yunseo eating1 = "images/chr_yunseo/eating1.png"
+image yunseo eating2 = "images/chr_yunseo/eating2.png"
+image yunseo embarrassed1 = "images/chr_yunseo/embarrassed1.png"
+image yunseo embarrassed2 = "images/chr_yunseo/embarrassed2.png"
+image yunseo embarrassed3 = "images/chr_yunseo/embarrassed3.png"
+image yunseo embarrassed4 = "images/chr_yunseo/embarrassed4.png"
+image yunseo embarrassed5 = "images/chr_yunseo/embarrassed5.png"
+image yunseo embarrassed6 = "images/chr_yunseo/embarrassed6.png"
+image yunseo embarrassed7 = "images/chr_yunseo/embarrassed7.png"
+image yunseo embarrassed8 = "images/chr_yunseo/embarrassed8.png"
+# image yunseo embarrassed9 = "images/chr_yunseo/embarrassed9.png"
+image yunseo happy1 = "images/chr_yunseo/happy1.png"
+image yunseo happy2 = "images/chr_yunseo/happy2.png"
+image yunseo happy3 = "images/chr_yunseo/happy3.png"
+image yunseo happy4 = "images/chr_yunseo/happy4.png"
+image yunseo happy5 = "images/chr_yunseo/happy5.png"
+# image yunseo happy6 = "images/chr_yunseo/happy6.png"
+image yunseo happy7 = "images/chr_yunseo/happy7.png"
+# image yunseo happy8 = "images/chr_yunseo/happy8.png"
+# image yunseo anxious1 = "images/chr_yunseo/anxious1.png"
+# image yunseo anxious2 = "images/chr_yunseo/anxious2.png"
 
-image yunseo a1 = "$/images/chr_yunseo/a1.png"
-image yunseo a6 = "$/images/chr_yunseo/a6.png"
-image yunseo a7 = "$/images/chr_yunseo/a7.png"
-image yunseo embarrassed1_blush = "$/images/chr_yunseo/embarrassed1_blush.png"
-image yunseo embarrassed2_blush = "$/images/chr_yunseo/embarrassed2_blush.png"
-image yunseo embarrassed3_blush = "$/images/chr_yunseo/embarrassed3_blush.png"
-image yunseo embarrassed4_blush = "$/images/chr_yunseo/embarrassed4_blush.png"
-image yunseo happy5_blush = "$/images/chr_yunseo/happy5_blush.png"
-image yunseo happy7_blush = "$/images/chr_yunseo/happy7_blush.png"
-image yunseo embarrassed52 = "$/images/chr_yunseo/embarrassed52.png"
-image yunseo embarrassed53 = "$/images/chr_yunseo/embarrassed53.png"
-image yunseo happysuper2 = "$/images/chr_yunseo/happysuper2.png"
+image yunseo a1 = "images/chr_yunseo/a1.png"
+image yunseo a6 = "images/chr_yunseo/a6.png"
+image yunseo a7 = "images/chr_yunseo/a7.png"
+image yunseo embarrassed1_blush = "images/chr_yunseo/embarrassed1_blush.png"
+image yunseo embarrassed2_blush = "images/chr_yunseo/embarrassed2_blush.png"
+image yunseo embarrassed3_blush = "images/chr_yunseo/embarrassed3_blush.png"
+image yunseo embarrassed4_blush = "images/chr_yunseo/embarrassed4_blush.png"
+image yunseo happy5_blush = "images/chr_yunseo/happy5_blush.png"
+image yunseo happy7_blush = "images/chr_yunseo/happy7_blush.png"
+image yunseo embarrassed52 = "images/chr_yunseo/embarrassed52.png"
+image yunseo embarrassed53 = "images/chr_yunseo/embarrassed53.png"
+image yunseo happysuper2 = "images/chr_yunseo/happysuper2.png"
 
 # 배경
 image black = Solid("#000000")
 
-image home day = "$/images/bg_home_day_demo.png"
-image home night = "$/images/bg_home_night_demo.png"
+image home day = "images/bg_home_day_demo.png"
+image home night = "images/bg_home_night_demo.png"
 
 # 위치
 transform haeun_center:
@@ -401,7 +401,7 @@ label start:
     "그다음에 레시피에선 볶은 김치 넣으라고 하네, 원래 순서가 이게 맞나?"
     # 작은 방문이 열리는 SFX
     # 배고픈데 먹을 것을 발견한 윤서, 주위에서 계속 어슬렁거린다
-    play music "$/audio/Roomie Rookie.mp3" # 임시
+    play music STARBERRY_MILK
     show yunseo a1 at yunseo_center with Dissolve(0.4)
     player "어··· 윤서?"
     show yunseo happy3 at yunseo_center
@@ -458,7 +458,7 @@ label start:
     show yunseo embarrassed2 at yunseo_center
     window hide
     # TODO?: SFX 구현할 때 N.C.도 SFX 넣는 게 어울릴지 고민해보기
-    fx nc at yunseo_nc
+    fx NC at yunseo_nc
     pause 2.5 hard
     window show
     show yunseo embarrassed7 at yunseo_center
@@ -472,7 +472,7 @@ label start:
     show yunseo embarrassed4 at yunseo_center
     yunseo "이럴 땐 보, 보통 나눠주긴 하거든······."
     window hide
-    fx nc at yunseo_nc
+    fx NC at yunseo_nc
     pause 2.2 hard
     window show
     show yunseo embarrassed7 at yunseo_center
@@ -537,7 +537,7 @@ label start:
     player "무슨 일이길래?" # or 뭐라고?
     # 점차 차가워지는 조명, White Balance 조정하면 될 듯
     window hide
-    fx lc_frame at yunseo_nc
+    fx LC_FRAME at yunseo_nc
     pause 2.2 hard
     window show
     show yunseo embarrassed1_blush at yunseo_center
@@ -586,7 +586,7 @@ label start:
     pause 3.0
     window show
     player "갑자기 왜 김치찌개에 단맛이 나는 거지······."
-    stop music
+    stop music fadeout 3.0
 
     scene black with Fade(2.0, 2.0, 1.5)
     # 소리가 크지만 뭉툭하게 난다, 마치 ‘쿵쿵쿵!’ 비스무리 SFX

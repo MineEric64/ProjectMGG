@@ -12,6 +12,8 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
         public IPause Transition { get; set; }
         public bool Alone { get; set; }
 
+        public bool Pause { get; set; } = true;
+
         public With(bool alone)
         {
             Alone = alone;

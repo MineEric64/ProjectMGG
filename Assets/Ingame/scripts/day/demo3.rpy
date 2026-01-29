@@ -9,7 +9,7 @@ image hina_cg21 = Solid("#000000")
 image hina_cg22 = Solid("#000000")
 
 label start:
-	play music "$/audio/My Sweet Babo.mp3"
+	play music "audio/My Sweet Babo.mp3"
 	scene corridor
 	"4층 복도에 도착했다."
 	"아직 복도에 도착하지 못한 히나는 순조롭게 계단을 오르다 멈칫했다."

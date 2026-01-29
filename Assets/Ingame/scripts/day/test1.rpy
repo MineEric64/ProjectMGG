@@ -5,16 +5,16 @@ define haru = Character("서하루", color="#a965d3")
 define seah = Character("한세아", color="#3a3e4a")
 define hina = Character("유히나", color="#f688a7")
 
-image haru default = "$/images/chr_haru/default.png"
-image haru happy1 = "$/images/chr_haru/happy1.png"
-image haru happy2 = "$/images/chr_haru/happy2.png"
-image haru embarrassed1 = "$/images/chr_haru/embarrassed1.png"
-image haru embarrassed2 = "$/images/chr_haru/embarrassed2.png"
-image haru anxious = "$/images/chr_haru/anxious.png"
+image haru default = "images/chr_haru/default.png"
+image haru happy1 = "images/chr_haru/happy1.png"
+image haru happy2 = "images/chr_haru/happy2.png"
+image haru embarrassed1 = "images/chr_haru/embarrassed1.png"
+image haru embarrassed2 = "images/chr_haru/embarrassed2.png"
+image haru anxious = "images/chr_haru/anxious.png"
 
 # 배경
-image classroom = "$/images/bg_classroom_demo.png"
-image homebase = "$/images/bg_homebase_demo.png"
+image classroom = "images/bg_classroom_demo.png"
+image homebase = "images/bg_homebase_demo.png"
 
 transform half_size:
     zoom 1.3
@@ -37,9 +37,13 @@ label start:
     scene classroom
     "어떡하면 좋을까."
 
+    play music "Starberry milk.mp3" fadein 3.0
+
     show haru default at half_size
     "테스트"
-    fx lc_frame at nc_test
+    stop music fadeout 3.0
+    fx LC_FRAME at nc_test
+    
 
     "1aaaaaaaaaaaa{p}2bbbbbbbb{p}3ccccccccccc{p}4ddddddddd"
 
@@ -60,7 +64,7 @@ label start:
     "..."
     show haru happy1 at half_size
     "시간이 어느정도 지나자 내게 미소를 짓는 하루."
-    play music "$/audio/Nemo Neko.mp3"
+    play music "audio/Nemo Neko.mp3"
     seah "ㄱㅡ그냥 제가 할게요{size=-15}오{/size}..."
     hina "[playername2:야]아아!!!! 오랜만이다{size=-10}아{/size}!\n그동안 보고 싶었어 ㅜㅜ"
 

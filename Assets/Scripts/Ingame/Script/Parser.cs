@@ -522,7 +522,7 @@ namespace ProjectMGG.Ingame.Script
                     continue;
                 }
 
-                switch (_tokens[_index].Content)
+                switch (_tokens[_index].Content.ToLower())
                 {
                     case "xpos":
                         SkipCurrent();
@@ -1261,23 +1261,65 @@ namespace ProjectMGG.Ingame.Script
 
         private IStatement ParsePlay()
         {
-            var result = new Play();
+            var result = new RpyAudio();
 
             result.Line = _tokens[_index].Line;
             SkipCurrent();
+            result.State = RpyAudioStates.Play;
             result.Channel = ParseIdentifier();
-            result.Path = ParseStringLiteral();
+            result.Path = ParseExpression();
+
+            while (IsUnknown(ArgumentKind.Identifier, 0))
+            {
+                if (_tokens[_index].Content == "fadein" && _tokens[_index].Line == _tokens[_index + 1].Line)
+                {
+                    SkipCurrent();
+                    result.fadein = ParseExpression();
+                }
+                else if (_tokens[_index].Content == "fadeout" && _tokens[_index].Line == _tokens[_index + 1].Line)
+                {
+                    SkipCurrent();
+                    result.fadeout = ParseExpression();
+                }
+                else if (_tokens[_index].Content == "volume" && _tokens[_index].Line == _tokens[_index + 1].Line)
+                {
+                    SkipCurrent();
+                    result.volume = ParseExpression();
+                }
+                else if (_tokens[_index].Content == "if_changed")
+                {
+                    SkipCurrent();
+                    result.if_changed = true;
+                }
+                else if (_tokens[_index].Content == "loop")
+                {
+                    SkipCurrent();
+                    result.isloop = 1;
+                }
+                else if (_tokens[_index].Content == "noloop")
+                {
+                    SkipCurrent();
+                    result.isloop = 0;
+                }
+            }
 
             return result;
         }
 
         private IStatement ParseStop()
         {
-            var result = new Stop();
+            var result = new RpyAudio();
 
             result.Line = _tokens[_index].Line;
             SkipCurrent();
+            result.State = RpyAudioStates.Stop;
             result.Channel = ParseIdentifier();
+
+            if (IsUnknown(ArgumentKind.Identifier, 0) && _tokens[_index].Content == "fadeout" && _tokens[_index].Line == _tokens[_index + 1].Line)
+            {
+                SkipCurrent();
+                result.fadeout = ParseExpression();
+            }
 
             return result;
         }

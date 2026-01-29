@@ -54,12 +54,13 @@ namespace ProjectMGG.Ingame
         #endregion
         #region Audio
         public AudioSource MusicPlayer;
+        public RpyAudio CurrentMusic { get; private set; } = null;
+
         public bool IsReeverb = false;
         public List<float> ReeverbIntervals = new List<float>();
         public float EndReverbTime = 0.0f;
 
         private float _preservedMusicTime = 0.0f;
-        private string _currentPlayingMusic = "";
         private AudioReverbFilter _reverbFilter;
         private float _currentDecayTime = 0.1f;
         #endregion
@@ -108,17 +109,17 @@ namespace ProjectMGG.Ingame
                 TextureDefault.Apply();
 
                 //Pause Manager
-                PauseManager.OnCompleted += (_, _) =>
-                {
-                    _goToNext = true;
-                };
+                PauseManager.OnCompleted += (_, _) => { _goToNext = true; }; //blacklist (if something went wrong, please consider change to whitelist)
                 StartCoroutine(PauseManager.Loop());
+
+                //Audio Manager
+                StartCoroutine(AudioManager.Loop(MusicPlayer));
             }
 
             Instance = this;
             Locals = new Dictionary<string, VariableCollection>();
             Global = new VariableCollection();
-            if (Enum.TryParse(SettingsManager.Settings.UI.TextEase, out Ease ease)) DefaultEase = ease;
+            DefaultEase = ParseEaseFromString(SettingsManager.Settings.UI.TextEase);
 
             //Script
             PauseManager.Clear();
@@ -126,6 +127,7 @@ namespace ProjectMGG.Ingame
             StartCoroutine(InitializeScript()); //Pause will automatically removed after init completed
 
             //Audio
+            AudioManager.Clear();
             _reverbFilter = MusicPlayer.GetComponent<AudioReverbFilter>();
 
             //UI
@@ -264,6 +266,7 @@ namespace ProjectMGG.Ingame
                     }
                     else if (script is Pause pause)
                     {
+                        //pause.ActionAfter += () => { _goToNext = true; }; //whitelist
                         LetsPause(pause, true);
                     }
                 }
@@ -571,7 +574,6 @@ namespace ProjectMGG.Ingame
                             textUI.text += "\n";
                             _goToNext = false;
                         });
-                        
                         LetsPause(pause);
                         break;
                     }
@@ -918,9 +920,9 @@ namespace ProjectMGG.Ingame
                 {
                     Color color = Color.white;
 
-                    if (UnityEngine.ColorUtility.TryParseHtmlString(transform.colour, out color)) prefab.color = color;
-                    else if (!transform.colour.StartsWith('#') && UnityEngine.ColorUtility.TryParseHtmlString(string.Concat("#", transform.colour), out color)) prefab.color = color; //Concat #
-                    else ExceptionManager.Throw($"Color Hex '{transform.colour}' parsing failed while interpreting 'show'/'fx' statement.", "IngameManagerV2");
+                    if (ColorUtility.TryParseHtmlString(transform.colour, out color)) prefab.color = color;
+                    else if (!transform.colour.StartsWith('#') && ColorUtility.TryParseHtmlString(string.Concat("#", transform.colour), out color)) prefab.color = color; //Concat #
+                    else ExceptionManager.Throw($"Color Hex '{transform.colour}' parsing failed while interpreting 'show'/'FX' statement.", "IngameManagerV2");
                 }
             }
             else
@@ -944,9 +946,10 @@ namespace ProjectMGG.Ingame
             with.Transition = ParseWithKind(with);
             float time = with.Transition.GetPauseTime();
 
-            if (time > 0f)
+            if (time > 0f && with.Pause)
             {
                 Pause pause = new Pause(time, true);
+                //pause.ActionAfter += () => { _goToNext = true; }; //whitelist
                 LetsPause(pause, emptyDialog);
             }
         }
@@ -1060,7 +1063,7 @@ namespace ProjectMGG.Ingame
                 var transform = GetVariable(at, ref Local.Transforms, ref Global.Transforms);
                 if (transform == null)
                 {
-                    ExceptionManager.Throw($"The transform '{at}' variable doesn't exists while interpreting 'fx' statement.", "IngameManagerV2");
+                    ExceptionManager.Throw($"The transform '{at}' variable doesn't exists while interpreting 'FX' statement.", "IngameManagerV2");
                     yield break;
                 }
             }
@@ -1068,18 +1071,19 @@ namespace ProjectMGG.Ingame
             switch (name)
             {
                 #region N.C.
-                case "nc":
+                case "NC":
                     {
-                        ApplyInternalImage("$nc_frame", "$/images/fx_nc_frame.png");
-                        ApplyInternalImage("$nc_circle1", "$/images/fx_circle.png");
-                        ApplyInternalImage("$nc_circle2", "$/images/fx_circle.png");
-                        ApplyInternalImage("$nc_circle3", "$/images/fx_circle.png");
+                        ApplyInternalImage("$nc_frame", "images/fx_nc_frame.png");
+                        ApplyInternalImage("$nc_circle1", "images/fx_circle.png");
+                        ApplyInternalImage("$nc_circle2", "images/fx_circle.png");
+                        ApplyInternalImage("$nc_circle3", "images/fx_circle.png");
 
                         Show frame = new Show();
                         frame.Tag = "$nc_frame";
                         frame.At = at;
                         frame.With = new With(false);
                         frame.With.Transition = new Dissolve(0.16f);
+                        frame.With.Pause = false;
 
                         RpyTransform t1 = new RpyTransform();
                         t1.Name = "$nc_circle1_t";
@@ -1113,18 +1117,21 @@ namespace ProjectMGG.Ingame
                         circle1.At = "$nc_circle1_t";
                         circle1.With = new With(false);
                         circle1.With.Transition = new Dissolve(0.275f);
+                        circle1.With.Pause = false;
 
                         Show circle2 = new Show();
                         circle2.Tag = "$nc_circle2";
                         circle2.At = "$nc_circle2_t";
                         circle2.With = new With(false);
                         circle2.With.Transition = new Dissolve(0.275f);
+                        circle2.With.Pause = false;
 
                         Show circle3 = new Show();
                         circle3.Tag = "$nc_circle3";
                         circle3.At = "$nc_circle3_t";
                         circle3.With = new With(false);
                         circle3.With.Transition = new Dissolve(0.275f);
+                        circle3.With.Pause = false;
 
                         yield return LetsShow(frame, false);
 
@@ -1139,6 +1146,7 @@ namespace ProjectMGG.Ingame
 
                             circle1.With = new With(false);
                             circle1.With.Transition = new Dissolve(0.275f);
+                            circle1.With.Pause = false;
                             circle2.With = null;
                             Coroutine c = StartCoroutine(LetsHide(circle1, false));
                             Coroutine d = StartCoroutine(LetsShow(circle2, false, "CanvasImage/$nc_frame"));
@@ -1150,6 +1158,7 @@ namespace ProjectMGG.Ingame
 
                             circle2.With = new With(false);
                             circle2.With.Transition = new Dissolve(0.275f);
+                            circle2.With.Pause = false;
                             circle3.With = null;
                             Coroutine f = StartCoroutine(LetsHide(circle2, false));
                             Coroutine g = StartCoroutine(LetsShow(circle3, false, "CanvasImage/$nc_frame"));
@@ -1161,6 +1170,7 @@ namespace ProjectMGG.Ingame
 
                             circle3.With = new With(false);
                             circle3.With.Transition = new Dissolve(0.275f);
+                            circle3.With.Pause = false;
                             if (i != 1) StartCoroutine(LetsHide(circle3, false));
                             else yield return LetsHide(circle3, false);
                         }
@@ -1169,18 +1179,19 @@ namespace ProjectMGG.Ingame
                         break;
                     }
 
-                case "nc_once":
+                case "NC_ONCE":
                     {
-                        ApplyInternalImage("$nc_frame", "$/images/fx_nc_frame.png");
-                        ApplyInternalImage("$nc_circle1", "$/images/fx_circle.png");
-                        ApplyInternalImage("$nc_circle2", "$/images/fx_circle.png");
-                        ApplyInternalImage("$nc_circle3", "$/images/fx_circle.png");
+                        ApplyInternalImage("$nc_frame", "images/fx_nc_frame.png");
+                        ApplyInternalImage("$nc_circle1", "images/fx_circle.png");
+                        ApplyInternalImage("$nc_circle2", "images/fx_circle.png");
+                        ApplyInternalImage("$nc_circle3", "images/fx_circle.png");
 
                         Show frame = new Show();
                         frame.Tag = "$nc_frame";
                         frame.At = at;
                         frame.With = new With(false);
                         frame.With.Transition = new Dissolve(0.16f);
+                        frame.With.Pause = false;
 
                         RpyTransform t1 = new RpyTransform();
                         t1.Name = "$nc_circle1_t";
@@ -1214,18 +1225,21 @@ namespace ProjectMGG.Ingame
                         circle1.At = "$nc_circle1_t";
                         circle1.With = new With(false);
                         circle1.With.Transition = new Dissolve(0.275f);
+                        circle1.With.Pause = false;
 
                         Show circle2 = new Show();
                         circle2.Tag = "$nc_circle2";
                         circle2.At = "$nc_circle2_t";
                         circle2.With = new With(false);
                         circle2.With.Transition = new Dissolve(0.275f);
+                        circle2.With.Pause = false;
 
                         Show circle3 = new Show();
                         circle3.Tag = "$nc_circle3";
                         circle3.At = "$nc_circle3_t";
                         circle3.With = new With(false);
                         circle3.With.Transition = new Dissolve(0.275f);
+                        circle3.With.Pause = false;
 
                         yield return LetsShow(frame, false);
 
@@ -1238,6 +1252,7 @@ namespace ProjectMGG.Ingame
 
                         circle1.With = new With(false);
                         circle1.With.Transition = new Dissolve(0.275f);
+                        circle1.With.Pause = false;
                         circle2.With = null;
                         Coroutine c = StartCoroutine(LetsHide(circle1, false));
                         Coroutine d = StartCoroutine(LetsShow(circle2, false, "CanvasImage/$nc_frame"));
@@ -1249,6 +1264,7 @@ namespace ProjectMGG.Ingame
 
                         circle2.With = new With(false);
                         circle2.With.Transition = new Dissolve(0.275f);
+                        circle2.With.Pause = false;
                         circle3.With = null;
                         Coroutine f = StartCoroutine(LetsHide(circle2, false));
                         Coroutine g = StartCoroutine(LetsShow(circle3, false, "CanvasImage/$nc_frame"));
@@ -1260,6 +1276,7 @@ namespace ProjectMGG.Ingame
 
                         circle3.With = new With(false);
                         circle3.With.Transition = new Dissolve(0.275f);
+                        circle3.With.Pause = false;
                         yield return LetsHide(circle3, false);
 
                         yield return LetsHide(frame, false);
@@ -1267,7 +1284,7 @@ namespace ProjectMGG.Ingame
                     }
                 #endregion
                 #region L.C.
-                case "lc":
+                case "LC":
                     {
                         float currentWhole = 0f;
                         float current = 0f;
@@ -1299,7 +1316,7 @@ namespace ProjectMGG.Ingame
                             float x = -Mathf.Sin(t);
                             float y = -Mathf.Cos(t);
 
-                            ApplyInternalImage(circleName, "$/images/fx_circle.png");
+                            ApplyInternalImage(circleName, "images/fx_circle.png");
 
                             RpyTransform tr = new RpyTransform();
                             tr.Name = $"{circleName}_t";
@@ -1350,7 +1367,7 @@ namespace ProjectMGG.Ingame
                         break;
                     }
 
-                case "lc_frame":
+                case "LC_FRAME":
                     {
                         float currentWhole = 0f;
                         float current = 0f;
@@ -1366,13 +1383,14 @@ namespace ProjectMGG.Ingame
                             new Color(0.569f, 0.576f, 0.584f), new Color(0.49f, 0.486f, 0.498f), new Color(0.306f, 0.306f, 0.314f), new Color(0.306f, 0.306f, 0.314f)
                         };
 
-                        ApplyInternalImage("$lc_frame", "$/images/fx_nc_frame.png");
+                        ApplyInternalImage("$lc_frame", "images/fx_nc_frame.png");
 
                         Show frame = new Show();
                         frame.Tag = "$lc_frame";
                         frame.At = at;
                         frame.With = new With(false);
                         frame.With.Transition = new Dissolve(0.16f);
+                        frame.With.Pause = false;
 
                         yield return LetsShow(frame, false);
 
@@ -1384,7 +1402,7 @@ namespace ProjectMGG.Ingame
                             float x = -Mathf.Sin(t);
                             float y = -Mathf.Cos(t);
 
-                            ApplyInternalImage(circleName, "$/images/fx_circle.png");
+                            ApplyInternalImage(circleName, "images/fx_circle.png");
 
                             RpyTransform tr = new RpyTransform();
                             tr.Name = $"{circleName}_t";
@@ -1437,6 +1455,7 @@ namespace ProjectMGG.Ingame
                         {
                             circleShows[i].With = new With(false);
                             circleShows[i].With.Transition = new Dissolve(0.16f);
+                            circleShows[i].With.Pause = false;
                             coroutines[i] = StartCoroutine(LetsHide(circleShows[i], false));
                         }
                         coroutines[8] = StartCoroutine(LetsHide(frame, false));
@@ -1466,26 +1485,39 @@ namespace ProjectMGG.Ingame
         }
         #endregion
         #region Audio
-        public void LetsPlay(string channel, string path)
+        public void LetsPlay(RpyAudio audio, string path, float fadein = 0f, float fadeout = 0f, float volume = 1f)
         {
-            switch (channel)
+            switch (audio.Channel)
             {
                 case "music":
                     {
-                        if (!string.IsNullOrWhiteSpace(_currentPlayingMusic) && _currentPlayingMusic == path) //reeverbed
+                        if (CurrentMusic != null && CurrentMusic.GetFileName() == audio.GetFileName()) //reeverbed
                         {
                             _reverbFilter.enabled = false;
                             MusicPlayer.time = _preservedMusicTime;
+                            MusicPlayer.volume = volume;
                             MusicPlayer.mute = false;
                         }
                         else
                         {
-                            AudioClip audio = LoadResource<AudioClip>(path);
-                            if (audio != null)
+                            AudioClip clip = LoadResource<AudioClip>(path, "audio");
+
+                            if (clip != null)
                             {
-                                MusicPlayer.clip = audio;
+                                if (fadein > 0f)
+                                {
+                                    Ease ease = ParseEaseFromString(audio.fadeease);
+                                    Tween.AudioVolume(MusicPlayer, 0f, volume, fadein, ease);
+                                }
+                                else
+                                {
+                                    MusicPlayer.volume = volume;
+                                }
+
+                                MusicPlayer.clip = clip;
+                                MusicPlayer.loop = audio.Loop;
                                 MusicPlayer.Play();
-                                _currentPlayingMusic = path;
+                                CurrentMusic = audio;
                             }
                         }
                         break;
@@ -1497,13 +1529,24 @@ namespace ProjectMGG.Ingame
             }
         }
 
-        public void LetsStop(string channel)
+        public void LetsStop(RpyAudio audio, float fadeout = 0f)
         {
-            switch (channel)
+            switch (audio.Channel)
             {
                 case "music":
                     {
-                        MusicPlayer.Stop();
+                        if (fadeout > 0f)
+                        {
+                            Ease ease = ParseEaseFromString(audio.fadeease);
+                            Tween.AudioVolume(MusicPlayer, 0f, fadeout, ease).OnComplete(() =>
+                            {
+                                MusicPlayer.Stop();
+                            });
+                        }
+                        else
+                        {
+                            MusicPlayer.Stop();
+                        }
                         break;
                     }
 
@@ -1596,24 +1639,51 @@ namespace ProjectMGG.Ingame
         #endregion
 
         #region Etc Methods
-        public static T LoadResource<T>(string pathRaw) where T : UnityEngine.Object
+        //load priority reference: https://www.renpy.org/doc/html/audio.html
+        public static T LoadResource<T>(string pathRaw, string assetName = "images") where T : UnityEngine.Object
         {
+            //Trim
+            pathRaw = pathRaw.TrimStart('/');
+            pathRaw = pathRaw.TrimStart('\\');
+            pathRaw = pathRaw.Trim();
+
             string path = pathRaw.Replace("/", @"\");
-            string fileName = Path.GetFileName(path);
             T t = null;
 
-            if (pathRaw.StartsWith(@"$/"))
-            {
-                t = Resources.Load<T>(ToResourcePath(path, pathRaw));
-                if (t == null) ExceptionManager.Throw($"Couldn't load the file '{fileName}'. the file doesn't exists.", "IngameManagerV2");
-            }
+            //#1. assets/{pathRaw}
+            t = Resources.Load<T>(ToResourcePath(path, pathRaw, ""));
+            if (t != null) return t;
 
+            //#2. assets/{assetName}/{pathRaw}
+            t = Resources.Load<T>(ToResourcePath(path, pathRaw, assetName));
+            if (t != null) return t;
+
+            // P.S. extension is not needed on loading resource using Resources.Load()
+            // and '$/' syntax is deprecated after v0.5.15
+
+            if (t == null)
+            {
+                string fileName = Path.GetFileName(path);
+                if (string.IsNullOrEmpty(fileName)) fileName = pathRaw;
+
+                ExceptionManager.Throw($"Couldn't load the file '{fileName}'. the file doesn't exists.", "IngameManagerV2");
+            }
             return t;
         }
 
-        public static string ToResourcePath(string path, string pathRaw)
+        public static string ToResourcePath(string path, string pathRaw, string assetName)
         {
-            return @$"assets/{pathRaw.Substring(2, pathRaw.LastIndexOf(Path.GetExtension(path)) - 2)}";
+            var sb = new StringBuilder();
+            string ext = Path.GetExtension(path);
+
+            sb.Append("assets/");
+            if (!string.IsNullOrWhiteSpace(assetName)) sb.Append($"{assetName}/");
+
+            //without extension (more at P.S.)
+            if (!string.IsNullOrWhiteSpace(ext)) sb.Append(pathRaw.Substring(0, pathRaw.LastIndexOf(ext)));
+            else sb.Append(pathRaw);
+            
+            return sb.ToString();
         }
 
         public static T GetVariable<T>(string name, ref Dictionary<string, T> local, ref Dictionary<string, T> global)
@@ -1636,6 +1706,13 @@ namespace ProjectMGG.Ingame
             }
 
             return list;
+        }
+
+        public static Ease ParseEaseFromString(string s)
+        {
+            if (Enum.TryParse(s, out Ease ease)) return ease;
+            return Ease.Default;
+            //return Ease.Linear;
         }
         #endregion
     }

@@ -2,20 +2,20 @@
 define player = Character("[playername]", color="#f2f2f2")
 
 define seah = Character("한세아", color="#abb7db")
-image seah default = "$/images/chr_seah/1.png"
-image seah happy1 = "$/images/chr_seah/4.png"
-image seah happy2 = "$/images/chr_seah/5.png"
-image seah blush1 = "$/images/chr_seah/2-1-1.png"
-image seah blush2 = "$/images/chr_seah/2-1-2.png"
-image seah blush3 = "$/images/chr_seah/2-1-3.png"
-image seah blush4 = "$/images/chr_seah/2-2-1.png"
-image seah blush5 = "$/images/chr_seah/2-2-2.png"
-image seah blush6 = "$/images/chr_seah/2-2-3.png"
-image seah blush7 = "$/images/chr_seah/2extend.png"
-image seah blush8 = "$/images/chr_seah/3.png"
+image seah default = "images/chr_seah/"
+image seah happy1 = "images/chr_seah/"
+image seah happy2 = "images/chr_seah/"
+image seah blush1 = "images/chr_seah/"
+image seah blush2 = "images/chr_seah/"
+image seah blush3 = "images/chr_seah/"
+image seah blush4 = "images/chr_seah/"
+image seah blush5 = "images/chr_seah/"
+image seah blush6 = "images/chr_seah/"
+image seah blush7 = "images/chr_seah/"
+image seah blush8 = "images/chr_seah/"
 
 define hina = Character("유히나", color="#f688a7")
-image hina = "$/images/chr_hina_demo.png"
+image hina = "images/"
 
 transform seah_t1:
     zoom 0.36
@@ -28,7 +28,7 @@ transform hina_t1:
     ycenter 0.65
 
 # 배경
-image classroom = "$/images/bg_classroom_demo.png"
+image classroom = "images/bg_classroom_demo.png"
 
 # 효과음: Reverb Time
 define nemo_neko = [0.7, 2.17, 3, 4.26, 5, 6.45, 7.15, 8.5, 9.23, 11.42, 13.61, 15, 16.35, 17.14, 18, 20, 21.46, 22.15, 24.46, 25.73, 26.76, 28.9, 30, 30.8, 32.1, 34.3, 35.5, 39.5, 42.8, 44.6, 46.88, 48.7, 51.4, 52.7, 55.7, 59.4, 63.2, 70, 72.7, 77.5, 82.7]
@@ -45,7 +45,7 @@ label start:
     "에이 그냥 안 먹어야겠다."
     "애초에 급식을 빨리 먹기엔 내가 너무 늦게 일어나기도 했고."
     "(드…르륵) {nw}"
-    play music "$/audio/Nemo Neko.mp3"
+    play music "audio/Nemo Neko.mp3"
     show seah blush7 at seah_t1 with dissolve
     seah "저기이이,, [playername2] 맞으시죠···?"
     player "네."
@@ -71,7 +71,7 @@ label start:
     "몇 초가 지났을까."
     "서로 어색하게 흐르고 있던 침묵을 깰 무언가가 필요할 마침, 교실 문이 힘차게 열린다."
     "드르륵… 쿵! {nw}"
-    play music "$/audio/Nemo Neko.mp3"
+    play music "audio/Nemo Neko.mp3"
     show hina at hina_t1 with Dissolve(0.3)
     hina "[playername2:야]!!"
     hina "너 방송부 합격했엉!!! 몰랐지?"

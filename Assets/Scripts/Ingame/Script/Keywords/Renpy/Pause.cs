@@ -8,6 +8,8 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
     public class Pause : IStatement
     {
         public int Line { get; set; } = 0;
+        public Guid UUID { get; } = Guid.NewGuid();
+
         public float Delay { get; set; }
         public bool Hard { get; set; } = false;
 
@@ -17,7 +19,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 
         public Pause()
         {
-
+            
         }
 
         public Pause(float delay, bool hard = false)

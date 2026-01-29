@@ -15,6 +15,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 
         public bool IsScene { get; set; } = false;
         public bool IsHide { get; set; } = false;
+        public bool HasPause { get; set; } = true;
 
         public void Interpret()
         {
