@@ -4,8 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-using ProjectMGG.Ingame.Script;
-using ProjectMGG.Ingame.Script.Keywords;
+using PrimeTween;
+
 using ProjectMGG.Ingame.Script.Keywords.Renpy;
 using ProjectMGG.UI;
 
@@ -66,13 +66,13 @@ namespace ProjectMGG.Ingame
                 {
                     string name = prefab.name.Substring(4);
                     int index = int.Parse(name);
-                    OnHover(index);
+                    OnHover(index, rectTransform);
                 });
                 buttonEvent.onExit.AddListener((text) =>
                 {
                     string name = prefab.name.Substring(4);
                     int index = int.Parse(name);
-                    OnExit(index);
+                    OnExit(index, rectTransform);
                 });
             }
 
@@ -93,14 +93,19 @@ namespace ProjectMGG.Ingame
             IsWorking = false;
         }
 
-        public void OnHover(int index)
+        public void OnHover(int index, RectTransform rectTransform)
         {
-
+            float start = rectTransform.rect.width;
+            const float WIDTH_BIG = 1809.281f;
+            Tween.Custom(start, WIDTH_BIG, 0.16f, x => { rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, x); }, Ease.OutCubic);
         }
 
-        public void OnExit(int index)
+        public void OnExit(int index, RectTransform rectTransform)
         {
-
+            float start = rectTransform.rect.width;
+            const float WIDTH_DEFAULT = 1709.281f;
+            Tween.Custom(start, WIDTH_DEFAULT, 0.16f, x => { rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, x); }, Ease.OutCubic);
+            //Height: 118.1127f, but not sorted
         }
 
         public void OnClick(int index)

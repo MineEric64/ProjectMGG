@@ -38,7 +38,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
                         audio = new RpyAudio();
                         audio.State = State;
                         audio.Channel = Channel;
-                        audio.Path = new StringLiteral("audio/Roomie Rookie");
+                        audio.Path = new StringLiteral("audio/bg_roomie_rookie");
                         audio.loopstart = 30.63f;
                         audio.loopend = 112.34f;
                         audio.isloop = 1;
@@ -49,7 +49,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
                         audio = new RpyAudio();
                         audio.State = State;
                         audio.Channel = Channel;
-                        audio.Path = new StringLiteral("audio/Starberry milk");
+                        audio.Path = new StringLiteral("audio/bg_starberry_milk");
                         audio.loopstart = 40.85f;
                         audio.loopend = 142.97f;
                         audio.isloop = 1;

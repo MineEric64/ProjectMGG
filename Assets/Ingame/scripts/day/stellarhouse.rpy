@@ -139,23 +139,23 @@ label start:
 
     "······{nw=1.1}"
     # 툭툭
+    play music ROOMIE_ROOKIE
     # 호기심으로 쳐다보는 하은의 캐릭터 CG
-    # TODO: 임시 캐릭터 color 적용
     show haeun curious at haeun_center with Dissolve(0.7)
-    "???" "혹시 새롭게 들어온··· 룸메?"
+    "{color=#ffd9e9}???" "혹시 새롭게 들어온··· 룸메?"
     "이 사람이··· 이제부터 나랑 같이 살게 될 룸메이트라고??"
     player "{color=#cccccc}{size=-10}(존나 예쁘잖아?){/size}{/color}"
-    "???" "저기···?"
+    "{color=#ffd9e9}???" "저기···?"
     player "어··· 어{size=-15}어{/size}······."
     # 환하게 웃는 하은의 캐릭터 CG
     show haeun happy3 at haeun_center
     "머릿속이 새하얘진 내 모습을 본 건지, 살짝 미소 짓는 얼굴이 보인다."
-    "???" "괜찮아요, 말 편하게 해요!"
+    "{color=#ffd9e9}???" "괜찮아요, 말 편하게 해요!"
     "처음 보는 사이인데도, 이렇게 친근하게 대해주다니······"
     "완전 착하잖아!"
     show haeun happy1 at haeun_left # TODO: 캐릭터 동적 애니메이션
     show yunseo embarrassed1 at yunseo_right with Dissolve(0.4)
-    "???" "어ㅡ 하, 하은아 왔어···?"
+    "{color=#aaaaaa}???" "어ㅡ 하, 하은아 왔어···?"
     show haeun curious at haeun_left
     haeun "어? 윤서 안에 있었네?"
     "여자가······ 한 명 더 있다??"
@@ -313,6 +313,7 @@ label start:
     show haeun curious at haeun_center
     "하은이는 유난히 호기심 있는 표정으로 상자를 바라보고 있었다."
     "그 상자에는 뭐, {cps=*0.5}특별한 건 {/cps}{cps=*0.3}딱히{/cps}{cps=*0.06}··· {/cps}{cps=*0.8}{size=+25}어!?{/size}{/cps}"
+    # TODO?: Music Speed up
     "팬티가 들어있는 속옷이 들어가 있다는 걸 깜빡했다!!"
     "절대로 하은이에게 보여줘선 안 돼!!"
     player "하, 하은아!! 미안한데 이 상자 말고, 다른 상자 열어줄래?!"
@@ -351,6 +352,7 @@ label start:
     menu:
         "왜?":
             show haeun anxious2 at haeun_center
+            # TODO?: Music Speed down
             # 눈이 내려가 자기 목걸이를 보는 하은의 캐릭터 CG, 이상하면 폐기
             window hide
             pause 1.5
@@ -362,6 +364,7 @@ label start:
 
         "너 지금 목걸이 쓰고 있는 거 아니야?":
             show haeun anxious2 at haeun_center
+            # TODO?: Music Speed down
             # 눈이 내려가 자기 목걸이를 보는 하은의 캐릭터 CG, 이상하면 폐기
             haeun "아, 이거······."
             "내 말에 잠자코 있던 하은이는 내 유리 목걸이를 흘겨보곤 다시 말을 이어나갔다."
@@ -384,6 +387,7 @@ label start:
     haeun "그리고 생필품은 첫 번째 서랍에 넣어둘게~"
     player "응."
 
+    stop music fadeout 3.0
     scene home day with Fade(1.0, 2.0, 2.0)
     "···그렇게 어제 온종일 짐 정리만 하고 잤다."
     "같이 정리해서 망정이지, 하은이가 없었으면 선반 조립은 어떻게 했으려나."
@@ -524,6 +528,7 @@ label start:
     yunseo "오늘만큼은 교회 쉬는 날이거든."
     window hide
     pause 1.0
+    # TODO?: Music Speed down
     # 생각 전에 말이 먼저 튀어나와 순간 당황한 윤서의 캐릭터 CG / 윤서 특유 불안 표정 + o_o
     show yunseo embarrassed53 at yunseo_center
     window show

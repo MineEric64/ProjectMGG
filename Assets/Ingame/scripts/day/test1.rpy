@@ -37,7 +37,7 @@ label start:
     scene classroom
     "어떡하면 좋을까."
 
-    play music "Starberry milk.mp3" fadein 3.0
+    play music "bg_starberry_milk" fadein 3.0
 
     show haru default at half_size
     "테스트"

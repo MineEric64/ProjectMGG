@@ -8,10 +8,24 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
     {
         public string Text { get; set; } = string.Empty;
 
+        /// <summary>
+        /// Dialogue (ex: {p}, {nw})
+        /// </summary>
         public TextTagData PrimaryData { get; set; } = new TextTagData();
+
+        /// <summary>
+        /// General (ex: {color}, {size})
+        /// </summary>
         public HashSet<TextTagData> PrefixDatas { get; set; } = new HashSet<TextTagData>();
 
+        /// <summary>
+        /// General Predefined on Unity (ex: {color}, {size}, {b}, {i})
+        /// </summary>
         public HashSet<TextTagData> PrefixPredefined { get; set; } = new HashSet<TextTagData>();
+
+        /// <summary>
+        /// Using General Predefined syntaxes on Unity, but syntax is customed
+        /// </summary>
         public HashSet<TextTagData> PrefixPredefinedCustom { get; set; } = new HashSet<TextTagData>();
 
         public TextTag()

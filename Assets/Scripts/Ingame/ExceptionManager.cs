@@ -35,7 +35,8 @@ namespace ProjectMGG.Ingame
             }
 
             Debug.LogError(message2);
-            MessageBox.Instance.Error(message2);
+            PauseManager.Add(Script.Keywords.Renpy.Pause.GetInfinity(true));
+            MessageBox.Instance.Error(message2, onSubmit: (_) => { PauseManager.Remove(true); });
 
             //if (UnityEditor.EditorUtility.DisplayDialog(scriptName, message3, "OK"))
             //{

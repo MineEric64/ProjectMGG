@@ -28,6 +28,11 @@ namespace ProjectMGG.Ingame.Script.Keywords
             return Value;
         }
 
+        public override string ToString()
+        {
+            return Value;
+        }
+
         /// <summary>
         /// for Renpy, Supports Variable []
         /// </summary>
@@ -86,7 +91,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
         /// for Renpy, Supports Tag {}
         /// </summary>
         /// <returns></returns>
-        public static void ApplyTag(string value, ref List<TextTag> textTags)
+        public static void ApplyTag(string value, List<TextTag> textTags)
         {
             bool hasTag = value.Contains('{') && value.Contains('}');
             if (!hasTag)
@@ -103,6 +108,8 @@ namespace ProjectMGG.Ingame.Script.Keywords
 
             bool isTag = false;
 
+            //Recognizing Text Tag Format: <text><tag>
+            //More details at https://github.com/MineEric64/ProjectMGG/issues/21#issuecomment-2869007533
             foreach (char ch in value)
             {
                 switch (ch)
@@ -114,7 +121,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
                     case '}':
                         if (tag.Length > 0)
                         {
-                            var textTag = InterpretTag(sb.ToString(), tag.ToString(), ref prefixes, ref predefined, ref predefinedCustom);
+                            var textTag = InterpretTag(sb.ToString(), tag.ToString(), prefixes, predefined, predefinedCustom);
                             if (textTag != null) textTags.Add(textTag);
 
                             sb.Clear();
@@ -130,12 +137,14 @@ namespace ProjectMGG.Ingame.Script.Keywords
                         break;
                 }
             }
+
             if (sb.Length > 0)
             {
-                var textTag = new TextTag(sb.ToString());
-                textTag.PrefixDatas = new HashSet<TextTagData>(prefixes);
-                textTags.Add(textTag);
+                var textTag = InterpretTag(sb.ToString(), tag.ToString(), prefixes, predefined, predefinedCustom);
+                if (textTag != null) textTags.Add(textTag);
+
                 sb.Clear();
+                tag.Clear();
             }
         }
 
@@ -143,19 +152,21 @@ namespace ProjectMGG.Ingame.Script.Keywords
         private static string[] _predefinedTags = new string[] { "b", "color", "font", "i", "size", "space", "s", "u" };
         private static string[] _predefinedCustom = new string[] { "sg" };
 
+        //General (<tag>)
         private static string[] _tagType1 = new string[] { "a", "alpha", "alt", "art", "b", "color", "cps", "font", "i", "image", "k", "noalt", "outlinecolor", "plain", "rb", "rt", "s", "shader", "size", "space", "u", "vspace"};
         private static string[] _tagTypeCustom1 = new string[] { "ease" };
 
+        //Dialogue (<tag2>)
         private static string[] _tagType2 = new string[] { "w", "p", "nw", "fast", "done", "clear" };
         //private static string[] _tagTypeCustom2 = new string[] { };
 
         /// <summary>
         /// Interpret each text and tag like: {tag}<tag3>{text}</tag3>{tag2}{/tag}
         /// </summary>
-        private static TextTag InterpretTag(string text, string tag, ref HashSet<TextTagData> prefixes, ref HashSet<TextTagData> predefined, ref HashSet<TextTagData> predefinedCustom)
+        private static TextTag InterpretTag(string text, string tag, HashSet<TextTagData> prefixes, HashSet<TextTagData> predefined, HashSet<TextTagData> predefinedCustom)
         {
             TextTag textTag = new TextTag();
-            TextTagData primary = new TextTagData();
+            TextTagData primary = new TextTagData(); //Dialogue
             TextTagData tag2 = InterpretTagOnly(tag);
             int tagType = ParseTextTagType(tag2.Tag);
 
@@ -165,8 +176,14 @@ namespace ProjectMGG.Ingame.Script.Keywords
             }
 
             textTag.Text = text;
-            textTag.PrimaryData = primary;
+
+            // {tag}: General
             textTag.PrefixDatas = new HashSet<TextTagData>(prefixes);
+
+            // {tag2}: Dialogue
+            textTag.PrimaryData = primary;
+
+            // <tag3>: Predefined
             textTag.PrefixPredefined = new HashSet<TextTagData>(predefined);
             textTag.PrefixPredefinedCustom = new HashSet<TextTagData>(predefinedCustom);
 
@@ -204,7 +221,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
         }
 
         /// <summary>
-        /// If tag arguments exist, return it with them
+        /// If tag arguments exist, return it with them (tagContent = {tag=TagArgument})
         /// </summary>
         private static TextTagData InterpretTagOnly(string tagContent)
         {

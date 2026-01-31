@@ -28,7 +28,9 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 
         public override string ToString()
         {
-            return $"Character(name={Name}, color={Colour})";
+            string name = Name?.Interpret()?.ToString() ?? string.Empty;
+            return name;
+            //return $"Character(name={name}, color={Colour})"; //uncomment and replace to this if debugging
         }
     }
 }

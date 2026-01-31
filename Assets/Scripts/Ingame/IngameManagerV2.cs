@@ -1,24 +1,22 @@
+using PrimeTween;
+using ProjectMGG.Ingame.Script;
+using ProjectMGG.Ingame.Script.Keywords.Renpy;
+using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
+using ProjectMGG.Settings;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
-
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using TMPro;
-
-using PrimeTween;
-
-using ProjectMGG.Ingame.Script;
-using ProjectMGG.Ingame.Script.Keywords.Renpy;
-using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
-using ProjectMGG.Settings;
-
+using static System.Net.Mime.MediaTypeNames;
 using Path = System.IO.Path;
 
 namespace ProjectMGG.Ingame
@@ -81,6 +79,10 @@ namespace ProjectMGG.Ingame
         #endregion
         #region Text & UI
         private GraphicRaycaster _raycaster;
+        /// <summary>
+        /// If false, Click event doesn't appear
+        /// </summary>
+        public bool Focused { get; set; } = true;
         
         private bool _goToNext = true;
         private bool _readAll = false;
@@ -196,18 +198,24 @@ namespace ProjectMGG.Ingame
         // Update is called once per frame
         void Update()
         {
-            int downType = 0;
+            ClickType downType = ClickType.None;
 
+            //Keyboard
             #region Hotkeys
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 GoHome();
             }
-            else if (Input.GetKeyDown(KeyCode.Space)) downType = 1;
-
-            if (downType == 0) downType = GetMouseDownType();
+            else if (Input.GetKeyDown(KeyCode.Space)) downType = ClickType.Dialog;
             #endregion
 
+            //Mouse
+            if (downType == ClickType.None) downType = GetMouseDownType();
+
+            //If unfocused, change to None (for preventing click event overlapped)
+            if (!Focused) downType = ClickType.None;
+
+            //Text Handle
             if (ContentUI.text.Length == 0) _readAll = true;
             if (_readAll && _noWait)
             {
@@ -217,7 +225,7 @@ namespace ProjectMGG.Ingame
 
             switch (downType)
             {
-                case 1: //Dialog
+                case ClickType.Dialog:
                     {
                         if (!_readAll) //while reading
                         {
@@ -280,12 +288,7 @@ namespace ProjectMGG.Ingame
             if (IsReeverb) Reeverb();
         }
 
-        /// <summary>
-        /// 0: Not Mouse Clicked
-        /// 1: Dialog
-        /// 2: other (TODO)
-        /// </summary>
-        int GetMouseDownType()
+        ClickType GetMouseDownType()
         {
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
@@ -301,15 +304,15 @@ namespace ProjectMGG.Ingame
                 foreach (RaycastResult result in results)
                 {
                     //Debug.Log(result.gameObject.name);
-                    return 1;
+                    return ClickType.Dialog;
                     //TODO: if other button is touched, return 2~
                     //if (result.gameObject.name == "DialogUI") return true;
                 }
 
-                return 1;
+                return ClickType.Dialog;
             }
 
-            return 0;
+            return ClickType.None;
         }
 
         #region Keywords: Renpy
@@ -318,6 +321,7 @@ namespace ProjectMGG.Ingame
         {
             NameUI.text = string.Empty;
             NameBackgroundUI.enabled = false;
+
             ContentUI.transform.localPosition = new Vector3(62.9156f, -22.304f, ContentUI.transform.position.z);
             ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 1939.294f);
             ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 301.8214f);
@@ -332,6 +336,7 @@ namespace ProjectMGG.Ingame
         {
             NameUI.text = string.Empty;
             NameBackgroundUI.enabled = false;
+
             ContentUI.transform.localPosition = new Vector3(62.9156f, -22.304f, ContentUI.transform.position.z);
             ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 1939.294f);
             ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 301.8214f);
@@ -348,23 +353,21 @@ namespace ProjectMGG.Ingame
 
             if (chr == null)
             {
-                if (string.IsNullOrWhiteSpace(content))
-                {
-                    ExceptionManager.Throw($"Invalid character argument '{chrName}' on dialog.", "IngameManagerV2");
-                    return;
-                }
-                else
+                if (!string.IsNullOrWhiteSpace(content))
                 {
                     chr = new Character(); //temporary character name
                     chr.Name = new Script.Keywords.StringLiteral(chrName);
+                }
+                else
+                {
+                    ExceptionManager.Throw($"Invalid character argument '{chrName}' on dialog.", "IngameManagerV2");
+                    return;
                 }
             }
 
             CheckWindowAuto();
 
-            NameUI.text = chr.Name.Interpret() as string;
-            NameUI.color = chr.Colour;
-            NameBackgroundUI.enabled = true;
+            ProcessDialogName(chr);
             ContentUI.transform.localPosition = new Vector3(45.9257f, -22.304f, ContentUI.transform.position.z);
             ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 1349.591f);
             ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 301.8214f);
@@ -395,7 +398,7 @@ namespace ProjectMGG.Ingame
                 yield break;
             }
 
-            Script.Keywords.StringLiteral.ApplyTag(text, ref _textTags);
+            Script.Keywords.StringLiteral.ApplyTag(text, _textTags);
             //_textTagsDebug = _textTags.Select(x => x.ToString()).ToList();
 
             while (!completed)
@@ -413,7 +416,7 @@ namespace ProjectMGG.Ingame
                         skipNext = false;
                     }
 
-                    LetsTextTag(ContentUI, out completed, ref option);
+                    LetsTextTag(ContentUI, _textTags, ref _tagIndex, out completed, option);
                     yield return TMPDOText(ContentUI, option.StartIndex, option.CPS, option.Ease);
 
                     if (skip)
@@ -442,27 +445,48 @@ namespace ProjectMGG.Ingame
 
             _tagIndex = 0;
             _textTags.Clear();
-            Script.Keywords.StringLiteral.ApplyTag(text, ref _textTags);
+            Script.Keywords.StringLiteral.ApplyTag(text, _textTags);
 
             while (!completed)
             {
-                LetsTextTag(ContentUI, out completed, ref option);
+                LetsTextTag(ContentUI, _textTags, ref _tagIndex, out completed, option);
             }
             ContentUI.maxVisibleCharacters = ContentUI.text.Length;
             _maxAllTextLength = text.Length;
             _readAll = true;
         }
 
+        private void ProcessDialogName(Character chr)
+        {
+            string name = chr.Name.Interpret() as string;
+            name = Script.Keywords.StringLiteral.ApplyVariable(name);
+
+            var nameTextTags = new List<TextTag>();
+            int nameTagIndex = 0;
+            bool completed = false;
+            TextTagOption option = new TextTagOption();
+
+            Script.Keywords.StringLiteral.ApplyTag(name, nameTextTags);
+
+            while (!completed)
+            {
+                LetsTextTag(NameUI, nameTextTags, ref nameTagIndex, out completed, option);
+            }
+            NameUI.maxVisibleCharacters = NameUI.text.Length;
+            NameUI.color = chr.Colour;
+            NameBackgroundUI.enabled = true;
+        }
+
         /// <summary>
         /// Interpret Tag + Set Text on UI
         /// </summary>
-        private void LetsTextTag(TextMeshProUGUI textUI, out bool completed, ref TextTagOption option)
+        private void LetsTextTag(TextMeshProUGUI textUI, List<TextTag> textTags, ref int tagIndex, out bool completed, TextTagOption option)
         {
-            completed = _tagIndex + 1 >= _textTags.Count;
+            completed = tagIndex + 1 >= textTags.Count;
 
-            if (_tagIndex >= _textTags.Count) return; //Something went wrong
+            if (tagIndex >= textTags.Count) return; //Something went wrong
 
-            TextTag tag = _textTags[_tagIndex];
+            TextTag tag = textTags[tagIndex];
 
             //for converting Tag Argument properly (Renpy script -> Text Mesh Pro script)
             #region Predefined
@@ -546,10 +570,11 @@ namespace ProjectMGG.Ingame
 
             string textWithPredefined = tag.GetTextWithPredefined();
 
-            if (_tagIndex == 0) textUI.text = textWithPredefined;
+            if (tagIndex == 0) textUI.text = textWithPredefined;
             else textUI.text += textWithPredefined;
 
-            switch (tag.PrimaryData.Tag) //Dialogue
+            #region Dialogue
+            switch (tag.PrimaryData.Tag)
             {
                 case "w":
                     {
@@ -616,8 +641,9 @@ namespace ProjectMGG.Ingame
 
                     //https://www.renpy.org/doc/html/text.html#dialogue-text-tags
             }
-
-            foreach (var prefix in tag.PrefixDatas) //General
+            #endregion
+            #region General
+            foreach (var prefix in tag.PrefixDatas)
             {
                 switch (prefix.Tag)
                 {
@@ -691,8 +717,9 @@ namespace ProjectMGG.Ingame
                         }
                 }
             }
+            #endregion
 
-            _tagIndex++;
+            tagIndex++;
         }
 
         public IEnumerator TMPDOText(TextMeshProUGUI text, float start, float cps, Ease ease)
@@ -1715,5 +1742,12 @@ namespace ProjectMGG.Ingame
             //return Ease.Linear;
         }
         #endregion
+    }
+
+    public enum ClickType
+    {
+        None = 0,
+        Dialog = 1,
+        Other = 2, //TODO
     }
 }

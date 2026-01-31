@@ -18,7 +18,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
             Pause pause = Pause.GetInfinity(true);
             //pause.ActionAfter += () => { _goToNext = true; }; //whitelist
 
-            IngameManagerV2.Instance.LetsPause(pause);
+            PauseManager.Add(pause);
             MenuChoiceManager.Instance.CreateMenu(this);
         }
     }
