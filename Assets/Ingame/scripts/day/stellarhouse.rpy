@@ -120,14 +120,14 @@ label start:
     "결국 다른 곳을 이리저리 알아보던 중에 셰어하우스가 유독 눈에 들어왔다."
     "가격이 워낙 싸서 별로 기대는 안 하고 있지만··· 룸메이트만큼은 제발 좋은 분이었으면."
     window hide
-    # 짐을 내려놓는 SFX
     pause 1.1
     window show
     player "새로운 집 비밀번호가 뭐였더라······ 0915?"
     "비밀번호가 마침 내 생일이랑 같네, 우연치곤 신기하다."
-    # 비밀번호를 눌러 현관문을 여는 SFX
-    # 장소: 거실 / Camera Lens Blur FX + Lens Flare FX가 2초 동안 서서히 사라진다
     window hide
+    play sound "audio/sfx_doorlock"
+    pause 3.0 hard
+    # 장소: 거실 / Camera Lens Blur FX + Lens Flare FX가 2초 동안 서서히 사라진다
     scene home day with Dissolve(2.0)
     window show
     player "우와······."
@@ -184,8 +184,8 @@ label start:
     yunseo "필요하면 불러{size=-10}어어{/size}······."
     # 소심하게 한 걸음씩 오른쪽으로 내디디며 사라지는 윤서
     hide yunseo with Dissolve(1.0)
-    # 작게 문을 닫는 SFX
-    pause 0.3
+    play sound "audio/sfx_door_close1"
+    pause 3.0
     "윤서는 되게 소심한 성격을 가져 보이는 듯하다."
     "뭐, 새로운 룸메이트라면 낯을 많이 가리는 게 당연하지."
     "···그것도 이성이라면 더더욱."
@@ -387,12 +387,11 @@ label start:
     haeun "그리고 생필품은 첫 번째 서랍에 넣어둘게~"
     player "응."
 
-    stop music fadeout 3.0
+    stop music fadeout 5.0
     scene home day with Fade(1.0, 2.0, 2.0)
     "···그렇게 어제 온종일 짐 정리만 하고 잤다."
     "같이 정리해서 망정이지, 하은이가 없었으면 선반 조립은 어떻게 했으려나."
-    # 꼬르륵 SFX
-    pause 1.1
+    pause 0.2
     player "아··· 너무 배고프다."
     "남은 것 중에 큰 건 대충 끝났으니까, 일단 밥 좀 먹어야겠다."
     player "오랜만에 김치찌개 해 먹어야지."
@@ -423,7 +422,7 @@ label start:
     "윤서는, 내가 보글보글 끓인 김치찌개를 쳐다보고 있는 걸까."
     "···아니면 나를 뚫어지게 바라보고 있는 걸까."
     "후자라면 살짝 부담스럽긴 한데···."
-    # 꼬르륵 SFX
+    play sound "audio/sfx_growling"
     show yunseo embarrassed5 at yunseo_center
     "(꼬르륵...)"
     # 살짝 당황하는 윤서의 캐릭터 CG
@@ -587,11 +586,11 @@ label start:
     window hide
     # 방문으로 들어가는 윤서, Dissolve
     hide yunseo with Dissolve(1.5)
-    # 작게 문을 닫는 SFX
-    pause 3.0
+    play sound "audio/sfx_door_close1"
+    pause 5.0
     window show
     player "갑자기 왜 김치찌개에 단맛이 나는 거지······."
-    stop music fadeout 3.0
+    stop music fadeout 5.0
 
     scene black with Fade(2.0, 2.0, 1.5)
     # 소리가 크지만 뭉툭하게 난다, 마치 ‘쿵쿵쿵!’ 비스무리 SFX

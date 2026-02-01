@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -17,20 +18,55 @@ namespace ProjectMGG.Ingame
 
         public GameObject Prefab;
         public Vector3 Offset = new Vector3(0, 0, 0);
-        public bool IsWorking { get; private set; } = false;
+        public bool Active { get; private set; } = false;
 
         private Menu _currentMenu = null;
+        private int _selectedMenuNumber = -1;
+        private List<ButtonEvent> _buttons = new List<ButtonEvent>();
 
         void Start()
         {
             Instance = this;
         }
 
+        void Update()
+        {
+            if (Active)
+            {
+                if (Input.GetKeyDown(KeyCode.DownArrow))
+                {
+                    if (_selectedMenuNumber >= 0) _buttons[_selectedMenuNumber].OnPointerExit(null);
+
+                    _selectedMenuNumber++;
+                    if (_selectedMenuNumber >= _currentMenu.Count) _selectedMenuNumber = 0;
+
+                    _buttons[_selectedMenuNumber].OnPointerEnter(null);
+                }
+                else if (Input.GetKeyDown(KeyCode.UpArrow))
+                {
+                    if (_selectedMenuNumber >= 0) _buttons[_selectedMenuNumber].OnPointerExit(null);
+
+                    if (_selectedMenuNumber == -1) _selectedMenuNumber = 1;
+                    _selectedMenuNumber--;
+                    if (_selectedMenuNumber < 0) _selectedMenuNumber = _currentMenu.Count - 1;
+
+                    _buttons[_selectedMenuNumber].OnPointerEnter(null);
+                }
+                else if (Input.GetKeyDown(KeyCode.Return))
+                {
+                    if (_selectedMenuNumber >= 0) OnClick(_selectedMenuNumber);
+                }
+            }
+        }
+
         public void CreateMenu(Menu menu)
         {
-            IsWorking = true;
+            Active = true;
             _currentMenu = menu;
-            Vector3 position = Prefab.transform.localPosition;
+            _selectedMenuNumber = -1;
+            _buttons.Clear();
+
+            Vector3 position = new Vector3(0f, 360f);
 
             for (int i = 0; i < menu.Count; i++)
             {
@@ -66,14 +102,17 @@ namespace ProjectMGG.Ingame
                 {
                     string name = prefab.name.Substring(4);
                     int index = int.Parse(name);
-                    OnHover(index, rectTransform);
+                    OnHover(index, rectTransform, text);
                 });
                 buttonEvent.onExit.AddListener((text) =>
                 {
                     string name = prefab.name.Substring(4);
                     int index = int.Parse(name);
-                    OnExit(index, rectTransform);
+                    OnExit(index, rectTransform, text);
                 });
+
+                //Extra data
+                _buttons.Add(buttonEvent);
             }
 
             //Dialog Text
@@ -90,22 +129,38 @@ namespace ProjectMGG.Ingame
                 Destroy(child.gameObject);
             }
             _currentMenu = null;
-            IsWorking = false;
+            Active = false;
         }
 
-        public void OnHover(int index, RectTransform rectTransform)
+        public void OnHover(int index, RectTransform rectTransform, TextMeshProUGUI textUI)
         {
-            float start = rectTransform.rect.width;
+            if (_selectedMenuNumber != index) _buttons[_selectedMenuNumber].OnPointerExit(null);
+            _selectedMenuNumber = index;
+
+            float widthStart = rectTransform.rect.width;
+            float heightStart = rectTransform.rect.height;
+            float fontSizeStart = textUI.fontSize;
             const float WIDTH_BIG = 1809.281f;
-            Tween.Custom(start, WIDTH_BIG, 0.16f, x => { rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, x); }, Ease.OutCubic);
+            const float HEIGHT_BIG = 120.1127f;
+            const float FONT_SIZE_BIG = 73.2f;
+
+            Tween.Custom(widthStart, WIDTH_BIG, 0.16f, x => { rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, x); }, Ease.OutQuad);
+            Tween.Custom(heightStart, HEIGHT_BIG, 0.16f, x => { rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, x); }, Ease.OutQuint);
+            Tween.Custom(fontSizeStart, FONT_SIZE_BIG, 0.16f, x => { textUI.fontSize = x; }, Ease.OutQuad);
         }
 
-        public void OnExit(int index, RectTransform rectTransform)
+        public void OnExit(int index, RectTransform rectTransform, TextMeshProUGUI textUI)
         {
-            float start = rectTransform.rect.width;
+            float widthStart = rectTransform.rect.width;
+            float heightStart = rectTransform.rect.height;
+            float fontSizeStart = textUI.fontSize;
             const float WIDTH_DEFAULT = 1709.281f;
-            Tween.Custom(start, WIDTH_DEFAULT, 0.16f, x => { rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, x); }, Ease.OutCubic);
-            //Height: 118.1127f, but not sorted
+            const float HEIGHT_DEFAULT = 118.1127f;
+            const float FONT_SIZE_DEFAULT = 72f;
+
+            Tween.Custom(widthStart, WIDTH_DEFAULT, 0.16f, x => { rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, x); }, Ease.OutQuad);
+            Tween.Custom(heightStart, HEIGHT_DEFAULT, 0.16f, x => { rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, x); }, Ease.OutQuint);
+            Tween.Custom(fontSizeStart, FONT_SIZE_DEFAULT, 0.16f, x => { textUI.fontSize = x; }, Ease.OutQuad);
         }
 
         public void OnClick(int index)

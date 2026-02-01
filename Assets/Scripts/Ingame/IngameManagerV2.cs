@@ -61,6 +61,8 @@ namespace ProjectMGG.Ingame
         private float _preservedMusicTime = 0.0f;
         private AudioReverbFilter _reverbFilter;
         private float _currentDecayTime = 0.1f;
+
+        public AudioSource SoundPlayer; //deprecated
         #endregion
         #region UI
         //based on QHD (refers to issue #20)
@@ -1550,8 +1552,32 @@ namespace ProjectMGG.Ingame
                         break;
                     }
 
+                case "sound": //DEPRECATED METHOD!! Let's renewal this code
+                    {
+                        AudioClip clip = LoadResource<AudioClip>(path, "audio");
+
+                        if (clip != null)
+                        {
+                            if (fadein > 0f)
+                            {
+                                Ease ease = ParseEaseFromString(audio.fadeease);
+                                Tween.AudioVolume(SoundPlayer, 0f, volume, fadein, ease);
+                            }
+                            else
+                            {
+                                SoundPlayer.volume = volume;
+                            }
+
+                            SoundPlayer.clip = clip;
+                            SoundPlayer.loop = audio.Loop;
+                            SoundPlayer.Play();
+                        }
+                        break;
+                    }
+
                 default:
                     ExceptionManager.Throw("TODO: support channel on play keyword", "IngameManagerV2");
+                    //reference: Let's use Audio Mixer Group
                     break;
             }
         }
@@ -1573,6 +1599,23 @@ namespace ProjectMGG.Ingame
                         else
                         {
                             MusicPlayer.Stop();
+                        }
+                        break;
+                    }
+
+                case "sound":
+                    {
+                        if (fadeout > 0f)
+                        {
+                            Ease ease = ParseEaseFromString(audio.fadeease);
+                            Tween.AudioVolume(SoundPlayer, 0f, fadeout, ease).OnComplete(() =>
+                            {
+                                SoundPlayer.Stop();
+                            });
+                        }
+                        else
+                        {
+                            SoundPlayer.Stop();
                         }
                         break;
                     }
@@ -1650,7 +1693,7 @@ namespace ProjectMGG.Ingame
 
                 //Warning: if pause is removed, some transitions (or animations) might not be work properly
                 if (PauseManager.Paused) PauseManager.Remove(true);
-                if (MenuChoiceManager.Instance.IsWorking) MenuChoiceManager.Instance.OnClick(0); //always click Menu Block 0
+                if (MenuChoiceManager.Instance.Active) MenuChoiceManager.Instance.OnClick(0); //always click Menu Block 0
 
                 yield return null;
             }
