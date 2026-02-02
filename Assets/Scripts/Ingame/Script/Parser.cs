@@ -435,7 +435,7 @@ namespace ProjectMGG.Ingame.Script
             result.Line = _tokens[_index].Line;
             SkipCurrent();
 
-            if (IsUnknown(ArgumentKind.NumberLiteral, 0)) result.Delay = ParseNumberLiteral();
+            if (IsUnknown(ArgumentKind.NumberLiteral, 0)) result.DelayAsExpression = ParseExpression();
             else
             {
                 int line = result.Line;

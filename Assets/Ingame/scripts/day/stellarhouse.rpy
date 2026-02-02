@@ -137,8 +137,9 @@ label start:
     "순간 분위기에 압도되어 그저 앞을 멍하니 바라볼 수밖에 없었다."
     player "여기서 살게 되는구나···."
 
-    "······{nw=1.1}"
-    # 툭툭
+    "······{nw=0.51}"
+    play sound "audio/sfx_taptap"
+    "······{fast}{nw=0.61}"
     play music ROOMIE_ROOKIE
     # 호기심으로 쳐다보는 하은의 캐릭터 CG
     show haeun curious at haeun_center with Dissolve(0.7)
@@ -306,9 +307,9 @@ label start:
     player "응."
     show haeun happy1 at haeun_center
     haeun "응! 알겠어."
-    # 상자를 뜯는 SFX
+    play sound "audio/sfx_unboxing"
     show haeun default1 at haeun_center
-    pause 1.1
+    pause 1.1 + 1.1
     "······ 그렇게 서로 조용히 짐을 정리하던 중, 문득 내 고개를 들었을 때."
     show haeun curious at haeun_center
     "하은이는 유난히 호기심 있는 표정으로 상자를 바라보고 있었다."
@@ -397,11 +398,12 @@ label start:
     player "오랜만에 김치찌개 해 먹어야지."
     "자취할 때 자주 먹었던 터라, 찌개 요리는 그 누구보다 자신이 있었다."
     window hide
-    # 요리 SFX
     pause 0.5
+    play sound "audio/sfx_simmer_loop" loop fadein 3.0
     window show
     "일단··· 물을 1컵 정도 부어주고······."
     "그다음에 레시피에선 볶은 김치 넣으라고 하네, 원래 순서가 이게 맞나?"
+    stop sound fadeout 3.0
     # 작은 방문이 열리는 SFX
     # 배고픈데 먹을 것을 발견한 윤서, 주위에서 계속 어슬렁거린다
     play music STARBERRY_MILK
@@ -412,11 +414,11 @@ label start:
     "냄새가 윤서 방까지 스며 들어간 건가."
     show yunseo happy1 at yunseo_center
     window hide
-    # 요리 SFX
+    play sound "audio/sfx_simmer" volume 0.7 fadein 0.5
     pause 1.0
     # 입에 침이 고여있고 초롱초롱해진 눈으로 헤벌레 웃는 윤서의 캐릭터 CG
     show yunseo a1 at yunseo_center
-    pause 0.5
+    pause 1.0
     window show
     "찌개를 휘저을 때마다··· 옆에서 자꾸만 인기척이 느껴진다."
     "윤서는, 내가 보글보글 끓인 김치찌개를 쳐다보고 있는 걸까."
@@ -425,7 +427,6 @@ label start:
     play sound "audio/sfx_growling"
     show yunseo embarrassed5 at yunseo_center
     "(꼬르륵...)"
-    # 살짝 당황하는 윤서의 캐릭터 CG
     "······진심으로 배고팠구나."
     show yunseo embarrassed4 at yunseo_center
     player "윤서, 김치찌개 같이 먹어."
@@ -450,7 +451,8 @@ label start:
     show yunseo embarrassed8 at yunseo_center
     "내 말을 듣곤 그제야 분주하게 움직이는 윤서."
     "···뭐 냄비받침이 바로 눈앞에 있어서 ‘분주하게’라고 말할 것까진 아니지만."
-    # 뭉툭한 SFX
+    play sound "audio/sfx_blunt"
+    pause 1.0
     show yunseo embarrassed2 at yunseo_center
     "좋아, 윤서가 준 냄비받침에다 둔 뒤에 이제 먹으면······ 어라?"
     "정작 냄비를 뜰 수저가 없네."
@@ -461,6 +463,7 @@ label start:
     show yunseo embarrassed2 at yunseo_center
     window hide
     # TODO?: SFX 구현할 때 N.C.도 SFX 넣는 게 어울릴지 고민해보기
+    # (+) N.C. 이후 ... 할 때 sfx_dazed2?
     fx NC at yunseo_nc
     pause 2.5 hard
     window show
@@ -488,9 +491,9 @@ label start:
     show yunseo embarrassed4 at yunseo_center
     player "어디 있으려나···."
     window hide
-    pause 1.1
+    play sound "audio/sfx_cutlery_container"
+    pause 2.0
     window show
-    # 쇠끼리 부딪치는 SFX
     player "찾았다, 바로 앞에 있네."
     show yunseo embarrassed5 at yunseo_center
     yunseo "저, 정말···?"

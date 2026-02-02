@@ -108,6 +108,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
                         break;
 
                     case RpyAudioStates.Stop:
+                        fadeease = "OutCubic"; //temporary on fadeout, deprecated (TODO: implement ease custom syntax in script)
                         IngameManagerV2.Instance.LetsStop(audio, fadeout2);
                         break;
 

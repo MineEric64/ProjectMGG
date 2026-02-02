@@ -13,6 +13,8 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
         public float Delay { get; set; }
         public bool Hard { get; set; } = false;
 
+        public IExpression DelayAsExpression { get; set; } = null;
+
         //used for PauseManager, not internal
         public float CurrentDelay { get; set; } = 0f;
         public Action ActionAfter { get; set; } = null;
@@ -30,7 +32,12 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 
         public void Interpret()
         {
-            
+            if (DelayAsExpression != null)
+            {
+                float? value = DelayAsExpression.Interpret() as float?;
+                if (value != null && value.HasValue) Delay = value.Value;
+                else ExceptionManager.Throw("Failed to interpret pause's delay value.", "Script/Pause");
+            }
         }
 
         public static Pause GetInfinity(bool hard = false)
