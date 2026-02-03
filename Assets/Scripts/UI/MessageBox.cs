@@ -77,6 +77,7 @@ namespace ProjectMGG.UI
                     var unityEvent = _onSubmitMap[uuid];
                     unityEvent.Invoke(result);
                     unityEvent.RemoveListener(onSubmit);
+                    _onSubmitMap.Remove(uuid);
                 });
             }
 
@@ -97,6 +98,7 @@ namespace ProjectMGG.UI
                     var unityEvent = _onSubmitMap[uuid];
                     unityEvent.Invoke(MessageResult.Yes);
                     unityEvent.RemoveListener(onSubmit);
+                    _onSubmitMap.Remove(uuid);
                 });
 
                 no.onClick.AddListener(() =>
@@ -106,6 +108,7 @@ namespace ProjectMGG.UI
                     var unityEvent = _onSubmitMap[uuid];
                     unityEvent.Invoke(MessageResult.No);
                     unityEvent.RemoveListener(onSubmit);
+                    _onSubmitMap.Remove(uuid);
                 });
             }
 
