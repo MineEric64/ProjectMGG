@@ -83,21 +83,21 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
                 var fadein3 = fadein?.Interpret() as float?;
 
                 if (fadein3 != null) fadein2 = fadein3.Value;
-                else ExceptionManager.Throw("Can't cast fadein's value to float.", "Interpreter/RpyAudio");
+                else ExceptionManager.Throw("Can't cast fadein's value to float.", "Interpreter/RpyAudio", Line);
             }
             if (fadeout != null)
             {
                 var fadeout3 = fadeout?.Interpret() as float?;
 
                 if (fadeout3 != null) fadeout2 = fadeout3.Value;
-                else ExceptionManager.Throw("Can't cast fadeout's value to float.", "Interpreter/RpyAudio");
+                else ExceptionManager.Throw("Can't cast fadeout's value to float.", "Interpreter/RpyAudio", Line);
             }
             if (volume != null)
             {
                 var volume3 = volume?.Interpret() as float?;
 
                 if (volume3 != null) volume2 = volume3.Value;
-                else ExceptionManager.Throw("Can't cast volume's value to float.", "Interpreter/RpyAudio");
+                else ExceptionManager.Throw("Can't cast volume's value to float.", "Interpreter/RpyAudio", Line);
             }
 
             //Statement

@@ -134,7 +134,7 @@ namespace ProjectMGG.Ingame
 
         public void OnHover(int index, RectTransform rectTransform, TextMeshProUGUI textUI)
         {
-            if (_selectedMenuNumber != index) _buttons[_selectedMenuNumber].OnPointerExit(null);
+            if (_selectedMenuNumber >= 0 && _selectedMenuNumber != index) _buttons[_selectedMenuNumber].OnPointerExit(null);
             _selectedMenuNumber = index;
 
             float widthStart = rectTransform.rect.width;

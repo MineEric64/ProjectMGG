@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -9,11 +12,13 @@ namespace ProjectMGG.UI
     {
         public static MessageBox Instance { get; private set; } = null;
         public GameObject Prefab;
-        public UnityEvent<MessageResult> OnSubmit;
+
+        private static Dictionary<Guid, UnityEvent<MessageResult>> _onSubmitMap;
 
         void Awake()
         {
             Instance = this;
+            _onSubmitMap = new Dictionary<Guid, UnityEvent<MessageResult>>();
         }
 
         // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -24,23 +29,35 @@ namespace ProjectMGG.UI
 
         public void Info(string content, MessageButton button = MessageButton.OK, string name = "", UnityAction<MessageResult> onSubmit = null)
         {
-            if (onSubmit != null) OnSubmit.AddListener(onSubmit);
-            ShowInternal(0, content, button, name);
+            Guid uuid = Guid.NewGuid();
+            var unityEvent = new UnityEvent<MessageResult>();
+
+            if (onSubmit != null) unityEvent.AddListener(onSubmit);
+            _onSubmitMap.Add(uuid, unityEvent);
+            ShowInternal(0, content, button, name, uuid, onSubmit);
         }
 
         public void Warn(string content, MessageButton button = MessageButton.OK, string name = "", UnityAction<MessageResult> onSubmit = null)
         {
-            if (onSubmit != null) OnSubmit.AddListener(onSubmit);
-            ShowInternal(1, content, button, name);
+            Guid uuid = Guid.NewGuid();
+            var unityEvent = new UnityEvent<MessageResult>();
+
+            if (onSubmit != null) unityEvent.AddListener(onSubmit);
+            _onSubmitMap.Add(uuid, unityEvent);
+            ShowInternal(1, content, button, name, uuid, onSubmit);
         }
 
         public void Error(string content, MessageButton button = MessageButton.OK, string name = "", UnityAction<MessageResult> onSubmit = null)
         {
-            if (onSubmit != null) OnSubmit.AddListener(onSubmit);
-            ShowInternal(2, content, button, name);
+            Guid uuid = Guid.NewGuid();
+            var unityEvent = new UnityEvent<MessageResult>();
+
+            if (onSubmit != null) unityEvent.AddListener(onSubmit);
+            _onSubmitMap.Add(uuid, unityEvent);
+            ShowInternal(2, content, button, name, uuid, onSubmit);
         }
 
-        private void ShowInternal(int image, string content, MessageButton button, string name)
+        private void ShowInternal(int image, string content, MessageButton button, string name, Guid uuid, UnityAction<MessageResult> onSubmit)
         {
             Vector3 position = Prefab.transform.localPosition;
             var prefab = Instantiate(Prefab, transform);
@@ -56,8 +73,10 @@ namespace ProjectMGG.UI
                 ok.onClick.AddListener(() =>
                 {
                     Destroy(prefab);
-                    OnSubmit.Invoke(result);
-                    OnSubmit.RemoveAllListeners();
+
+                    var unityEvent = _onSubmitMap[uuid];
+                    unityEvent.Invoke(result);
+                    unityEvent.RemoveListener(onSubmit);
                 });
             }
 
@@ -74,15 +93,19 @@ namespace ProjectMGG.UI
                 yes.onClick.AddListener(() =>
                 {
                     Destroy(prefab);
-                    OnSubmit.Invoke(MessageResult.Yes);
-                    OnSubmit.RemoveAllListeners();
+
+                    var unityEvent = _onSubmitMap[uuid];
+                    unityEvent.Invoke(MessageResult.Yes);
+                    unityEvent.RemoveListener(onSubmit);
                 });
 
                 no.onClick.AddListener(() =>
                 {
                     Destroy(prefab);
-                    OnSubmit.Invoke(MessageResult.No);
-                    OnSubmit.RemoveAllListeners();
+
+                    var unityEvent = _onSubmitMap[uuid];
+                    unityEvent.Invoke(MessageResult.No);
+                    unityEvent.RemoveListener(onSubmit);
                 });
             }
 

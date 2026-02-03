@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 {
-    public class Pause : IStatement
+    public class Pause : IStatement, IComparable<Pause>
     {
         public int Line { get; set; } = 0;
         public Guid UUID { get; } = Guid.NewGuid();
@@ -36,13 +36,18 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
             {
                 float? value = DelayAsExpression.Interpret() as float?;
                 if (value != null && value.HasValue) Delay = value.Value;
-                else ExceptionManager.Throw("Failed to interpret pause's delay value.", "Script/Pause");
+                else ExceptionManager.Throw("Failed to interpret pause's delay value.", "Script/Pause", Line);
             }
         }
 
         public static Pause GetInfinity(bool hard = false)
         {
             return new Pause(9999f, hard);
+        }
+
+        public int CompareTo(Pause other)
+        {
+            return UUID.CompareTo(other.UUID);
         }
     }
 }

@@ -1,8 +1,3 @@
-using PrimeTween;
-using ProjectMGG.Ingame.Script;
-using ProjectMGG.Ingame.Script.Keywords.Renpy;
-using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
-using ProjectMGG.Settings;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,13 +5,21 @@ using System.IO;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
-using TMPro;
+
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using static System.Net.Mime.MediaTypeNames;
+
+using PrimeTween;
+using TMPro;
+
+using ProjectMGG.Ingame.Script;
+using ProjectMGG.Ingame.Script.Keywords.Renpy;
+using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
+using ProjectMGG.Settings;
+
 using Path = System.IO.Path;
 
 namespace ProjectMGG.Ingame
@@ -807,7 +810,7 @@ namespace ProjectMGG.Ingame
 
             if (image == null)
             {
-                ExceptionManager.Throw($"The image '{show.Tag}' variable doesn't exists while interpreting 'show' statement.", "IngameManagerV2");
+                ExceptionManager.Throw($"The image '{show.Tag}' variable doesn't exists while interpreting 'show' statement.", "IngameManagerV2", show.Line);
                 yield break;
             }
             if (string.IsNullOrEmpty(show.Attributes)) texture = image.MainImage;
@@ -815,7 +818,7 @@ namespace ProjectMGG.Ingame
             {
                 if (!image.SubImages.TryGetValue(show.Attributes, out var subPath))
                 {
-                    ExceptionManager.Throw($"The image '{show.Tag}' that has a attribute '{show.Attributes}' variable doesn't exists.", "IngameManagerV2");
+                    ExceptionManager.Throw($"The image '{show.Tag}' that has a attribute '{show.Attributes}' variable doesn't exists.", "IngameManagerV2", show.Line);
                     yield break;
                 }
                 texture = subPath;
@@ -882,7 +885,7 @@ namespace ProjectMGG.Ingame
                 var transform = GetVariable(show.At, ref Local.Transforms, ref Global.Transforms);
                 if (transform == null)
                 {
-                    ExceptionManager.Throw($"The transform '{show.At}' variable doesn't exists while interpreting 'show' statement.", "IngameManagerV2");
+                    ExceptionManager.Throw($"The transform '{show.At}' variable doesn't exists while interpreting 'show' statement.", "IngameManagerV2", show.Line);
                     return prefab;
                 }
 
@@ -951,7 +954,7 @@ namespace ProjectMGG.Ingame
 
                     if (ColorUtility.TryParseHtmlString(transform.colour, out color)) prefab.color = color;
                     else if (!transform.colour.StartsWith('#') && ColorUtility.TryParseHtmlString(string.Concat("#", transform.colour), out color)) prefab.color = color; //Concat #
-                    else ExceptionManager.Throw($"Color Hex '{transform.colour}' parsing failed while interpreting 'show'/'FX' statement.", "IngameManagerV2");
+                    else ExceptionManager.Throw($"Color Hex '{transform.colour}' parsing failed while interpreting 'show'/'FX' statement.", "IngameManagerV2", transform.Line);
                 }
             }
             else
@@ -1576,7 +1579,7 @@ namespace ProjectMGG.Ingame
                     }
 
                 default:
-                    ExceptionManager.Throw("TODO: support channel on play keyword", "IngameManagerV2");
+                    ExceptionManager.Throw("TODO: support channel on play keyword", "IngameManagerV2", audio.Line);
                     //reference: Let's use Audio Mixer Group
                     break;
             }
@@ -1621,7 +1624,7 @@ namespace ProjectMGG.Ingame
                     }
 
                 default:
-                    ExceptionManager.Throw("TODO: support channel on stop keyword", "IngameManagerV2");
+                    ExceptionManager.Throw("TODO: support channel on stop keyword", "IngameManagerV2", audio.Line);
                     break;
             }
         }
