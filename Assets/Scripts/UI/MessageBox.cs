@@ -13,12 +13,12 @@ namespace ProjectMGG.UI
         public static MessageBox Instance { get; private set; } = null;
         public GameObject Prefab;
 
-        private static Dictionary<Guid, UnityEvent<MessageResult>> _onSubmitMap;
+        private static Dictionary<Guid, UnityEvent<MessageResult>> _onSubmitMap = new Dictionary<Guid, UnityEvent<MessageResult>>();
 
         void Awake()
         {
             Instance = this;
-            _onSubmitMap = new Dictionary<Guid, UnityEvent<MessageResult>>();
+            _onSubmitMap.Clear();
         }
 
         // Start is called once before the first execution of Update after the MonoBehaviour is created
