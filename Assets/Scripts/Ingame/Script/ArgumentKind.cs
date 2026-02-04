@@ -49,6 +49,17 @@ namespace ProjectMGG.Ingame.Script
 
         // ATL
         [KindAttr("transform")] Transform,
+        [KindAttr("xpos")] Xpos,
+        [KindAttr("ypos")] Ypos,
+        [KindAttr("xcenter")] Xcenter,
+        [KindAttr("ycenter")] Ycenter,
+        [KindAttr("xalign")] Xalign,
+        [KindAttr("yalign")] Yalign,
+        [KindAttr("xanchor")] Xanchor,
+        [KindAttr("yanchor")] Yanchor,
+        [KindAttr("zoom")] Zoom,
+        [KindAttr("repeat")] Repeat,
+        [KindAttr("colour", true)] Colour,
         // More at ParseTransform() in Parser.cs
 
         [KindAttr("show")] Show,

@@ -10,7 +10,10 @@ using SmartFormat;
 
 using ProjectMGG.Ingame.Script.Keywords;
 using ProjectMGG.Ingame.Script.Keywords.Renpy;
+using ProjectMGG.Ingame.Script.Keywords.Renpy.ATL;
 using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
+
+using Ease = PrimeTween.Ease;
 
 namespace ProjectMGG.Ingame.Script
 {
@@ -507,6 +510,7 @@ namespace ProjectMGG.Ingame.Script
         private IStatement ParseTransform(bool isGlobal = false)
         {
             RpyTransform result = new RpyTransform();
+            var block = new ATLBlock();
 
             result.Line = _tokens[_index].Line;
             SkipCurrent(ArgumentKind.Transform);
@@ -514,92 +518,199 @@ namespace ProjectMGG.Ingame.Script
             result.IsGlobal = isGlobal;
             SkipCurrent(ArgumentKind.Colon); //equals to LeftBrace
 
-            while (_tokens[_index].Kind != ArgumentKind.RightBrace)
+            while (true)
             {
+                if (_index - 1 >= 0 && (_tokens[_index - 1].Line != _tokens[_index].Line)) //If line is different than previous one
+                {
+                    result.Blocks.Add(block);
+                    block = new ATLBlock();
+                }
+                if (_tokens[_index].Kind == ArgumentKind.RightBrace) break; //condition
+
                 if (_tokens[_index].Kind == ArgumentKind.Comment)
                 {
                     ParseComment();
                     continue;
                 }
 
-                switch (_tokens[_index].Content.ToLower())
+                switch (_tokens[_index].Kind)
                 {
-                    case "xpos":
-                        SkipCurrent();
-                        result.xpos = float.Parse(_tokens[_index].Content);
-                        SkipCurrent();
-                        break;
+                    case ArgumentKind.Xpos:
+                        {
+                            SkipCurrent();
 
-                    case "ypos":
-                        SkipCurrent();
-                        result.ypos = float.Parse(_tokens[_index].Content);
-                        SkipCurrent();
-                        break;
+                            var atl = new RpyPos();
+                            atl.Line = _tokens[_index].Line;
+                            atl.IsX = true;
+                            atl.Value = ParseExpression();
+                            block.Interior.Add(atl);
 
-                    case "xcenter":
-                        SkipCurrent();
-                        result.xcenter = float.Parse(_tokens[_index].Content);
-                        SkipCurrent();
-                        break;
+                            break;
+                        }
 
-                    case "ycenter":
-                        SkipCurrent();
-                        result.ycenter = float.Parse(_tokens[_index].Content);
-                        SkipCurrent();
-                        break;
+                    case ArgumentKind.Ypos:
+                        {
+                            SkipCurrent();
 
-                    case "xalign": //TODO: support variable
-                        SkipCurrent();
-                        result.xalign = float.Parse(_tokens[_index].Content);
-                        SkipCurrent();
-                        break;
+                            var atl = new RpyPos();
+                            atl.Line = _tokens[_index].Line;
+                            atl.IsX = false;
+                            atl.Value = ParseExpression();
+                            block.Interior.Add(atl);
 
-                    case "yalign":
-                        SkipCurrent();
-                        result.yalign = float.Parse(_tokens[_index].Content);
-                        SkipCurrent();
-                        break;
+                            break;
+                        }
 
-                    case "xanchor":
-                        SkipCurrent();
-                        result.xanchor = float.Parse(_tokens[_index].Content);
-                        SkipCurrent();
-                        break;
+                    case ArgumentKind.Xcenter:
+                        {
+                            SkipCurrent();
 
-                    case "yanchor":
-                        SkipCurrent();
-                        result.yanchor = float.Parse(_tokens[_index].Content);
-                        SkipCurrent();
-                        break;
+                            var atl = new RpyCenter();
+                            atl.Line = _tokens[_index].Line;
+                            atl.IsX = true;
+                            atl.Value = ParseExpression();
+                            block.Interior.Add(atl);
 
-                    case "zoom":
-                        SkipCurrent();
-                        result.zoom = float.Parse(_tokens[_index].Content);
-                        SkipCurrent();
-                        break;
+                            break;
+                        }
 
-                    case "repeat":
-                        SkipCurrent();
-                        //if error, replace this condition to compare _tokens[_index].Line (without checking for ArgumentKind), like parsing ease
-                        if (IsUnknown(ArgumentKind.NumberLiteral, 0) || IsUnknown(ArgumentKind.Identifier, 0)) result.repeatAsExpression = ParseExpression();
-                        break;
+                    case ArgumentKind.Ycenter:
+                        {
+                            SkipCurrent();
 
-                    case "linear":
-                    case "ease":
-                    case "easein":
-                    case "easeout":
-                        int easeLine = _tokens[_index].Line;
-                        result.easeName = _tokens[_index].Content.ToLower();
-                        SkipCurrent();
-                        if (easeLine == _tokens[_index].Line) result.easeDurationAsExpression = ParseExpression();
-                        else ExceptionManager.Throw("Failed to parse ease duration's value in transform. Line is not same as ease syntax.", "Script/Parser", _tokens[_index].Line);
-                        break;
+                            var atl = new RpyCenter();
+                            atl.Line = _tokens[_index].Line;
+                            atl.IsX = false;
+                            atl.Value = ParseExpression();
+                            block.Interior.Add(atl);
+
+                            break;
+                        }
+
+                    case ArgumentKind.Xalign:
+                        {
+                            SkipCurrent();
+
+                            var atl = new RpyAlign();
+                            atl.Line = _tokens[_index].Line;
+                            atl.IsX = true;
+                            atl.Value = ParseExpression();
+                            block.Interior.Add(atl);
+
+                            break;
+                        }
+
+                    case ArgumentKind.Yalign:
+                        {
+                            SkipCurrent();
+
+                            var atl = new RpyAlign();
+                            atl.Line = _tokens[_index].Line;
+                            atl.IsX = false;
+                            atl.Value = ParseExpression();
+                            block.Interior.Add(atl);
+
+                            break;
+                        }
+
+                    case ArgumentKind.Xanchor:
+                        {
+                            SkipCurrent();
+
+                            var atl = new RpyAnchor();
+                            atl.Line = _tokens[_index].Line;
+                            atl.IsX = true;
+                            atl.Value = ParseExpression();
+                            block.Interior.Add(atl);
+
+                            break;
+                        }
+
+                    case ArgumentKind.Yanchor:
+                        {
+                            SkipCurrent();
+
+                            var atl = new RpyAnchor();
+                            atl.Line = _tokens[_index].Line;
+                            atl.IsX = false;
+                            atl.Value = ParseExpression();
+                            block.Interior.Add(atl);
+
+                            break;
+                        }
+
+                    case ArgumentKind.Zoom:
+                        {
+                            SkipCurrent();
+
+                            var atl = new RpyZoom();
+                            atl.Line = _tokens[_index].Line;
+                            atl.Value = ParseExpression();
+                            block.Interior.Add(atl);
+
+                            break;
+                        }
+
+                    case ArgumentKind.Repeat:
+                        {
+                            SkipCurrent();
+
+                            var atl = new RpyRepeat();
+                            atl.Line = _tokens[_index].Line;
+                            if (_index - 1 >= 0 && _tokens[_index - 1].Line == _tokens[_index].Line) atl.Value = ParseExpression();
+                            block.Interior.Add(atl);
+
+                            break;
+                        }
+
+                    case ArgumentKind.Identifier: //same as ease
+                        {
+                            var map = new Dictionary<string, Ease>()
+                            {
+                                { "linear", Ease.Linear },
+                                { "ease", Ease.InOutSine },
+                                { "easein", Ease.InSine },
+                                { "easeout", Ease.OutSine }
+                            };
+
+                            if (map.TryGetValue(_tokens[_index].Content, out Ease ease))
+                            {
+                                block.EaseEnabled = true;
+                                block.EaseKind = ease;
+
+                                SkipCurrent();
+                                if (_index - 1 >= 0 && _tokens[_index - 1].Line == _tokens[_index].Line) block.EaseDurationAsExpression = ParseExpression();
+                                else ExceptionManager.Throw("Failed to parse ease duration's value in transform. Line is not same as ease syntax.", "Script/Parser", _tokens[_index].Line);
+                            }
+                            else goto default;
+
+                            break;
+                        }
+
+                    case ArgumentKind.Pause:
+                        {
+                            SkipCurrent();
+
+                            block.EaseEnabled = true;
+                            block.EaseDurationAsExpression = ParseExpression();
+                            result.Blocks.Add(block);
+                            block = new ATLBlock();
+
+                            break;
+                        }
 
                     //Custom syntax
-                    case "colour":
-                        SkipCurrent();
-                        result.colour = ParseStringLiteral();
-                        break;
+                    case ArgumentKind.Colour:
+                        {
+                            SkipCurrent();
+
+                            var atl = new RpyColour();
+                            atl.Line = _tokens[_index].Line;
+                            atl.Value = ParseExpression();
+                            block.Interior.Add(atl);
+
+                            break;
+                        }
 
                     default:
                         ExceptionManager.Throw($"Invalid attribute '{_tokens[_index].Content}' on transform keyword.", "Script/Parser");
@@ -934,6 +1045,7 @@ namespace ProjectMGG.Ingame.Script
         {
             NumberLiteral result = new NumberLiteral();
             result.Value = float.Parse(_tokens[_index].Content);
+            result.IsFloat = _tokens[_index].Content.Contains('.');
             SkipCurrent(ArgumentKind.NumberLiteral);
             return result;
         }

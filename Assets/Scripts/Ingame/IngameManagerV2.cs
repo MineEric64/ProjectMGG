@@ -17,9 +17,11 @@ using TMPro;
 
 using ProjectMGG.Ingame.Script;
 using ProjectMGG.Ingame.Script.Keywords.Renpy;
+using ProjectMGG.Ingame.Script.Keywords.Renpy.ATL;
 using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
 using ProjectMGG.Settings;
 
+using SizeF = System.Drawing.SizeF;
 using Path = System.IO.Path;
 
 namespace ProjectMGG.Ingame
@@ -132,6 +134,8 @@ namespace ProjectMGG.Ingame
             PauseManager.Clear();
             PauseManager.Add(new Pause(15f, true));
             StartCoroutine(InitializeScript()); //Pause will automatically removed after init completed
+
+            RpyTransform.Init();
 
             //Audio
             AudioManager.Clear();
@@ -889,73 +893,7 @@ namespace ProjectMGG.Ingame
                     return prefab;
                 }
 
-                float widthScaled = width * transform.zoom;
-                float heightScaled = height * transform.zoom;
-
-                if (transform.zoom != 1f)
-                {
-                    prefab.transform.localScale = new Vector3(transform.zoom, transform.zoom);
-                    prefab.transform.localPosition = new Vector3(0f, -(720 - heightScaled / 2));
-                }
-
-                //0~1: ratio, 1~: absolute value
-                //pos
-                if (transform.xpos != -1f)
-                {
-                    float offset = (transform.xanchor - 0.5f) * widthScaled;
-                    if (transform.xanchor > 1f) offset = transform.xanchor - (width / 2);
-
-                    if (transform.xpos >= 0f && transform.xpos <= 1f) prefab.transform.localPosition = new Vector3((1280 * (transform.xpos - 0.5f) * 2) - offset, prefab.transform.localPosition.y);
-                    else prefab.transform.localPosition = new Vector3(transform.xpos - offset - 1280, prefab.transform.localPosition.y);
-                }
-                if (transform.ypos != -1f)
-                {
-                    float offset = (transform.yanchor - 0.5f) * heightScaled;
-                    if (transform.yanchor > 1f) offset = transform.yanchor - (height / 2);
-
-                    if (transform.ypos >= 0f && transform.ypos <= 1f) prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, (-(720 * (transform.ypos - 0.5f) * 2)) + offset);
-                    else prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(transform.ypos - offset - 720));
-                }
-                
-                //center
-                if (transform.xcenter != -1f)
-                {
-                    if (transform.xcenter >= 0f && transform.xcenter <= 1f) prefab.transform.localPosition = new Vector3(1280 * (transform.xcenter - 0.5f) * 2, prefab.transform.localPosition.y);
-                    else prefab.transform.localPosition = new Vector3(transform.xcenter - 1280, prefab.transform.localPosition.y);
-                }
-                if (transform.ycenter != -1f)
-                {
-                    if (transform.ycenter >= 0f && transform.ycenter <= 1f) prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(720 * (transform.ycenter - 0.5f) * 2));
-                    else prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(transform.ycenter - 720));
-                }
-
-                //align
-                if (transform.xalign != -1f)
-                {
-                    float offset = (transform.xalign - 0.5f) * widthScaled;
-                    if (transform.xalign > 1f) offset = transform.xalign - (width / 2);
-
-                    if (transform.xalign >= 0f && transform.xalign <= 1f) prefab.transform.localPosition = new Vector3((1280 * (transform.xalign - 0.5f) * 2) - offset, prefab.transform.localPosition.y);
-                    else prefab.transform.localPosition = new Vector3(transform.xalign - offset - 1280, prefab.transform.localPosition.y);
-                }
-                if (transform.yalign != -1f)
-                {
-                    float offset = (transform.yalign - 0.5f) * heightScaled;
-                    if (transform.yalign > 1f) offset = transform.yalign - (height / 2);
-
-                    if (transform.yalign >= 0f && transform.yalign >= 1f) prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, (-(720 * (transform.yalign - 0.5f) * 2)) - offset);
-                    else prefab.transform.localPosition = new Vector3(prefab.transform.localPosition.x, -(transform.yalign - offset - 720));
-                }
-
-                //Custom syntax
-                if (!string.IsNullOrEmpty(transform.colour))
-                {
-                    Color color = Color.white;
-
-                    if (ColorUtility.TryParseHtmlString(transform.colour, out color)) prefab.color = color;
-                    else if (!transform.colour.StartsWith('#') && ColorUtility.TryParseHtmlString(string.Concat("#", transform.colour), out color)) prefab.color = color; //Concat #
-                    else ExceptionManager.Throw($"Color Hex '{transform.colour}' parsing failed while interpreting 'show'/'FX' statement.", "IngameManagerV2", transform.Line);
-                }
+                if (transform.Blocks.Count > 0) StartCoroutine(ApplyImageTransform(transform, prefab, width, height));
             }
             else
             {
@@ -969,6 +907,66 @@ namespace ProjectMGG.Ingame
             else ImageChild.Add(show.Tag, prefab);
 
             return prefab;
+        }
+
+        private IEnumerator ApplyImageTransform(RpyTransform transform, RawImage prefab, float width, float height)
+        {
+            float time = 0f;
+            SizeF textureSize = new SizeF(width, height);
+            SizeF textureSizeScaled = new SizeF(textureSize);
+            var blocksToExecute = new List<IATL>();
+
+            for (int i = 0; i < transform.Blocks.Count; i++)
+            {
+                var block = transform.Blocks[i];
+                block.ApplyExpression();
+
+                //Init before execution
+                foreach (var interiorBlock in block.Interior)
+                {
+                    interiorBlock.Texture = prefab;
+                    interiorBlock.TextureSize = textureSize;
+
+                    interiorBlock.EaseKind = block.EaseKind;
+                    interiorBlock.EaseDuration = block.EaseDuration;
+                    //interiorBlock.StartDelay = time;
+
+                    blocksToExecute.Add(interiorBlock);
+                }
+
+                //Execution (for optimization)
+                float timePrevious = time;
+
+                time += block.EaseDuration;
+
+                if (timePrevious < time || i == transform.Blocks.Count - 1)
+                {
+                    for (int j = 0; j < blocksToExecute.Count; j++)
+                    {
+                        var interiorBlock = blocksToExecute[j];
+                        interiorBlock.TextureSizeScaled = textureSizeScaled;
+                        interiorBlock.Interpret();
+
+                        //scaled size changed (ex: zoom)
+                        if (interiorBlock.TextureSizeScaled != textureSizeScaled) textureSizeScaled = interiorBlock.TextureSizeScaled;
+
+                        //repeat
+                        if (interiorBlock is RpyRepeat repeat)
+                        {
+                            int count = -1;
+                            if (repeat.Value != null && repeat.Value.Interpret() is float temp) count = (int)temp;
+
+                            repeat.CurrentCount++;
+
+                            if (count < 0 || repeat.CurrentCount < count) i = -1; //loop from start
+                            break;
+                        }
+                    }
+                    blocksToExecute.Clear();
+
+                    yield return Tween.Delay(block.EaseDuration).ToYieldInstruction();
+                }
+            }
         }
 
         private void PauseBeforeShow(With with, bool emptyDialog = true)
@@ -1118,30 +1116,36 @@ namespace ProjectMGG.Ingame
                         frame.With.Pause = false;
 
                         RpyTransform t1 = new RpyTransform();
+                        ATLBlock a1 = new ATLBlock();
                         t1.Name = "$nc_circle1_t";
                         t1.IsGlobal = true;
-                        t1.colour = "#313131";
-                        t1.zoom = 0.12f;
-                        t1.xcenter = 0.428f;
-                        t1.ycenter = 0.5f;
+                        a1.Interior.Add(new RpyColour("#313131"));
+                        a1.Interior.Add(new RpyZoom(0.12f));
+                        a1.Interior.Add(new RpyCenter(0.428f, true));
+                        a1.Interior.Add(new RpyCenter(0.5f, false));
+                        t1.Blocks.Add(a1);
                         t1.Interpret(); //Add
 
                         RpyTransform t2 = new RpyTransform();
+                        ATLBlock a2 = new ATLBlock();
                         t2.Name = "$nc_circle2_t";
                         t2.IsGlobal = true;
-                        t2.colour = "#313131";
-                        t2.zoom = 0.12f;
-                        t2.xcenter = 0.498f;
-                        t2.ycenter = 0.5f;
+                        a2.Interior.Add(new RpyColour("#313131"));
+                        a2.Interior.Add(new RpyZoom(0.12f));
+                        a2.Interior.Add(new RpyCenter(0.498f, true));
+                        a2.Interior.Add(new RpyCenter(0.5f, false));
+                        t2.Blocks.Add(a2);
                         t2.Interpret();
 
                         RpyTransform t3 = new RpyTransform();
+                        ATLBlock a3 = new ATLBlock();
                         t3.Name = "$nc_circle3_t";
                         t3.IsGlobal = true;
-                        t3.colour = "#313131";
-                        t3.zoom = 0.12f;
-                        t3.xcenter = 0.568f;
-                        t3.ycenter = 0.5f;
+                        a3.Interior.Add(new RpyColour("#313131"));
+                        a3.Interior.Add(new RpyZoom(0.12f));
+                        a3.Interior.Add(new RpyCenter(0.568f, true));
+                        a3.Interior.Add(new RpyCenter(0.5f, false));
+                        t3.Blocks.Add(a3);
                         t3.Interpret();
 
                         Show circle1 = new Show();
@@ -1171,7 +1175,7 @@ namespace ProjectMGG.Ingame
                         {
                             circle1.With = null;
                             Coroutine a = StartCoroutine(LetsShow(circle1, false, "CanvasImage/$nc_frame"));
-                            Coroutine b = StartCoroutine(ParallelWaitForSeconds(0.33f));
+                            Coroutine b = StartCoroutine(Tween.Delay(0.33f).ToYieldInstruction());
 
                             yield return a;
                             yield return b;
@@ -1182,7 +1186,7 @@ namespace ProjectMGG.Ingame
                             circle2.With = null;
                             Coroutine c = StartCoroutine(LetsHide(circle1, false));
                             Coroutine d = StartCoroutine(LetsShow(circle2, false, "CanvasImage/$nc_frame"));
-                            Coroutine e = StartCoroutine(ParallelWaitForSeconds(0.33f));
+                            Coroutine e = StartCoroutine(Tween.Delay(0.33f).ToYieldInstruction());
 
                             yield return c;
                             yield return d;
@@ -1194,7 +1198,7 @@ namespace ProjectMGG.Ingame
                             circle3.With = null;
                             Coroutine f = StartCoroutine(LetsHide(circle2, false));
                             Coroutine g = StartCoroutine(LetsShow(circle3, false, "CanvasImage/$nc_frame"));
-                            Coroutine h = StartCoroutine(ParallelWaitForSeconds(0.33f));
+                            Coroutine h = StartCoroutine(Tween.Delay(0.33f).ToYieldInstruction());
 
                             yield return f;
                             yield return g;
@@ -1226,30 +1230,36 @@ namespace ProjectMGG.Ingame
                         frame.With.Pause = false;
 
                         RpyTransform t1 = new RpyTransform();
+                        ATLBlock a1 = new ATLBlock();
                         t1.Name = "$nc_circle1_t";
                         t1.IsGlobal = true;
-                        t1.colour = "#313131";
-                        t1.zoom = 0.12f;
-                        t1.xcenter = 0.428f;
-                        t1.ycenter = 0.5f;
+                        a1.Interior.Add(new RpyColour("#313131"));
+                        a1.Interior.Add(new RpyZoom(0.12f));
+                        a1.Interior.Add(new RpyCenter(0.428f, true));
+                        a1.Interior.Add(new RpyCenter(0.5f, false));
+                        t1.Blocks.Add(a1);
                         t1.Interpret(); //Add
 
                         RpyTransform t2 = new RpyTransform();
+                        ATLBlock a2 = new ATLBlock();
                         t2.Name = "$nc_circle2_t";
                         t2.IsGlobal = true;
-                        t2.colour = "#313131";
-                        t2.zoom = 0.12f;
-                        t2.xcenter = 0.498f;
-                        t2.ycenter = 0.5f;
+                        a2.Interior.Add(new RpyColour("#313131"));
+                        a2.Interior.Add(new RpyZoom(0.12f));
+                        a2.Interior.Add(new RpyCenter(0.498f, true));
+                        a2.Interior.Add(new RpyCenter(0.5f, false));
+                        t2.Blocks.Add(a2);
                         t2.Interpret();
 
                         RpyTransform t3 = new RpyTransform();
+                        ATLBlock a3 = new ATLBlock();
                         t3.Name = "$nc_circle3_t";
                         t3.IsGlobal = true;
-                        t3.colour = "#313131";
-                        t3.zoom = 0.12f;
-                        t3.xcenter = 0.568f;
-                        t3.ycenter = 0.5f;
+                        a3.Interior.Add(new RpyColour("#313131"));
+                        a3.Interior.Add(new RpyZoom(0.12f));
+                        a3.Interior.Add(new RpyCenter(0.568f, true));
+                        a3.Interior.Add(new RpyCenter(0.5f, false));
+                        t3.Blocks.Add(a3);
                         t3.Interpret();
 
                         Show circle1 = new Show();
@@ -1277,7 +1287,7 @@ namespace ProjectMGG.Ingame
 
                         circle1.With = null;
                         Coroutine a = StartCoroutine(LetsShow(circle1, false, "CanvasImage/$nc_frame"));
-                        Coroutine b = StartCoroutine(ParallelWaitForSeconds(0.66f));
+                        Coroutine b = StartCoroutine(Tween.Delay(0.66f).ToYieldInstruction());
 
                         yield return a;
                         yield return b;
@@ -1288,7 +1298,7 @@ namespace ProjectMGG.Ingame
                         circle2.With = null;
                         Coroutine c = StartCoroutine(LetsHide(circle1, false));
                         Coroutine d = StartCoroutine(LetsShow(circle2, false, "CanvasImage/$nc_frame"));
-                        Coroutine e = StartCoroutine(ParallelWaitForSeconds(0.66f));
+                        Coroutine e = StartCoroutine(Tween.Delay(0.66f).ToYieldInstruction());
 
                         yield return c;
                         yield return d;
@@ -1300,7 +1310,7 @@ namespace ProjectMGG.Ingame
                         circle3.With = null;
                         Coroutine f = StartCoroutine(LetsHide(circle2, false));
                         Coroutine g = StartCoroutine(LetsShow(circle3, false, "CanvasImage/$nc_frame"));
-                        Coroutine h = StartCoroutine(ParallelWaitForSeconds(0.66f));
+                        Coroutine h = StartCoroutine(Tween.Delay(0.66f).ToYieldInstruction());
 
                         yield return f;
                         yield return g;
@@ -1351,12 +1361,14 @@ namespace ProjectMGG.Ingame
                             ApplyInternalImage(circleName, "images/fx_circle.png");
 
                             RpyTransform tr = new RpyTransform();
+                            ATLBlock atl = new ATLBlock();
                             tr.Name = $"{circleName}_t";
                             tr.IsGlobal = true;
-                            tr.zoom = 0.1f;
-                            tr.xcenter = 1280 + x * RADIUS;
-                            tr.ycenter = 720 + y * RADIUS;
-                            tr.colour = colorTable1[i];
+                            atl.Interior.Add(new RpyZoom(0.1f));
+                            atl.Interior.Add(new RpyCenter((int)(1280 + x * RADIUS), true));
+                            atl.Interior.Add(new RpyCenter((int)(720 + y * RADIUS), false));
+                            atl.Interior.Add(new RpyColour(colorTable1[i]));
+                            tr.Blocks.Add(atl);
                             tr.Interpret(); //Add
 
                             Show circle = new Show();
@@ -1437,12 +1449,14 @@ namespace ProjectMGG.Ingame
                             ApplyInternalImage(circleName, "images/fx_circle.png");
 
                             RpyTransform tr = new RpyTransform();
+                            ATLBlock atl = new ATLBlock();
                             tr.Name = $"{circleName}_t";
                             tr.IsGlobal = true;
-                            tr.zoom = 0.13f;
-                            tr.xcenter = 1280 + x * RADIUS;
-                            tr.ycenter = 720 + y * RADIUS;
-                            tr.colour = colorTable1[i];
+                            atl.Interior.Add(new RpyZoom(0.13f));
+                            atl.Interior.Add(new RpyCenter((int)(1280 + x * RADIUS), true));
+                            atl.Interior.Add(new RpyCenter((int)(720 + y * RADIUS), false));
+                            atl.Interior.Add(new RpyColour(colorTable1[i]));
+                            tr.Blocks.Add(atl);
                             tr.Interpret(); //Add
 
                             Show circle = new Show();
@@ -1509,11 +1523,6 @@ namespace ProjectMGG.Ingame
             image.IsGlobal = true;
 
             image.Interpret();
-        }
-
-        private IEnumerator ParallelWaitForSeconds(float seconds)
-        {
-            yield return new WaitForSeconds(seconds);
         }
         #endregion
         #region Audio
