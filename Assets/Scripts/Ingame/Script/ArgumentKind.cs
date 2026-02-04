@@ -47,7 +47,9 @@ namespace ProjectMGG.Ingame.Script
         [KindAttr("Character")] Character,
         [KindAttr("Solid")] Solid,
 
+        // ATL
         [KindAttr("transform")] Transform,
+        // More at ParseTransform() in Parser.cs
 
         [KindAttr("show")] Show,
         [KindAttr("hide")] Hide,

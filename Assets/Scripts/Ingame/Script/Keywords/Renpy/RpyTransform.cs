@@ -22,6 +22,19 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
 
         public float zoom = 1f;
 
+        /// <summary>
+        /// -1: infinite loop, 0: no repeat, 0 ~: repeat count
+        /// </summary>
+        public int repeat = 0;
+        public IExpression repeatAsExpression = null;
+
+        /// <summary>
+        /// linear, ease, easein, easeout etc
+        /// </summary>
+        public string easeName = "";
+        public float easeDuration = 0f;
+        public IExpression easeDurationAsExpression = null;
+
         //Custom syntax
         public string colour = "";
 
@@ -36,6 +49,12 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy
             {
                 ExceptionManager.Throw("The transform name can't be empty.", "Script/RpyTransform", Line);
                 return;
+            }
+
+            if (repeatAsExpression != null)
+            {
+                float? value = repeatAsExpression.Interpret() as float?;
+                if (value.HasValue) repeat = (int)value.Value;
             }
 
             var vars = IsGlobal ? IngameManagerV2.Global : IngameManagerV2.Local;

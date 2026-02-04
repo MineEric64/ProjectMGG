@@ -37,6 +37,9 @@ label start:
     scene classroom
     "어떡하면 좋을까."
 
+    define a = .0
+    "[a]"
+
     play music "bg_starberry_milk" fadein 3.0
 
     show haru default at half_size

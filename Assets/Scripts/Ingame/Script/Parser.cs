@@ -578,6 +578,23 @@ namespace ProjectMGG.Ingame.Script
                         SkipCurrent();
                         break;
 
+                    case "repeat":
+                        SkipCurrent();
+                        //if error, replace this condition to compare _tokens[_index].Line (without checking for ArgumentKind), like parsing ease
+                        if (IsUnknown(ArgumentKind.NumberLiteral, 0) || IsUnknown(ArgumentKind.Identifier, 0)) result.repeatAsExpression = ParseExpression();
+                        break;
+
+                    case "linear":
+                    case "ease":
+                    case "easein":
+                    case "easeout":
+                        int easeLine = _tokens[_index].Line;
+                        result.easeName = _tokens[_index].Content.ToLower();
+                        SkipCurrent();
+                        if (easeLine == _tokens[_index].Line) result.easeDurationAsExpression = ParseExpression();
+                        else ExceptionManager.Throw("Failed to parse ease duration's value in transform. Line is not same as ease syntax.", "Script/Parser", _tokens[_index].Line);
+                        break;
+
                     //Custom syntax
                     case "colour":
                         SkipCurrent();
