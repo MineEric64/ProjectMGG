@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 using PrimeTween;
-using System.Xml.Serialization;
 
 namespace ProjectMGG.Ingame.Script.Keywords.Renpy.ATL
 {
