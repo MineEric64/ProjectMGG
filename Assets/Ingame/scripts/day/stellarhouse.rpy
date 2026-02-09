@@ -70,10 +70,15 @@ image yunseo happy7 = "images/chr_yunseo/happy7.png"
 
 image yunseo a1 = "images/chr_yunseo/a1.png"
 image yunseo a6 = "images/chr_yunseo/a6.png"
+image yunseo a63 = "images/chr_yunseo/a63.png"
+image yunseo embarrassed54 = "images/chr_yunseo/embarrassed54.png"
+image yunseo embarrassed55 = "images/chr_yunseo/embarrassed55.png"
 image yunseo a7 = "images/chr_yunseo/a7.png"
 image yunseo embarrassed1_blush = "images/chr_yunseo/embarrassed1_blush.png"
 image yunseo embarrassed2_blush = "images/chr_yunseo/embarrassed2_blush.png"
 image yunseo embarrassed3_blush = "images/chr_yunseo/embarrassed3_blush.png"
+image yunseo embarrassed3_blush2 = "images/chr_yunseo/embarrassed3_blush2.png"
+image yunseo embarrassed3_blush3 = "images/chr_yunseo/embarrassed3_blush3.png"
 image yunseo embarrassed4_blush = "images/chr_yunseo/embarrassed4_blush.png"
 image yunseo happy5_blush = "images/chr_yunseo/happy5_blush.png"
 image yunseo happy7_blush = "images/chr_yunseo/happy7_blush.png"
@@ -547,26 +552,26 @@ label start:
     pause 1.0
     # TODO?: Music Speed down
     # 생각 전에 말이 먼저 튀어나와 순간 당황한 윤서의 캐릭터 CG / 윤서 특유 불안 표정 + o_o
-    show yunseo embarrassed53 at yunseo_center
+    show yunseo a63 at yunseo_center
     window show
     "순간, 윤서의 하얀 얼굴이 붉게 달아오른다."
     player "응?"
     # 삐졌어요 그리고 놀랐어요 표정 / 소스라치게 놀라는 모습 참고 
-    show yunseo a6 at yunseo_center
+    show yunseo embarrassed54 at yunseo_center
     yunseo "아, {sg=*0.93}그, 그ㅡ그게······.{/sg}"
-    show yunseo embarrassed3_blush at yunseo_center
+    show yunseo embarrassed55 at yunseo_center
     "윤서의 말끝이 흐려졌다."
     player "무슨 일이길래?" # or 뭐라고?
     # 점차 차가워지는 조명, White Balance 조정하면 될 듯
+    show yunseo embarrassed3_blush3 at yunseo_center
     window hide
     fx LC_FRAME at yunseo_nc
     pause 2.2 hard
     window show
-    show yunseo embarrassed1_blush at yunseo_center
-    # TODO: 이 중간에 embarrassed1_blush로 대체하고, 기존은 시선을 아래로 향하자. (조윤서 문서 참고)
     yunseo "······."
     "아무래도 무슨 생각에 잠긴 듯한 모양이다."
     player "괜찮아, 천천히 이야기해도 돼."
+    show yunseo embarrassed1_blush at yunseo_center
     "하지만 붉게 물든 윤서의 얼굴은 좀처럼 사라지지 않았다."
     "그런데 왜 나를 힐끔힐끔 보고 있는 걸까."
     "말로는 못 하겠지만 무언가 전하고 싶은 표정이었다."
