@@ -5,12 +5,6 @@ TextureImporter:
   - first:
       213: 2696691424040205228
     second: anxious2_0
-  - first:
-      213: -3754845150085663839
-    second: anxious2_1
-  - first:
-      213: 6925115521776118593
-    second: anxious2_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -78,7 +72,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 4096
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -116,6 +110,19 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
     buildTarget: iOS
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -135,10 +142,10 @@ TextureImporter:
       name: anxious2_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 341
-        width: 44
-        height: 39
+        x: 888
+        y: 0
+        width: 2486
+        height: 5346
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -149,50 +156,6 @@ TextureImporter:
       bones: []
       spriteID: cab32ceff829c6520800000000000000
       internalID: 2696691424040205228
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: anxious2_1
-      rect:
-        serializedVersion: 2
-        x: 13
-        y: 0
-        width: 1577
-        height: 3768
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1a3bb82ea3c14ebc0800000000000000
-      internalID: -3754845150085663839
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: anxious2_2
-      rect:
-        serializedVersion: 2
-        x: 15
-        y: 375
-        width: 34
-        height: 31
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 14b620050e3fa1060800000000000000
-      internalID: 6925115521776118593
       vertices: []
       indices: 
       edges: []
@@ -212,8 +175,6 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       anxious2_0: 2696691424040205228
-      anxious2_1: -3754845150085663839
-      anxious2_2: 6925115521776118593
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

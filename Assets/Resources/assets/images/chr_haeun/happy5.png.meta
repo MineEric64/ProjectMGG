@@ -5,12 +5,6 @@ TextureImporter:
   - first:
       213: -399048642170848305
     second: happy5_0
-  - first:
-      213: 5490353752527076014
-    second: happy5_1
-  - first:
-      213: -5162907707072003989
-    second: happy5_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -78,7 +72,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 4096
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -116,6 +110,19 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
     buildTarget: iOS
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -135,10 +142,10 @@ TextureImporter:
       name: happy5_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 341
-        width: 44
-        height: 39
+        x: 888
+        y: 0
+        width: 2486
+        height: 5346
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -149,50 +156,6 @@ TextureImporter:
       bones: []
       spriteID: fcbfd4bcf5b467af0800000000000000
       internalID: -399048642170848305
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: happy5_1
-      rect:
-        serializedVersion: 2
-        x: 13
-        y: 0
-        width: 1577
-        height: 3768
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: eaafb9616a7a13c40800000000000000
-      internalID: 5490353752527076014
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: happy5_2
-      rect:
-        serializedVersion: 2
-        x: 15
-        y: 375
-        width: 34
-        height: 31
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: b60c8df6bcaa958b0800000000000000
-      internalID: -5162907707072003989
       vertices: []
       indices: 
       edges: []
@@ -212,8 +175,6 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       happy5_0: -399048642170848305
-      happy5_1: 5490353752527076014
-      happy5_2: -5162907707072003989
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

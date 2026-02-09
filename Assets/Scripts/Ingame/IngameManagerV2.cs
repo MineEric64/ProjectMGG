@@ -217,7 +217,7 @@ namespace ProjectMGG.Ingame
             }
             else if (Input.GetKeyDown(KeyCode.Space)) downType = ClickType.Dialog;
             #endregion
-
+            
             //Mouse
             if (downType == ClickType.None) downType = GetMouseDownType();
 

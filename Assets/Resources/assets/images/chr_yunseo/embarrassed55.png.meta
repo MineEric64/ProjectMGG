@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 46346003939ec8d42b973f163e4630d8
+guid: 89e782dc9556fdc4794b36b2833fe34c
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7686057379454970393
-    second: yandere3_0
+      213: -3582201857833657643
+    second: embarrassed55_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,13 +139,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: yandere3_0
+      name: embarrassed55_0
       rect:
         serializedVersion: 2
-        x: 888
+        x: 62
         y: 0
-        width: 2486
-        height: 5346
+        width: 1823
+        height: 5507
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7e5115e2983a55590800000000000000
-      internalID: -7686057379454970393
+      spriteID: 5da941eb366794ec0800000000000000
+      internalID: -3582201857833657643
       vertices: []
       indices: 
       edges: []
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      yandere3_0: -7686057379454970393
+      embarrassed55_0: -3582201857833657643
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
