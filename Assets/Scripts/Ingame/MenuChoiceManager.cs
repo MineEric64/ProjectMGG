@@ -19,6 +19,7 @@ namespace ProjectMGG.Ingame
         public GameObject Prefab;
         public Vector3 Offset = new Vector3(0, 0, 0);
         public bool Active { get; private set; } = false;
+        public bool Hover { get; private set; } = false;
 
         private Menu _currentMenu = null;
         private int _selectedMenuNumber = -1;
@@ -52,7 +53,7 @@ namespace ProjectMGG.Ingame
 
                     _buttons[_selectedMenuNumber].OnPointerEnter(null);
                 }
-                else if (Input.GetKeyDown(KeyCode.Return))
+                else if (Hover && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))) //Space / Enter
                 {
                     if (_selectedMenuNumber >= 0) OnClick(_selectedMenuNumber);
                 }
@@ -62,6 +63,7 @@ namespace ProjectMGG.Ingame
         public void CreateMenu(Menu menu)
         {
             Active = true;
+            Hover = false;
             _currentMenu = menu;
             _selectedMenuNumber = -1;
             _buttons.Clear();
@@ -136,6 +138,7 @@ namespace ProjectMGG.Ingame
         {
             if (_selectedMenuNumber >= 0 && _selectedMenuNumber != index) _buttons[_selectedMenuNumber].OnPointerExit(null);
             _selectedMenuNumber = index;
+            Hover = true;
 
             float widthStart = rectTransform.rect.width;
             float heightStart = rectTransform.rect.height;
@@ -151,6 +154,8 @@ namespace ProjectMGG.Ingame
 
         public void OnExit(int index, RectTransform rectTransform, TextMeshProUGUI textUI)
         {
+            Hover = false;
+
             float widthStart = rectTransform.rect.width;
             float heightStart = rectTransform.rect.height;
             float fontSizeStart = textUI.fontSize;
