@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 57d3d09e0574db541b135bc983320bc9
+guid: 102b6bd49cbb46d478d59042124e6e53
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -9054215322114238121
-    second: happy53_0
+      213: 5755689601672282094
+    second: disgust1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,7 +139,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: happy53_0
+      name: disgust1_0
       rect:
         serializedVersion: 2
         x: 888
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7595b75c227f85280800000000000000
-      internalID: -9054215322114238121
+      spriteID: eeff511a23150ef40800000000000000
+      internalID: 5755689601672282094
       vertices: []
       indices: 
       edges: []
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      happy53_0: -9054215322114238121
+      disgust1_0: 5755689601672282094
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

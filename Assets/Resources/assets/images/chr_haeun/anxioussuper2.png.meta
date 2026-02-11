@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 57d3d09e0574db541b135bc983320bc9
+guid: 92c846b5f66ae61498b3920d2afc8c10
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -9054215322114238121
-    second: happy53_0
+      213: -8758502324018610698
+    second: anxioussuper2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,7 +139,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: happy53_0
+      name: anxioussuper2_0
       rect:
         serializedVersion: 2
         x: 888
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7595b75c227f85280800000000000000
-      internalID: -9054215322114238121
+      spriteID: 6fdff647a8c837680800000000000000
+      internalID: -8758502324018610698
       vertices: []
       indices: 
       edges: []
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      happy53_0: -9054215322114238121
+      anxioussuper2_0: -8758502324018610698
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

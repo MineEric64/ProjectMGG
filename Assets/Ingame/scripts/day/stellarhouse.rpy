@@ -3,50 +3,34 @@ define player = Character("[playername]", color="#f2f2f2")
 define haeun = Character("이하은", color="#ffd9e9")
 define yunseo = Character("조윤서", color="#aaaaaa")
 
-# image haeun angry1 = "images/chr_haeun/angry1.png"
-# image haeun angry2 = "images/chr_haeun/angry2.png"
-# image haeun angry3 = "images/chr_haeun/angry3.png"
 image haeun anxious1 = "images/chr_haeun/anxious1.png"
 image haeun anxious2 = "images/chr_haeun/anxious2.png"
-# image haeun anxious3 = "images/chr_haeun/anxious3.png"
 image haeun curious = "images/chr_haeun/curious.png"
 image haeun default1 = "images/chr_haeun/default1.png"
 image haeun default2 = "images/chr_haeun/default2.png"
-# image haeun default3 = "images/chr_haeun/default3.png"
-# image haeun default4 = "images/chr_haeun/default4.png"
-# image haeun default5 = "images/chr_haeun/default5.png"
-# image haeun disgust1 = "images/chr_haeun/disgust1.png"
-# image haeun disgust2 = "images/chr_haeun/disgust2.png"
 image haeun happy1 = "images/chr_haeun/happy1.png"
 image haeun happy2 = "images/chr_haeun/happy2.png"
 image haeun happy3 = "images/chr_haeun/happy3.png"
-# image haeun happy4 = "images/chr_haeun/happy4.png"
 image haeun happy5 = "images/chr_haeun/happy5.png"
-# image haeun happy6 = "images/chr_haeun/happy6.png"
-# image haeun happy7 = "images/chr_haeun/happy7.png"
-# image haeun happy8 = "images/chr_haeun/happy8.png"
-# image haeun happy9 = "images/chr_haeun/happy9.png"
-# image haeun happy10 = "images/chr_haeun/happy10.png"
-image haeun yandere1 = "images/chr_haeun/yandere1.png"
-# image haeun yandere2 = "images/chr_haeun/yandere2.png"
-image haeun yandere3 = "images/chr_haeun/yandere3.png"
-# image haeun yandere4 = "images/chr_haeun/yandere4.png"
-# image haeun yandere5 = "images/chr_haeun/yandere5.png"
-# image haeun yandere6 = "images/chr_haeun/yandere6.png"
-# image haeun yandere7 = "images/chr_haeun/yandere7.png"
-# image haeun yandere8 = "images/chr_haeun/yandere8.png"
-# image haeun yandere9 = "images/chr_haeun/yandere9.png"
-# image haeun yandere10 = "images/chr_haeun/yandere10.png"
-# image haeun yandere11 = "images/chr_haeun/yandere11.png"
-# image haeun yandere12 = "images/chr_haeun/yandere12.png"
-# image haeun yandere13 = "images/chr_haeun/yandere13.png"
-# image haeun yandere14 = "images/chr_haeun/yandere14.png"
-
 image haeun happy52 = "images/chr_haeun/happy52.png"
+image haeun happy54 = "images/chr_haeun/happy54.png"
+image haeun happy55 = "images/chr_haeun/happy55.png"
+image haeun yandere1 = "images/chr_haeun/yandere1.png"
+image haeun yandere3 = "images/chr_haeun/yandere3.png"
+
+image haeun ahaha1 = "images/chr_haeun/ahaha1.png"
+image haeun ahaha12 = "images/chr_haeun/ahaha12.png"
+image haeun ahaha2 = "images/chr_haeun/ahaha2.png"
+image haeun ahaha3 = "images/chr_haeun/ahaha3.png"
+image haeun ahaha4 = "images/chr_haeun/ahaha4.png"
+image haeun ahaha12 = "images/chr_haeun/ahaha12.png"
+image haeun ahaha32 = "images/chr_haeun/ahaha32.png"
+image haeun disgust1 = "images/chr_haeun/disgust1.png"
+image haeun disgust4 = "images/chr_haeun/disgust1.png"
+image haeun anxioussuper = "images/chr_haeun/anxioussuper.png"
 
 image yunseo default1 = "images/chr_yunseo/default1.png"
 image yunseo default2 = "images/chr_yunseo/default2.png"
-# image yunseo eating1 = "images/chr_yunseo/eating1.png"
 image yunseo eating2 = "images/chr_yunseo/eating2.png"
 image yunseo embarrassed1 = "images/chr_yunseo/embarrassed1.png"
 image yunseo embarrassed2 = "images/chr_yunseo/embarrassed2.png"
@@ -56,18 +40,12 @@ image yunseo embarrassed5 = "images/chr_yunseo/embarrassed5.png"
 image yunseo embarrassed6 = "images/chr_yunseo/embarrassed6.png"
 image yunseo embarrassed7 = "images/chr_yunseo/embarrassed7.png"
 image yunseo embarrassed8 = "images/chr_yunseo/embarrassed8.png"
-# image yunseo embarrassed9 = "images/chr_yunseo/embarrassed9.png"
 image yunseo happy1 = "images/chr_yunseo/happy1.png"
 image yunseo happy2 = "images/chr_yunseo/happy2.png"
 image yunseo happy3 = "images/chr_yunseo/happy3.png"
 image yunseo happy4 = "images/chr_yunseo/happy4.png"
 image yunseo happy5 = "images/chr_yunseo/happy5.png"
-# image yunseo happy6 = "images/chr_yunseo/happy6.png"
 image yunseo happy7 = "images/chr_yunseo/happy7.png"
-# image yunseo happy8 = "images/chr_yunseo/happy8.png"
-# image yunseo anxious1 = "images/chr_yunseo/anxious1.png"
-# image yunseo anxious2 = "images/chr_yunseo/anxious2.png"
-
 image yunseo a1 = "images/chr_yunseo/a1.png"
 image yunseo a6 = "images/chr_yunseo/a6.png"
 image yunseo a63 = "images/chr_yunseo/a63.png"
@@ -156,7 +134,7 @@ label start:
     "순간 분위기에 압도되어 그저 앞을 멍하니 바라볼 수밖에 없었다."
     player "여기서 살게 되는구나···."
 
-    "······{nw=0.51}"
+    "······{nw=0.5}"
     play sound "audio/sfx_taptap"
     "······{fast}{nw=0.61}"
     play music ROOMIE_ROOKIE
@@ -195,7 +173,7 @@ label start:
     haeun "무슨 생각해?"
     player "어··· 셰어하우스는 처음이라서"
     player "뭔가 되게 새로운 느낌이 드네"
-    show haeun happy1 at haeun_left
+    show haeun happy3 at haeun_left
     "그저 말없이 환하게 웃는 하은."
 
     show yunseo embarrassed6 at yunseo_right
@@ -237,7 +215,7 @@ label start:
             player "만난 지 얼마 안 되기도 했고···."
             show haeun happy1 at haeun_center
             "내 말이 끝난 순간 하은이의 얼굴에는 미소가 반겼다."
-            show haeun happy2 at haeun_center
+            show haeun ahaha1 at haeun_center
             haeun "아하하~ 알겠어."
 
         "예뻐.":
@@ -247,9 +225,11 @@ label start:
             show haeun curious at haeun_center
             haeun "정말?"
             player "응. 동시에 조금은 무섭기도 하고···."
-            show haeun happy1 at haeun_center
+            show haeun happy55 at haeun_center
             "내 말이 끝난 순간 하은이의 얼굴에는 미소가 반겼다."
+            show haeun ahaha12 at haeun_center
             haeun "아하하~ 너 꽤 귀여운 구석이 있구나?"
+            show haeun ahaha32 at haeun_center
             haeun "그 말을 이번엔 너한테 들으니까 좋네."
             player "이번에··· 라니?"
             show haeun happy2 at haeun_center
@@ -264,9 +244,11 @@ label start:
             haeun "그냥. 너라면 솔직하게 말해줄 것 같아서."
             # 경멸한 표정을 짓는 하은의 캐릭터 CG, 얀데레 특유 표정 like [얀데레 경멸]
             # 경멸할 때, 시선이 아래를 향하는 것도 나쁘지 않다. 적용해 보고 이상하면 폐기
+            show haeun disgust4 at haeun_center
             haeun "다른 사람들은, 다 거짓말만 했거든."
             player "다른 사람들?"
             # 다시 무심하면서도 호기심 있게 바라보는 하은의 캐릭터 CG로 바뀐다
+            show haeun curious at haeun_center
             haeun "그리고 무엇보다, 네 반응이 재미있을 것 같아서."
             player "···으응?"
             show haeun happy3 at haeun_center
@@ -277,14 +259,15 @@ label start:
             # 호감도 -1
             "···이럴 땐 못 들은 척하는 게 가장 나을지도 모르겠다."
             player "응? 뭐라고?"
-            show haeun anxious1 at haeun_center
+            show haeun default1 at haeun_center
             "내 말이 끝나자 단호하게 이야기하는 하은."
             # 경멸한 표정을 짓는 하은의 캐릭터 CG, 얀데레 특유 표정 like [얀데레 경멸]
-            show haeun default1 at haeun_center
+            show haeun disgust1 at haeun_center
             haeun "그런 건 왜 물어보는 거야?"
             player "으응?"
             "···그런 눈으로 바라보니 하은이가 조금 무서워졌다."
             # 무심하면서도 호기심 있게 바라보는 하은의 캐릭터 CG로 바뀐다
+            show haeun default1 at haeun_center
 
     "그때, 하은이는 내 앞에 놓인 수많은 박스를 보고 말을 이어나간다."
     show haeun happy1 at haeun_center
@@ -298,7 +281,7 @@ label start:
     menu:
         "응, 도와줘.":
             # 하은이가 좋아할 만한 선택지, 호감도 +1
-            show haeun happy3 at haeun_center
+            show haeun happy54 at haeun_center
             haeun "응! 그렇게 말해줘서 고마워!"
             "그 순간 하은이의 표정에는 활기가 가득해졌다."
             "뭐, 나도 이번 기회에 하은이와 친해질 수 있어서 좋긴 하지만···"
@@ -314,7 +297,7 @@ label start:
             "난 분명히 괜찮다고 말했는데···."
             player "괜찮다니까?"
             "그러자 하은이는 별말 없이 나를 한번 보고는, 결국 짐을 들었다."
-            show haeun happy1 at haeun_center
+            show haeun happy2 at haeun_center
             haeun "에이, 그래도 룸메이트인데 이 정돈 해야지~"
             "뭐··· 그래."
             "둘이서 한다고 안 좋을 건 없으니까."
@@ -357,7 +340,7 @@ label start:
     pause 1.1
     window show
     player "응, 열어도 돼."
-    show haeun happy3 at haeun_center
+    show haeun happy2 at haeun_center
     haeun "좋아~"
     "이제 상자 뜯는 거에 능숙해진 하은이는 재빠르게 테이프를 뜯어 상자를 연다."
     show haeun curious at haeun_center
@@ -371,9 +354,9 @@ label start:
 
     menu:
         "왜?":
-            show haeun anxious2 at haeun_center
             # TODO?: Music Speed down
             # 눈이 내려가 자기 목걸이를 보는 하은의 캐릭터 CG, 이상하면 폐기
+            show haeun anxioussuper at haeun_center
             window hide
             pause 1.5
             window show
@@ -383,9 +366,9 @@ label start:
             haeun "유리라서 더욱 의미 있을 것 같기도 하고."
 
         "너 지금 목걸이 쓰고 있는 거 아니야?":
-            show haeun anxious2 at haeun_center
             # TODO?: Music Speed down
             # 눈이 내려가 자기 목걸이를 보는 하은의 캐릭터 CG, 이상하면 폐기
+            show haeun anxioussuper at haeun_center
             haeun "아, 이거······."
             "내 말에 잠자코 있던 하은이는 내 유리 목걸이를 흘겨보곤 다시 말을 이어나갔다."
             show haeun default1 at haeun_center
@@ -395,16 +378,18 @@ label start:
     player "뭐, 알겠어."
     show haeun curious at haeun_center
     "아예 주는 것도 아니고 당분간 빌려 쓴다고 했으니까."
-    show haeun yandere1 at haeun_center
+    show haeun ahaha12 at haeun_center
     haeun "응! [playername2:야] 고마워!"
+    show haeun happy55 at haeun_center
     "무척 해맑은 눈으로 미소를 짓는 하은."
     "하은이가 이렇게 진심으로 웃는 모습은 만나서 처음으로 보는 듯하다."
     "하은이는, 목걸이를 정말로 좋아하는구나."
     show haeun yandere1 at haeun_center
     haeun "다른 사람들한텐 안 그러지? 나한테만 주는 거지?"
     player "어, 애초에 그 목걸이 언젠가 처분하려고 했어."
-    show haeun happy5 at haeun_center
+    show haeun happy52 at haeun_center
     haeun "아하하~ 좋아."
+    show haeun happy54 at haeun_center
     haeun "그리고 생필품은 첫 번째 서랍에 넣어둘게~"
     player "응."
 
