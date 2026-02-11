@@ -1085,6 +1085,194 @@ namespace ProjectMGG.Ingame
             yield return LetsWithAfter(show.With, false, prefab);
             if (!showed) showAction.Invoke();
         }
+        #endregion
+        #region Audio
+        public void LetsPlay(RpyAudio audio, string path, float fadein = 0f, float fadeout = 0f, float volume = 1f)
+        {
+            switch (audio.Channel)
+            {
+                case "music":
+                    {
+                        if (CurrentMusic != null && CurrentMusic.GetFileName() == audio.GetFileName()) //reeverbed
+                        {
+                            _reverbFilter.enabled = false;
+                            MusicPlayer.time = _preservedMusicTime;
+                            MusicPlayer.volume = volume;
+                            MusicPlayer.mute = false;
+                        }
+                        else
+                        {
+                            AudioClip clip = LoadResource<AudioClip>(path, "audio");
+
+                            if (clip != null)
+                            {
+                                if (fadein > 0f)
+                                {
+                                    Ease ease = ParseEaseFromString(audio.fadeease);
+                                    Tween.AudioVolume(MusicPlayer, 0f, volume, fadein, ease);
+                                }
+                                else
+                                {
+                                    MusicPlayer.volume = volume;
+                                }
+
+                                MusicPlayer.clip = clip;
+                                MusicPlayer.loop = audio.Loop;
+                                MusicPlayer.Play();
+                                CurrentMusic = audio;
+                            }
+                        }
+                        break;
+                    }
+
+                case "sound": //DEPRECATED METHOD!! Let's renewal this code
+                    {
+                        AudioClip clip = LoadResource<AudioClip>(path, "audio");
+
+                        if (clip != null)
+                        {
+                            if (fadein > 0f)
+                            {
+                                Ease ease = ParseEaseFromString(audio.fadeease);
+                                Tween.AudioVolume(SoundPlayer, 0f, volume, fadein, ease);
+                            }
+                            else
+                            {
+                                SoundPlayer.volume = volume;
+                            }
+
+                            SoundPlayer.clip = clip;
+                            SoundPlayer.loop = audio.Loop;
+                            SoundPlayer.Play();
+                        }
+                        break;
+                    }
+
+                default:
+                    ExceptionManager.Throw("TODO: support channel on play keyword", "IngameManagerV2", audio.Line);
+                    //reference: Let's use Audio Mixer Group
+                    break;
+            }
+        }
+
+        public void LetsStop(RpyAudio audio, float fadeout = 0f)
+        {
+            switch (audio.Channel)
+            {
+                case "music":
+                    {
+                        if (fadeout > 0f)
+                        {
+                            Ease ease = ParseEaseFromString(audio.fadeease);
+                            Tween.AudioVolume(MusicPlayer, 0f, fadeout, ease).OnComplete(() =>
+                            {
+                                MusicPlayer.Stop();
+                            });
+                        }
+                        else
+                        {
+                            MusicPlayer.Stop();
+                        }
+                        break;
+                    }
+
+                case "sound":
+                    {
+                        if (fadeout > 0f)
+                        {
+                            Ease ease = ParseEaseFromString(audio.fadeease);
+                            Tween.AudioVolume(SoundPlayer, 0f, fadeout, ease).OnComplete(() =>
+                            {
+                                SoundPlayer.Stop();
+                            });
+                        }
+                        else
+                        {
+                            SoundPlayer.Stop();
+                        }
+                        break;
+                    }
+
+                default:
+                    ExceptionManager.Throw("TODO: support channel on stop keyword", "IngameManagerV2", audio.Line);
+                    break;
+            }
+        }
+        #endregion
+        #region Etc
+        public void LetsPause(Pause pause, bool emptyDialog = false)
+        {
+            PauseManager.Add(pause);
+            if (emptyDialog) LetsNarration(string.Empty);
+        }
+
+        public void CallInteriorBlock(IEnumerable<Script.Keywords.IStatement> block)
+        {
+            var function = new Script.Keywords.Function();
+            function.Name = Interpreter.CurrentPoint.Name; //temporary, because of sharing variables
+            function.Block = new List<Script.Keywords.IStatement>(block);
+            function.Block.Add(new Return());
+
+            Script.Keywords.Call.Interpret(function);
+        }
+        #endregion
+        #endregion
+        #region Keywords: Custom
+        void Reeverb()
+        {
+            _currentDecayTime = Mathf.MoveTowards(_currentDecayTime, 7.0f, 2f * Time.deltaTime);
+            _reverbFilter.decayTime = _currentDecayTime;
+
+            bool available = ReeverbIntervals.Count > 0;
+
+            if (available) available = MusicPlayer.time >= EndReverbTime;
+            else available = _currentDecayTime == 7.0f;
+
+            if (available)
+            {
+                MusicPlayer.mute = true;
+                _preservedMusicTime = MusicPlayer.time;
+                IsReeverb = false;
+            }
+        }
+
+        public IEnumerator LetsGoTo(int line)
+        {
+            int currentLine = 0;
+            IsSkipping = true;
+
+            while (currentLine < line)
+            {
+                var block = Interpreter.CurrentPoint?.GetCurrentBlock();
+
+                if (block == null)
+                {
+                    IsSkipping = false;
+                    yield break;
+                }
+
+                currentLine = block.Line;
+                if (currentLine >= line)
+                {
+                    _goToNext = true;
+                    _readAll = false;
+
+                    IsSkipping = false;
+                    yield break;
+                }
+
+                _goToNext = true;
+                _readAll = true;
+
+                //Warning: if pause is removed, some transitions (or animations) might not be work properly
+                if (PauseManager.Paused) PauseManager.Remove(true);
+                if (MenuChoiceManager.Instance.Active) MenuChoiceManager.Instance.OnClick(0); //always click Menu Block 0
+
+                yield return null;
+            }
+
+            IsSkipping = false;
+        }
 
         public IEnumerator LetsFX(string name, string at)
         {
@@ -1523,194 +1711,6 @@ namespace ProjectMGG.Ingame
             image.IsGlobal = true;
 
             image.Interpret();
-        }
-        #endregion
-        #region Audio
-        public void LetsPlay(RpyAudio audio, string path, float fadein = 0f, float fadeout = 0f, float volume = 1f)
-        {
-            switch (audio.Channel)
-            {
-                case "music":
-                    {
-                        if (CurrentMusic != null && CurrentMusic.GetFileName() == audio.GetFileName()) //reeverbed
-                        {
-                            _reverbFilter.enabled = false;
-                            MusicPlayer.time = _preservedMusicTime;
-                            MusicPlayer.volume = volume;
-                            MusicPlayer.mute = false;
-                        }
-                        else
-                        {
-                            AudioClip clip = LoadResource<AudioClip>(path, "audio");
-
-                            if (clip != null)
-                            {
-                                if (fadein > 0f)
-                                {
-                                    Ease ease = ParseEaseFromString(audio.fadeease);
-                                    Tween.AudioVolume(MusicPlayer, 0f, volume, fadein, ease);
-                                }
-                                else
-                                {
-                                    MusicPlayer.volume = volume;
-                                }
-
-                                MusicPlayer.clip = clip;
-                                MusicPlayer.loop = audio.Loop;
-                                MusicPlayer.Play();
-                                CurrentMusic = audio;
-                            }
-                        }
-                        break;
-                    }
-
-                case "sound": //DEPRECATED METHOD!! Let's renewal this code
-                    {
-                        AudioClip clip = LoadResource<AudioClip>(path, "audio");
-
-                        if (clip != null)
-                        {
-                            if (fadein > 0f)
-                            {
-                                Ease ease = ParseEaseFromString(audio.fadeease);
-                                Tween.AudioVolume(SoundPlayer, 0f, volume, fadein, ease);
-                            }
-                            else
-                            {
-                                SoundPlayer.volume = volume;
-                            }
-
-                            SoundPlayer.clip = clip;
-                            SoundPlayer.loop = audio.Loop;
-                            SoundPlayer.Play();
-                        }
-                        break;
-                    }
-
-                default:
-                    ExceptionManager.Throw("TODO: support channel on play keyword", "IngameManagerV2", audio.Line);
-                    //reference: Let's use Audio Mixer Group
-                    break;
-            }
-        }
-
-        public void LetsStop(RpyAudio audio, float fadeout = 0f)
-        {
-            switch (audio.Channel)
-            {
-                case "music":
-                    {
-                        if (fadeout > 0f)
-                        {
-                            Ease ease = ParseEaseFromString(audio.fadeease);
-                            Tween.AudioVolume(MusicPlayer, 0f, fadeout, ease).OnComplete(() =>
-                            {
-                                MusicPlayer.Stop();
-                            });
-                        }
-                        else
-                        {
-                            MusicPlayer.Stop();
-                        }
-                        break;
-                    }
-
-                case "sound":
-                    {
-                        if (fadeout > 0f)
-                        {
-                            Ease ease = ParseEaseFromString(audio.fadeease);
-                            Tween.AudioVolume(SoundPlayer, 0f, fadeout, ease).OnComplete(() =>
-                            {
-                                SoundPlayer.Stop();
-                            });
-                        }
-                        else
-                        {
-                            SoundPlayer.Stop();
-                        }
-                        break;
-                    }
-
-                default:
-                    ExceptionManager.Throw("TODO: support channel on stop keyword", "IngameManagerV2", audio.Line);
-                    break;
-            }
-        }
-        #endregion
-        #region Etc
-        public void LetsPause(Pause pause, bool emptyDialog = false)
-        {
-            PauseManager.Add(pause);
-            if (emptyDialog) LetsNarration(string.Empty);
-        }
-
-        public void CallInteriorBlock(IEnumerable<Script.Keywords.IStatement> block)
-        {
-            var function = new Script.Keywords.Function();
-            function.Name = Interpreter.CurrentPoint.Name; //temporary, because of sharing variables
-            function.Block = new List<Script.Keywords.IStatement>(block);
-            function.Block.Add(new Return());
-
-            Script.Keywords.Call.Interpret(function);
-        }
-        #endregion
-        #endregion
-        #region Keywords: Custom
-        void Reeverb()
-        {
-            _currentDecayTime = Mathf.MoveTowards(_currentDecayTime, 7.0f, 2f * Time.deltaTime);
-            _reverbFilter.decayTime = _currentDecayTime;
-
-            bool available = ReeverbIntervals.Count > 0;
-
-            if (available) available = MusicPlayer.time >= EndReverbTime;
-            else available = _currentDecayTime == 7.0f;
-
-            if (available)
-            {
-                MusicPlayer.mute = true;
-                _preservedMusicTime = MusicPlayer.time;
-                IsReeverb = false;
-            }
-        }
-
-        public IEnumerator LetsGoTo(int line)
-        {
-            int currentLine = 0;
-            IsSkipping = true;
-
-            while (currentLine < line)
-            {
-                var block = Interpreter.CurrentPoint?.GetCurrentBlock();
-
-                if (block == null)
-                {
-                    IsSkipping = false;
-                    yield break;
-                }
-
-                currentLine = block.Line;
-                if (currentLine >= line)
-                {
-                    _goToNext = true;
-                    _readAll = false;
-
-                    IsSkipping = false;
-                    yield break;
-                }
-
-                _goToNext = true;
-                _readAll = true;
-
-                //Warning: if pause is removed, some transitions (or animations) might not be work properly
-                if (PauseManager.Paused) PauseManager.Remove(true);
-                if (MenuChoiceManager.Instance.Active) MenuChoiceManager.Instance.OnClick(0); //always click Menu Block 0
-
-                yield return null;
-            }
-
-            IsSkipping = false;
         }
         #endregion
         #region UI: Button Events
