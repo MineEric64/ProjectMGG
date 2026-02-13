@@ -217,6 +217,7 @@ label start:
             "내 말이 끝난 순간 하은이의 얼굴에는 미소가 반겼다."
             show haeun ahaha1 at haeun_center
             haeun "아하하~ 알겠어."
+            show haeun happy1 at haeun_center
 
         "예뻐.":
             # 하은이가 좋아할 만한 선택지, 호감도 +1

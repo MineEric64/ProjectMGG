@@ -27,8 +27,8 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy.ATL
         {
             if (duration > 0 || startDelay > 0)
             {
-                var settings = new TweenSettings(duration, ease, startDelay: startDelay, updateType: updateType);
-                Tween.Custom(startValue, endValue, settings, onValueChange);
+                var settings = new TweenSettings<float>(startValue, endValue, duration, ease, startDelay: startDelay, updateType: updateType);
+                Tween.Custom(settings, onValueChange);
             }
             else onValueChange.Invoke(endValue);
         }
@@ -37,8 +37,8 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy.ATL
         {
             if (duration > 0 || startDelay > 0)
             {
-                var settings = new TweenSettings(duration, ease, startDelay: startDelay, updateType: updateType);
-                Tween.Custom(startValue, endValue, settings, onValueChange);
+                var settings = new TweenSettings<Vector3>(startValue, endValue, duration, ease, startDelay: startDelay, updateType: updateType);
+                Tween.Custom(settings, onValueChange);
             }
             else onValueChange.Invoke(endValue);
         }
@@ -47,8 +47,8 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy.ATL
         {
             if (duration > 0 || startDelay > 0)
             {
-                var settings = new TweenSettings(duration, ease, startDelay: startDelay, updateType: updateType);
-                Tween.Custom(startValue, endValue, settings, onValueChange);
+                var settings = new TweenSettings<Color>(startValue, endValue, duration, ease, startDelay: startDelay, updateType: updateType);
+                Tween.Custom(settings, onValueChange);
             }
             else onValueChange.Invoke(endValue);
         }

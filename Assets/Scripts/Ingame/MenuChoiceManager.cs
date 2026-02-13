@@ -121,7 +121,7 @@ namespace ProjectMGG.Ingame
             string head = menu.Head;
             if (string.IsNullOrEmpty(head)) head = "하나를 선택하세요."; //TODO: translation
 
-            IngameManagerV2.Instance.LetsNarrationImmediate(head);
+            IngameManagerV2.Instance.LetsNarrationImmediate(head, false);
         }
 
         public void DeleteAllMenus()

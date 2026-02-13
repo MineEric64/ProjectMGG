@@ -1,14 +1,18 @@
-using PrimeTween;
-using ProjectMGG.Ingame;
-using ProjectMGG.Settings;
-using ProjectMGG.UI;
-using SmartFormat;
-using SmartFormat.Extensions;
 using System.Linq;
-using TMPro;
+
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+
+using TMPro;
+using PrimeTween;
+
+using SmartFormat;
+using SmartFormat.Extensions;
+
+using ProjectMGG.Ingame;
+using ProjectMGG.Settings;
+using ProjectMGG.UI;
 
 namespace ProjectMGG
 {
@@ -130,6 +134,16 @@ namespace ProjectMGG
         {
             IngameManagerV2.ScriptPath = scriptPath;
             SceneManager.LoadScene("Ingame");
+        }
+
+        public void Settings()
+        {
+
+        }
+
+        public void Exit()
+        {
+            Application.Quit();
         }
     }
 }

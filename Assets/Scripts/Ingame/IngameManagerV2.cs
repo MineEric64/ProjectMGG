@@ -1,3 +1,9 @@
+using PrimeTween;
+using ProjectMGG.Ingame.Script;
+using ProjectMGG.Ingame.Script.Keywords.Renpy;
+using ProjectMGG.Ingame.Script.Keywords.Renpy.ATL;
+using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
+using ProjectMGG.Settings;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -5,24 +11,16 @@ using System.IO;
 using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
-
+using TMPro;
+using UnityEditor;
+using UnityEditor.Build;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-
-using PrimeTween;
-using TMPro;
-
-using ProjectMGG.Ingame.Script;
-using ProjectMGG.Ingame.Script.Keywords.Renpy;
-using ProjectMGG.Ingame.Script.Keywords.Renpy.ATL;
-using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
-using ProjectMGG.Settings;
-
-using SizeF = System.Drawing.SizeF;
 using Path = System.IO.Path;
+using SizeF = System.Drawing.SizeF;
 
 namespace ProjectMGG.Ingame
 {
@@ -49,6 +47,7 @@ namespace ProjectMGG.Ingame
         public Interpreter Interpreter;
 
         public Dictionary<string, RawImage> ImageChild { get; private set; } = new Dictionary<string, RawImage>(); //key: gameobject's name, cached & using on show
+        public List<Tuple<string, string>> Histories = new List<Tuple<string, string>>(); //same as Text Log (first: character name, second: dialog text)
 
         private List<TextTag> _textTags = new List<TextTag>();
         [SerializeField] private List<string> _textTagsDebug;
@@ -81,6 +80,7 @@ namespace ProjectMGG.Ingame
         public RawImage NameBackgroundUI;
         public TextMeshProUGUI ContentUI;
         public RawImage CharacterSample;
+        public RawImage DownArrow;
 
         public bool WindowAuto = true;
         #endregion
@@ -129,6 +129,7 @@ namespace ProjectMGG.Ingame
             Locals = new Dictionary<string, VariableCollection>();
             Global = new VariableCollection();
             DefaultEase = ParseEaseFromString(SettingsManager.Settings.UI.TextEase);
+            Histories.Clear();
 
             //Script
             PauseManager.Clear();
@@ -145,6 +146,7 @@ namespace ProjectMGG.Ingame
             NameUI.text = "";
             NameBackgroundUI.enabled = false;
             ContentUI.text = "";
+            DownArrow.enabled = false;
             CanvasDefault.alpha = 0f;
             Tween.Custom(0f, 1f, 1f, x => CanvasDefault.alpha = x, Ease.InSine);
         }
@@ -335,13 +337,14 @@ namespace ProjectMGG.Ingame
             ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 1939.294f);
             ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 301.8214f);
             CheckWindowAuto();
+            DownArrow.enabled = false;
 
             StartCoroutine(ProcessText(content));
 
             _goToNext = false;
         }
 
-        public void LetsNarrationImmediate(string content)
+        public void LetsNarrationImmediate(string content, bool isMenu = false)
         {
             NameUI.text = string.Empty;
             NameBackgroundUI.enabled = false;
@@ -350,8 +353,9 @@ namespace ProjectMGG.Ingame
             ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 1939.294f);
             ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 301.8214f);
             CheckWindowAuto();
+            DownArrow.enabled = false;
 
-            ProcessTextImmediate(content);
+            ProcessTextImmediate(content, !isMenu);
 
             _goToNext = false;
         }
@@ -381,7 +385,7 @@ namespace ProjectMGG.Ingame
             ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 1349.591f);
             ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 301.8214f);
 
-            StartCoroutine(ProcessText(content));
+            StartCoroutine(ProcessText(content, chrName));
 
             _goToNext = false;
         }
@@ -389,7 +393,7 @@ namespace ProjectMGG.Ingame
         /// <summary>
         /// Supports the Text Tag
         /// </summary>
-        private IEnumerator ProcessText(string text)
+        private IEnumerator ProcessText(string text, string chrName = "")
         {
             bool completed = false;
             bool skipNext = false;
@@ -441,13 +445,16 @@ namespace ProjectMGG.Ingame
                 if (!completed) yield return null;
                 if (completed && _readAll) ContentUI.maxVisibleCharacters = _maxAllTextLength;
             }
+
             _readAll = true;
+            ShowDownArrow(); //UI
+            if (!string.IsNullOrWhiteSpace(ContentUI.text)) Histories.Add(Tuple.Create(chrName, ContentUI.text)); //History
         }
 
         /// <summary>
         /// without Text Typing effect
         /// </summary>
-        private void ProcessTextImmediate(string text)
+        private void ProcessTextImmediate(string text, bool showDownArrow = true, string chrName = "")
         {
             bool completed = false;
             TextTagOption option = new TextTagOption();
@@ -460,9 +467,12 @@ namespace ProjectMGG.Ingame
             {
                 LetsTextTag(ContentUI, _textTags, ref _tagIndex, out completed, option);
             }
+
             ContentUI.maxVisibleCharacters = ContentUI.text.Length;
             _maxAllTextLength = text.Length;
             _readAll = true;
+            if (showDownArrow) ShowDownArrow(); //UI
+            if (!string.IsNullOrWhiteSpace(ContentUI.text)) Histories.Add(Tuple.Create(chrName, ContentUI.text)); //History
         }
 
         private void ProcessDialogName(Character chr)
@@ -804,6 +814,21 @@ namespace ProjectMGG.Ingame
         {
             if (PauseManager.Paused && string.IsNullOrEmpty(NameUI.text) && string.IsNullOrEmpty(ContentUI.text)) return;
             if (CanvasDialogUI.alpha == 0f) LetsWindow(true, null, true);
+        }
+
+        private void ShowDownArrow()
+        {
+            var id = Guid.NewGuid().ToString();
+            
+            DownArrow.enabled = true;
+            Tween.Custom(id, 0f, 0.5f, 1f, (id, x) => {
+                if (_readAll && DownArrow.enabled && !PauseManager.Paused) DownArrow.color = new Color(DownArrow.color.r, DownArrow.color.g, DownArrow.color.b, x);
+                else
+                {
+                    DownArrow.enabled = false;
+                    if (!PauseManager.Paused) Tween.StopAll(id);
+                }
+            }, Ease.InOutSine, -1, CycleMode.Yoyo);
         }
         #endregion
         #region Images
