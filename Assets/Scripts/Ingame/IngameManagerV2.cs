@@ -73,8 +73,14 @@ namespace ProjectMGG.Ingame
         public const int SCREEN_WIDTH = 2560;
         public const int SCREEN_HEIGHT = 1440;
 
-        public CanvasGroup CanvasDefault; ///Screen
-        public CanvasGroup CanvasDialogUI;
+        public GameObject CanvasDefault;
+        public GameObject CanvasMenu; //Pause Menu
+
+        public GameObject MenuUI;
+
+        public CanvasGroup CanvasDefaultGroup; ///Screen
+        public CanvasGroup CanvasDialogUIGroup;
+        public CanvasGroup MenuUIGroup;
 
         public TextMeshProUGUI NameUI;
         public RawImage NameBackgroundUI;
@@ -100,7 +106,7 @@ namespace ProjectMGG.Ingame
         void Awake()
         {
             // Get both of the components we need to do this
-            _raycaster = GetComponent<GraphicRaycaster>();
+            _raycaster = CanvasDefault.GetComponent<GraphicRaycaster>();
             if (TextureDefault == null) TextureDefault = Texture2D.grayTexture;
         }
 
@@ -147,8 +153,8 @@ namespace ProjectMGG.Ingame
             NameBackgroundUI.enabled = false;
             ContentUI.text = "";
             DownArrow.enabled = false;
-            CanvasDefault.alpha = 0f;
-            Tween.Custom(0f, 1f, 1f, x => CanvasDefault.alpha = x, Ease.InSine);
+            CanvasDefaultGroup.alpha = 0f;
+            Tween.Custom(0f, 1f, 1f, x => CanvasDefaultGroup.alpha = x, Ease.InSine);
         }
 
         private IEnumerator InitializeScript()
@@ -215,7 +221,8 @@ namespace ProjectMGG.Ingame
             #region Hotkeys
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                GoHome();
+                if (Focused) ShowMenu();
+                else HideMenu();
             }
             else if (Input.GetKeyDown(KeyCode.Space)) downType = ClickType.Dialog;
             #endregion
@@ -292,7 +299,7 @@ namespace ProjectMGG.Ingame
                 else
                 {
                     //Story End
-                    GoHome();
+                    Main();
                 }
             }
 
@@ -795,8 +802,8 @@ namespace ProjectMGG.Ingame
 
                 if (transition is Dissolve dissolve)
                 {
-                    if (show) Tween.Alpha(CanvasDialogUI, 0f, 1f, dissolve.GetPauseTime(), Ease.OutSine);
-                    else Tween.Alpha(CanvasDialogUI, 1f, 0f, dissolve.GetPauseTime(), Ease.InSine);
+                    if (show) Tween.Alpha(CanvasDialogUIGroup, 0f, 1f, dissolve.GetPauseTime(), Ease.OutSine);
+                    else Tween.Alpha(CanvasDialogUIGroup, 1f, 0f, dissolve.GetPauseTime(), Ease.InSine);
                 }
                 else
                 {
@@ -805,15 +812,15 @@ namespace ProjectMGG.Ingame
             }
             else
             {
-                if (show) CanvasDialogUI.alpha = 1f;
-                else CanvasDialogUI.alpha = 0f;
+                if (show) CanvasDialogUIGroup.alpha = 1f;
+                else CanvasDialogUIGroup.alpha = 0f;
             }
         }
 
         private void CheckWindowAuto()
         {
             if (PauseManager.Paused && string.IsNullOrEmpty(NameUI.text) && string.IsNullOrEmpty(ContentUI.text)) return;
-            if (CanvasDialogUI.alpha == 0f) LetsWindow(true, null, true);
+            if (CanvasDialogUIGroup.alpha == 0f) LetsWindow(true, null, true);
         }
 
         private void ShowDownArrow()
@@ -859,6 +866,8 @@ namespace ProjectMGG.Ingame
             if (show.IsScene) //already adding image object to list (issue #18)
             {
                 var canvasImage = this.transform.Find("CanvasImage");
+
+                if (canvasImage == null) Debug.Log("WHY");
 
                 foreach (Transform child in canvasImage)
                 {
@@ -1045,7 +1054,7 @@ namespace ProjectMGG.Ingame
 
                 if (IsSkipping) //No delay
                 {
-                    CanvasDefault.alpha = 1f;
+                    CanvasDefaultGroup.alpha = 1f;
                     showAction?.Invoke();
                     yield break;
                 }
@@ -1056,14 +1065,14 @@ namespace ProjectMGG.Ingame
 
                 yield return Tween.Custom(1f, 0f, outTime, x =>
                 {
-                    CanvasDefault.alpha = x;
+                    CanvasDefaultGroup.alpha = x;
                 }, Ease.OutCubic).ToYieldInstruction();
 
                 showAction?.Invoke();
                 yield return Tween.Delay(holdTime).ToYieldInstruction();
                 yield return Tween.Custom(0f, 1f, inTime, x =>
                 {
-                    CanvasDefault.alpha = x;
+                    CanvasDefaultGroup.alpha = x;
                 }, Ease.InCubic).ToYieldInstruction();
             }
         }
@@ -1739,9 +1748,78 @@ namespace ProjectMGG.Ingame
         }
         #endregion
         #region UI: Button Events
-        public void GoHome()
+        public void ShowMenu()
         {
-            SceneManager.LoadScene("MainMenu");
+            float duration = 0.7f;
+            Ease ease = Ease.OutExpo;
+
+            //Default
+            Vector3 position = new Vector3(-250, 130);
+            Tween.Scale(this.transform, 0.77f, duration, ease)
+                .Group(Tween.LocalPosition(this.transform, position, duration, ease));
+
+            Pause pause = Pause.GetInfinity(true);
+            pause.ActionAfter = () => { _goToNext = false; };
+            PauseManager.Add(pause);
+            Focused = false;
+
+            //Menu UI
+            Vector3 positionMenuStart = new Vector3(1150, 200);
+            Vector3 positionMenuEnd = new Vector3(950, 550);
+            Tween.LocalPosition(MenuUI.transform, positionMenuStart, positionMenuEnd, duration, ease)
+                .Group(Tween.Custom(0f, 1f, duration, x => { MenuUIGroup.alpha = x; }, ease));
+            CanvasMenu.SetActive(true);
+        }
+
+        public void HideMenu()
+        {
+            float duration = 0.7f;
+            Ease ease = Ease.OutExpo;
+
+            //Default
+            Vector3 position = new Vector3(0, 0);
+            Tween.Scale(this.transform, 1f, duration, ease)
+                .Group(Tween.LocalPosition(this.transform, position, duration, ease));
+
+            Focused = true;
+            _goToNext = false;
+            PauseManager.Remove(true);
+
+            //Menu UI
+            Vector3 positionMenu = new Vector3(1150, 200);
+            Tween.LocalPosition(MenuUI.transform, positionMenu, duration, ease)
+                .Group(Tween.Custom(1f, 0f, duration, x => { MenuUIGroup.alpha = x; }, ease));
+                //.OnComplete(() => { CanvasMenu.SetActive(false); }); //uncomment this if something went wrong about Menu UI (switch flickering issue)
+        }
+
+        public void Return()
+        {
+            HideMenu();
+        }
+
+        public void History()
+        {
+
+        }
+
+        public static void Settings(GameObject prefab)
+        {
+            Instantiate(prefab);
+        }
+
+        public void SettingsIngame()
+        {
+            Settings(this.gameObject);
+        }
+
+        public void Main()
+        {
+            SceneManager.LoadScene("NameSelect"); //MainMenu
+        }
+
+        public void Quit()
+        {
+            Application.Quit();
         }
         #endregion
 

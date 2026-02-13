@@ -138,7 +138,7 @@ namespace ProjectMGG
 
         public void Settings()
         {
-
+            IngameManagerV2.Settings(null);
         }
 
         public void Exit()
