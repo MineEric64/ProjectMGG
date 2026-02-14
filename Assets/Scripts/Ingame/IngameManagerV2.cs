@@ -96,6 +96,7 @@ namespace ProjectMGG.Ingame
         #region FX
         public PostProcessVolume FxVolume;
         private DepthOfField FxBlur;
+        private ColorGrading FxColorGrading;
         #endregion
         #endregion
         #region Text & UI
@@ -166,6 +167,7 @@ namespace ProjectMGG.Ingame
 
             //UI: FX
             FxVolume.profile.TryGetSettings(out FxBlur);
+            FxVolume.profile.TryGetSettings(out FxColorGrading);
         }
 
         private IEnumerator InitializeScript()
@@ -1768,7 +1770,11 @@ namespace ProjectMGG.Ingame
             Vector3 position = new Vector3(-250, 130);
             Tween.Scale(this.transform, 0.77f, duration, ease)
                 .Group(Tween.LocalPosition(this.transform, position, duration, ease));
-            Tween.Custom(10f, 0.1f, duration, x => { FxBlur.focusDistance.value = x; }, ease);
+
+            float fxBlurStart = FxBlur.focusDistance.value; //default: 10f
+            float fxColorGradingStart = FxColorGrading.saturation.value; //default: 0f
+            Tween.Custom(fxBlurStart, 4f, duration, x => { FxBlur.focusDistance.value = x; }, ease)
+                .Group(Tween.Custom(fxColorGradingStart, -100f, duration, x => { FxColorGrading.saturation.value = x; }, ease));
 
             Pause pause = Pause.GetInfinity(true);
             pause.ActionAfter = () => { _goToNext = false; };
@@ -1792,6 +1798,11 @@ namespace ProjectMGG.Ingame
             Vector3 position = new Vector3(0, 0);
             Tween.Scale(this.transform, 1f, duration, ease)
                 .Group(Tween.LocalPosition(this.transform, position, duration, ease));
+
+            float fxBlurStart = FxBlur.focusDistance.value; //default: 4f
+            float fxColorGradingStart = FxColorGrading.saturation.value; //default: -100f
+            Tween.Custom(fxBlurStart, 10f, duration, x => { FxBlur.focusDistance.value = x; }, ease)
+                .Group(Tween.Custom(fxColorGradingStart, 0f, duration, x => { FxColorGrading.saturation.value = x; }, ease));
 
             Focused = true;
             _goToNext = false;
