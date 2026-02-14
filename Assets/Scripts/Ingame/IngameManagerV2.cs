@@ -1787,6 +1787,11 @@ namespace ProjectMGG.Ingame
             Tween.LocalPosition(MenuUI.transform, positionMenuStart, positionMenuEnd, duration, ease)
                 .Group(Tween.Custom(0f, 1f, duration, x => { MenuUIGroup.alpha = x; }, ease));
             CanvasMenu.SetActive(true);
+
+            //Audio
+            var lowpass = MusicPlayer.GetComponent<AudioLowPassFilter>();
+            lowpass.enabled = true;
+            Tween.Custom(15000f, 300f, 0.5f, x => lowpass.cutoffFrequency = x, ease);
         }
 
         public void HideMenu()
@@ -1813,6 +1818,11 @@ namespace ProjectMGG.Ingame
             Tween.LocalPosition(MenuUI.transform, positionMenu, duration, ease)
                 .Group(Tween.Custom(1f, 0f, duration, x => { MenuUIGroup.alpha = x; }, ease));
                 //.OnComplete(() => { CanvasMenu.SetActive(false); }); //uncomment this if something went wrong about Menu UI (switch flickering issue)
+
+            //Audio
+            var lowpass = MusicPlayer.GetComponent<AudioLowPassFilter>();
+            float lowpassStart = lowpass.cutoffFrequency; //default: 300f
+            Tween.Custom(lowpassStart, 15000f, 0.5f, x => lowpass.cutoffFrequency = x, Ease.InQuad).OnComplete(() => { lowpass.enabled = false; }); //Optimized Ease: InSine or InQuad
         }
 
         public void Return()
