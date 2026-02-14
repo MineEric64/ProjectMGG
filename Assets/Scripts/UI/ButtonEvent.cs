@@ -35,6 +35,7 @@ namespace ProjectMGG.UI
         public UnityEvent onClick;
         public UnityEvent<TextMeshProUGUI> onHover;
         public UnityEvent<TextMeshProUGUI> onExit;
+        public bool IgnoreEvent { get; set; } = false;
 
         public CanvasGroup canvas;
         TextMeshProUGUI buttonText;
@@ -48,6 +49,8 @@ namespace ProjectMGG.UI
 
         public void OnPointerEnter(PointerEventData eventData)
         {
+            if (IgnoreEvent) return;
+
             if (haveToTextGlow)
             {
                 currentTextGlowColor = new Color32(0, 0, 0, 100);
@@ -71,6 +74,8 @@ namespace ProjectMGG.UI
 
         public void OnPointerExit(PointerEventData eventData)
         {
+            if (IgnoreEvent) return;
+
             if (haveToTextGlow)
             {
                 currentTextGlowColor = new Color32(255, 255, 255, 100);
@@ -85,6 +90,8 @@ namespace ProjectMGG.UI
 
         public void OnPointerClick(PointerEventData eventData)
         {
+            if (IgnoreEvent) return;
+
             desiredColor = pressed;
             needToUpdate = true;
             needToFadeOut = true;

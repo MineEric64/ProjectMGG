@@ -80,6 +80,7 @@ namespace ProjectMGG.Ingame
         public GameObject CanvasMenu; //Pause Menu
 
         public GameObject MenuUI;
+        public MenuInput MenuUIInputManager;
 
         public CanvasGroup CanvasDefaultGroup; ///Screen
         public CanvasGroup CanvasDialogUIGroup;
@@ -165,6 +166,23 @@ namespace ProjectMGG.Ingame
             CanvasDefaultGroup.alpha = 0f;
             Tween.Custom(0f, 1f, 1f, x => CanvasDefaultGroup.alpha = x, Ease.InSine);
 
+            //UI: Menu
+            MenuUIInputManager = new MenuInput();
+            var menuParent = MenuUI.transform.Find("Menu");
+            int menuCount = menuParent.transform.childCount;
+
+            for (int i = 0; i < menuCount; i++)
+            {
+                var menu = menuParent.transform.GetChild(i);
+                var menuButton = menu.GetComponent<UI.ButtonEvent>();
+                int j = i; //Copied capture variable (thanks to Stack Overflow!)
+
+                menuButton.onHover.AddListener(text => { MenuUIOnHover(j, text); });
+                menuButton.onExit.AddListener(text => { MenuUIOnExit(j, text); });
+
+                MenuUIInputManager.AddMenuButton(menuButton);
+            }
+
             //UI: FX
             FxVolume.profile.TryGetSettings(out FxBlur);
             FxVolume.profile.TryGetSettings(out FxColorGrading);
@@ -244,7 +262,11 @@ namespace ProjectMGG.Ingame
             if (downType == ClickType.None) downType = GetMouseDownType();
 
             //If unfocused, change to None (for preventing click event overlapped)
-            if (!Focused) downType = ClickType.None;
+            if (!Focused)
+            {
+                downType = ClickType.None;
+                MenuUIInputManager?.UpdateForKeyboardInput(); //Menu
+            }
 
             //Text Handle
             if (ContentUI.text.Length == 0) _readAll = true;
@@ -1777,7 +1799,7 @@ namespace ProjectMGG.Ingame
                 .Group(Tween.Custom(fxColorGradingStart, -100f, duration, x => { FxColorGrading.saturation.value = x; }, ease));
 
             Pause pause = Pause.GetInfinity(true);
-            pause.ActionAfter = () => { _goToNext = false; };
+            //pause.ActionAfter = () => { _goToNext = false; };
             PauseManager.Add(pause);
             Focused = false;
 
@@ -1810,7 +1832,7 @@ namespace ProjectMGG.Ingame
                 .Group(Tween.Custom(fxColorGradingStart, 0f, duration, x => { FxColorGrading.saturation.value = x; }, ease));
 
             Focused = true;
-            _goToNext = false;
+            //_goToNext = false;
             PauseManager.Remove(true);
 
             //Menu UI
@@ -1827,12 +1849,13 @@ namespace ProjectMGG.Ingame
 
         public void Return()
         {
+            MenuUIInputManager.OnMouseClick();
             HideMenu();
         }
 
         public void History()
         {
-
+            MenuUIInputManager.OnMouseClick();
         }
 
         public static void Settings(GameObject prefab)
@@ -1842,17 +1865,38 @@ namespace ProjectMGG.Ingame
 
         public void SettingsIngame()
         {
+            MenuUIInputManager.OnMouseClick();
             Settings(this.gameObject);
         }
 
         public void Main()
         {
+            MenuUIInputManager.OnMouseClick();
             SceneManager.LoadScene("NameSelect"); //MainMenu
         }
 
         public void Quit()
         {
+            MenuUIInputManager.OnMouseClick();
             Application.Quit();
+        }
+
+        public void MenuUIOnHover(int index, TextMeshProUGUI text)
+        {
+            MenuUIInputManager.OnMouseHover(index);
+
+            float fontSizeStart = text.fontSize;
+            const float FONT_SIZE_BIG = 52.2f;
+            Tween.Custom(fontSizeStart, FONT_SIZE_BIG, 0.16f, x => { text.fontSize = x; }, Ease.OutQuad);
+        }
+
+        public void MenuUIOnExit(int index, TextMeshProUGUI text)
+        {
+            MenuUIInputManager.OnMouseExit(index);
+
+            float fontSizeStart = text.fontSize;
+            const float FONT_SIZE_DEFAULT = 50f;
+            Tween.Custom(fontSizeStart, FONT_SIZE_DEFAULT, 0.16f, x => { text.fontSize = x; }, Ease.OutQuad);
         }
         #endregion
 

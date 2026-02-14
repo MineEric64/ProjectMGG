@@ -19,11 +19,10 @@ namespace ProjectMGG.Ingame
         public GameObject Prefab;
         public Vector3 Offset = new Vector3(0, 0, 0);
         public bool Active { get; private set; } = false;
-        public bool Hover { get; private set; } = false;
 
+        private MenuInput _menuInput;
         private Menu _currentMenu = null;
-        private int _selectedMenuNumber = -1;
-        private List<ButtonEvent> _buttons = new List<ButtonEvent>();
+        private bool _ingameFocused = true;
 
         void Start()
         {
@@ -32,41 +31,20 @@ namespace ProjectMGG.Ingame
 
         void Update()
         {
-            if (Active)
+            if (_ingameFocused != IngameManagerV2.Instance.Focused) //toggle
             {
-                if (Input.GetKeyDown(KeyCode.DownArrow))
-                {
-                    if (_selectedMenuNumber >= 0) _buttons[_selectedMenuNumber].OnPointerExit(null);
-
-                    _selectedMenuNumber++;
-                    if (_selectedMenuNumber >= _currentMenu.Count) _selectedMenuNumber = 0;
-
-                    _buttons[_selectedMenuNumber].OnPointerEnter(null);
-                }
-                else if (Input.GetKeyDown(KeyCode.UpArrow))
-                {
-                    if (_selectedMenuNumber >= 0) _buttons[_selectedMenuNumber].OnPointerExit(null);
-
-                    if (_selectedMenuNumber == -1) _selectedMenuNumber = 1;
-                    _selectedMenuNumber--;
-                    if (_selectedMenuNumber < 0) _selectedMenuNumber = _currentMenu.Count - 1;
-
-                    _buttons[_selectedMenuNumber].OnPointerEnter(null);
-                }
-                else if (Hover && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))) //Space / Enter
-                {
-                    if (_selectedMenuNumber >= 0) OnClick(_selectedMenuNumber);
-                }
+                _ingameFocused = IngameManagerV2.Instance.Focused;
+                _menuInput?.SetButtonIgnoreEvent(!_ingameFocused);
             }
+            if (_ingameFocused && Active) _menuInput?.UpdateForKeyboardInput();
         }
 
         public void CreateMenu(Menu menu)
         {
             Active = true;
-            Hover = false;
             _currentMenu = menu;
-            _selectedMenuNumber = -1;
-            _buttons.Clear();
+            _menuInput = new MenuInput();
+            _ingameFocused = IngameManagerV2.Instance.Focused;
 
             Vector3 position = new Vector3(0f, 360f);
 
@@ -114,14 +92,14 @@ namespace ProjectMGG.Ingame
                 });
 
                 //Extra data
-                _buttons.Add(buttonEvent);
+                _menuInput.AddMenuButton(buttonEvent);
             }
 
             //Dialog Text
             string head = menu.Head;
             if (string.IsNullOrEmpty(head)) head = "하나를 선택하세요."; //TODO: translation
 
-            IngameManagerV2.Instance.LetsNarrationImmediate(head, false);
+            IngameManagerV2.Instance.LetsNarrationImmediate(head, true);
         }
 
         public void DeleteAllMenus()
@@ -131,14 +109,13 @@ namespace ProjectMGG.Ingame
                 Destroy(child.gameObject);
             }
             _currentMenu = null;
+            _menuInput = null;
             Active = false;
         }
 
         public void OnHover(int index, RectTransform rectTransform, TextMeshProUGUI textUI)
         {
-            if (_selectedMenuNumber >= 0 && _selectedMenuNumber != index) _buttons[_selectedMenuNumber].OnPointerExit(null);
-            _selectedMenuNumber = index;
-            Hover = true;
+            _menuInput.OnMouseHover(index);
 
             float widthStart = rectTransform.rect.width;
             float heightStart = rectTransform.rect.height;
@@ -154,7 +131,7 @@ namespace ProjectMGG.Ingame
 
         public void OnExit(int index, RectTransform rectTransform, TextMeshProUGUI textUI)
         {
-            Hover = false;
+            _menuInput.OnMouseExit(index);
 
             float widthStart = rectTransform.rect.width;
             float heightStart = rectTransform.rect.height;
@@ -170,6 +147,8 @@ namespace ProjectMGG.Ingame
 
         public void OnClick(int index)
         {
+            _menuInput.OnMouseClick(index);
+
             IngameManagerV2.Instance.CallInteriorBlock(_currentMenu.Blocks[index]);
             PauseManager.Remove(true);
             DeleteAllMenus();
