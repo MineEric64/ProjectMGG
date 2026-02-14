@@ -1639,6 +1639,7 @@ MonoBehaviour:
   CharacterSample: {fileID: 8649560694921746454, guid: 3daaf7c50de43a34e9f4654cd113a783, type: 3}
   DownArrow: {fileID: 1424455645}
   WindowAuto: 1
+  FxVolume: {fileID: 513591462}
 --- !u!1 &922029963
 GameObject:
   m_ObjectHideFlags: 0

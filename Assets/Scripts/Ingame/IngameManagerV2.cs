@@ -1,24 +1,27 @@
-using PrimeTween;
-using ProjectMGG.Ingame.Script;
-using ProjectMGG.Ingame.Script.Keywords.Renpy;
-using ProjectMGG.Ingame.Script.Keywords.Renpy.ATL;
-using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
-using ProjectMGG.Settings;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.ConstrainedExecution;
 using System.Text;
-using TMPro;
-using UnityEditor;
-using UnityEditor.Build;
+
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Networking;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+
+using TMPro;
+using PrimeTween;
+
+using ProjectMGG.Ingame.Script;
+using ProjectMGG.Ingame.Script.Keywords.Renpy;
+using ProjectMGG.Ingame.Script.Keywords.Renpy.ATL;
+using ProjectMGG.Ingame.Script.Keywords.Renpy.Transitions;
+using ProjectMGG.Settings;
+
 using Path = System.IO.Path;
 using SizeF = System.Drawing.SizeF;
 
@@ -89,6 +92,11 @@ namespace ProjectMGG.Ingame
         public RawImage DownArrow;
 
         public bool WindowAuto = true;
+
+        #region FX
+        public PostProcessVolume FxVolume;
+        private DepthOfField FxBlur;
+        #endregion
         #endregion
         #region Text & UI
         private GraphicRaycaster _raycaster;
@@ -155,6 +163,9 @@ namespace ProjectMGG.Ingame
             DownArrow.enabled = false;
             CanvasDefaultGroup.alpha = 0f;
             Tween.Custom(0f, 1f, 1f, x => CanvasDefaultGroup.alpha = x, Ease.InSine);
+
+            //UI: FX
+            FxVolume.profile.TryGetSettings(out FxBlur);
         }
 
         private IEnumerator InitializeScript()
@@ -1757,6 +1768,7 @@ namespace ProjectMGG.Ingame
             Vector3 position = new Vector3(-250, 130);
             Tween.Scale(this.transform, 0.77f, duration, ease)
                 .Group(Tween.LocalPosition(this.transform, position, duration, ease));
+            Tween.Custom(10f, 0.1f, duration, x => { FxBlur.focusDistance.value = x; }, ease);
 
             Pause pause = Pause.GetInfinity(true);
             pause.ActionAfter = () => { _goToNext = false; };
