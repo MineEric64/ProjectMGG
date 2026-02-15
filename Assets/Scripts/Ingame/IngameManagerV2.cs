@@ -432,7 +432,7 @@ namespace ProjectMGG.Ingame
             ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 1349.591f);
             ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 301.8214f);
 
-            StartCoroutine(ProcessText(content, chrName));
+            StartCoroutine(ProcessText(content, NameUI.text));
 
             _goToNext = false;
         }
@@ -880,7 +880,7 @@ namespace ProjectMGG.Ingame
 
         private void AddDialogHistory(string chrName, string text)
         {
-            Histories.Add(Tuple.Create(chrName, ContentUI.text));
+            Histories.Add(Tuple.Create(chrName, text));
 
             //Apply to UI
             HistoryManager.Add(chrName, text);
