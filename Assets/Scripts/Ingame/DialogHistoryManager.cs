@@ -8,6 +8,9 @@ namespace ProjectMGG.Ingame
     {
         public GameObject Prefab;
         public RawImage Background;
+        public Vector3 PositionFirst = new Vector3(-830, 380);
+        public Vector3 Offset = new Vector3(0, -50, 0);
+        public int Count { get; private set; } = 0;
 
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
@@ -25,6 +28,12 @@ namespace ProjectMGG.Ingame
             else nameUI.gameObject.SetActive(false);
 
             contentUI.text = dialogText;
+
+            Vector3 position = PositionFirst + Count * Offset;
+            position = new Vector3(position.x, position.y - contentUI.preferredHeight, position.z);
+            child.transform.localPosition = position;
+
+            Count++;
         }
     }
 }

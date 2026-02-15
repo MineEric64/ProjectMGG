@@ -1868,14 +1868,14 @@ namespace ProjectMGG.Ingame
 
         public void HistoryShow()
         {
-            Tween.Custom(0f, 1f, 0.5f, x => { CanvasHistoryGroup.alpha = x; }, Ease.OutSine);
+            Tween.Custom(0f, 1f, 0.3f, x => { CanvasHistoryGroup.alpha = x; }, Ease.OutSine);
             CanvasHistoryGroup.gameObject.SetActive(true);
             MenuUIInputManager.OnMouseClick();
         }
 
         public void HistoryClose()
         {
-            Tween.Custom(1f, 0f, 0.5f, x => { CanvasHistoryGroup.alpha = x; }, Ease.OutSine)
+            Tween.Custom(1f, 0f, 0.3f, x => { CanvasHistoryGroup.alpha = x; }, Ease.OutSine)
                 .OnComplete(() => { CanvasHistoryGroup.gameObject.SetActive(false); });
         }
 

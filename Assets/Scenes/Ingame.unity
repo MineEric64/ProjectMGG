@@ -2275,7 +2275,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hover: {r: 0.9607843, g: 0.7647059, b: 0.36862746, a: 0.95}
-  exit: {r: 1, g: 1, b: 1, a: 1}
+  exit: {r: 0, g: 0, b: 0, a: 1}
   pressed: {r: 0, g: 0, b: 0, a: 1}
   colors: []
   updateTime: 0.2
@@ -3456,6 +3456,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProjectMGG.Ingame.DialogHistoryManager
   Prefab: {fileID: 2645214085022667939, guid: e37461c340874994ea2f6abef334e430, type: 3}
   Background: {fileID: 1721490240}
+  PositionFirst: {x: -830, y: 380, z: 0}
+  Offset: {x: 0, y: -50, z: 0}
 --- !u!1 &1998609194
 GameObject:
   m_ObjectHideFlags: 0
