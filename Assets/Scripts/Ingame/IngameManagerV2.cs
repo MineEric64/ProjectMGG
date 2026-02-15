@@ -79,11 +79,9 @@ namespace ProjectMGG.Ingame
         public GameObject CanvasDefault;
         public GameObject CanvasMenu; //Pause Menu
 
-        public GameObject MenuUI;
-        public MenuInput MenuUIInputManager;
-
         public CanvasGroup CanvasDefaultGroup; ///Screen
         public CanvasGroup CanvasDialogUIGroup;
+        public CanvasGroup CanvasHistoryGroup;
         public CanvasGroup MenuUIGroup;
 
         public TextMeshProUGUI NameUI;
@@ -93,6 +91,13 @@ namespace ProjectMGG.Ingame
         public RawImage DownArrow;
 
         public bool WindowAuto = true;
+
+        //Menu: Others
+        public GameObject MenuUI;
+        public MenuInput MenuUIInputManager;
+
+        //History
+        public DialogHistoryManager HistoryManager;
 
         #region FX
         public PostProcessVolume FxVolume;
@@ -490,7 +495,7 @@ namespace ProjectMGG.Ingame
 
             _readAll = true;
             ShowDownArrow(); //UI
-            if (!string.IsNullOrWhiteSpace(ContentUI.text)) Histories.Add(Tuple.Create(chrName, ContentUI.text)); //History
+            if (!string.IsNullOrWhiteSpace(ContentUI.text)) AddDialogHistory(chrName, ContentUI.text); //History
         }
 
         /// <summary>
@@ -514,7 +519,7 @@ namespace ProjectMGG.Ingame
             _maxAllTextLength = text.Length;
             _readAll = true;
             if (showDownArrow) ShowDownArrow(); //UI
-            if (!string.IsNullOrWhiteSpace(ContentUI.text)) Histories.Add(Tuple.Create(chrName, ContentUI.text)); //History
+            if (!string.IsNullOrWhiteSpace(ContentUI.text)) AddDialogHistory(chrName, ContentUI.text); //History
         }
 
         private void ProcessDialogName(Character chr)
@@ -871,6 +876,14 @@ namespace ProjectMGG.Ingame
                     if (!PauseManager.Paused) Tween.StopAll(id);
                 }
             }, Ease.InOutSine, -1, CycleMode.Yoyo);
+        }
+
+        private void AddDialogHistory(string chrName, string text)
+        {
+            Histories.Add(Tuple.Create(chrName, ContentUI.text));
+
+            //Apply to UI
+            HistoryManager.Add(chrName, text);
         }
         #endregion
         #region Images
@@ -1853,9 +1866,17 @@ namespace ProjectMGG.Ingame
             HideMenu();
         }
 
-        public void History()
+        public void HistoryShow()
         {
+            Tween.Custom(0f, 1f, 0.5f, x => { CanvasHistoryGroup.alpha = x; }, Ease.OutSine);
+            CanvasHistoryGroup.gameObject.SetActive(true);
             MenuUIInputManager.OnMouseClick();
+        }
+
+        public void HistoryClose()
+        {
+            Tween.Custom(1f, 0f, 0.5f, x => { CanvasHistoryGroup.alpha = x; }, Ease.OutSine)
+                .OnComplete(() => { CanvasHistoryGroup.gameObject.SetActive(false); });
         }
 
         public static void Settings(GameObject prefab)
