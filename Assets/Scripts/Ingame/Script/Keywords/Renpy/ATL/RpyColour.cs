@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
-
 using PrimeTween;
 
+using Color = UnityEngine.Color;
 using SizeF = System.Drawing.SizeF;
 
 namespace ProjectMGG.Ingame.Script.Keywords.Renpy.ATL
@@ -39,13 +39,7 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy.ATL
             }
             if (Value != null && Value.Interpret() is string value)
             {
-                Color color = Color.white;
-                bool converted = false;
-
-                converted = ColorUtility.TryParseHtmlString(value, out color);
-                if (!converted && !value.StartsWith('#')) converted = ColorUtility.TryParseHtmlString(string.Concat("#", value), out color); //Concat #
-
-                if (converted)
+                if (ConvertHexToColor(value, out Color color))
                 {
                     Color start = Texture.color;
                     ATLBlock.SmartTweenCustom(start, color, EaseDuration, x => { Texture.color = x; }, EaseKind, StartDelay, UpdateType.LateUpdate);
@@ -53,6 +47,17 @@ namespace ProjectMGG.Ingame.Script.Keywords.Renpy.ATL
                 else ExceptionManager.Throw($"Color Hex '{value}' parsing failed while interpreting 'colour' attribute in transform.", "Script/RpyColour", Line);
             }
             else ExceptionManager.Throw("Failed to interpret 'colour' attribute in transform. The value is null or not a number.", "Script/RpyColour", Line);
+        }
+
+        public static bool ConvertHexToColor(string value, out Color color)
+        {
+            color = Color.white;
+            bool converted = false;
+
+            converted = ColorUtility.TryParseHtmlString(value, out color);
+            if (!converted && !value.StartsWith('#')) converted = ColorUtility.TryParseHtmlString(string.Concat("#", value), out color); //Concat #
+
+            return converted;
         }
     }
 }

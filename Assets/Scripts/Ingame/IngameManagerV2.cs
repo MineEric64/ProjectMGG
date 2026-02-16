@@ -109,8 +109,8 @@ namespace ProjectMGG.Ingame
 
         #region FX
         public PostProcessVolume FxVolume;
-        private DepthOfField FxBlur;
-        private ColorGrading FxColorGrading;
+        public DepthOfField FxBlur;
+        public ColorGrading FxColorGrading;
         #endregion
         #endregion
         #region Text & UI
@@ -121,6 +121,7 @@ namespace ProjectMGG.Ingame
         public bool Focused { get; set; } = true;
         
         private bool _goToNext = true;
+        //private bool _goToNextPrevious = true; //used for Pause Menu
         private bool _readAll = false;
         private int _maxAllTextLength = 0; //used on set _readAll to true
         private int _maxTextLength = 0; //used on get _readAll
@@ -360,6 +361,43 @@ namespace ProjectMGG.Ingame
                         //pause.ActionAfter += () => { _goToNext = true; }; //whitelist
                         LetsPause(pause, true);
                     }
+                    else if (script is Comment comment) //Temporary Custom syntax
+                    {
+                        switch (comment.Content)
+                        {
+                            case "$speedup":
+                                {
+                                    float end = MusicPlayer.pitch + 0.01f;
+                                    Tween.AudioPitch(MusicPlayer, end, 10f, Ease.OutSine);
+                                    break;
+                                }
+
+                            case "$speeddown":
+                                {
+                                    float end = MusicPlayer.pitch - 0.01f;
+                                    Tween.AudioPitch(MusicPlayer, end, 6f, Ease.OutSine);
+                                    break;
+                                }
+
+                            case "$whitebalance_on":
+                                {
+                                    Tween.Custom(0f, -7f, 5f, x => FxColorGrading.temperature.value = x, Ease.OutSine);
+                                    break;
+                                }
+
+                            case "$whitebalance_off":
+                                {
+                                    Tween.Custom(-7f, 0f, 20f, x => FxColorGrading.temperature.value = x, Ease.InSine);
+                                    break;
+                                }
+
+                            case "$vpunch":
+                                {
+                                    Tween.ShakeLocalPosition(this.gameObject.transform, new Vector3(0f, 50f), 0.4f);
+                                    break;
+                                }
+                        }
+                    }
                 }
                 else //Story End
                 {
@@ -396,10 +434,8 @@ namespace ProjectMGG.Ingame
                 //For every result returned, output the name of the GameObject on the Canvas hit by the Ray
                 foreach (RaycastResult result in results)
                 {
-                    //Debug.Log(result.gameObject.name);
-                    return ClickType.Dialog;
+                    if (result.gameObject.name == "Content" && result.gameObject.transform.parent?.name == "MenuHamButton") return ClickType.None; //already registered in ButtonEvent
                     //TODO: if other button is touched, return 2~
-                    //if (result.gameObject.name == "DialogUI") return true;
                 }
 
                 return ClickType.Dialog;
@@ -906,7 +942,11 @@ namespace ProjectMGG.Ingame
             
             DownArrow.enabled = true;
             Tween.Custom(id, 0f, 0.5f, 1f, (id, x) => {
-                if (_readAll && DownArrow.enabled && !PauseManager.Paused) DownArrow.color = new Color(DownArrow.color.r, DownArrow.color.g, DownArrow.color.b, x);
+                if (_readAll && !PauseManager.Paused)
+                {
+                    if (!DownArrow.enabled) DownArrow.enabled = true;
+                    DownArrow.color = new Color(DownArrow.color.r, DownArrow.color.g, DownArrow.color.b, x);
+                }
                 else
                 {
                     DownArrow.enabled = false;
@@ -1414,15 +1454,38 @@ namespace ProjectMGG.Ingame
 
         public IEnumerator LetsFX(string name, string at)
         {
+            RpyTransform atTransform = null;
+            //string colorValue = string.Empty;
+
             if (!string.IsNullOrEmpty(at))
             {
-                var transform = GetVariable(at, ref Local.Transforms, ref Global.Transforms);
-                if (transform == null)
+                atTransform = GetVariable(at, ref Local.Transforms, ref Global.Transforms);
+                if (atTransform == null)
                 {
                     ExceptionManager.Throw($"The transform '{at}' variable doesn't exists while interpreting 'FX' statement.", "IngameManagerV2");
                     yield break;
                 }
+
+                //for finding colour (deprecated, if you don't use, remove it)
+                //for (int i = 0; i < atTransform.Blocks.Count; i++)
+                //{
+                //    var block = atTransform.Blocks[i];
+
+                //    for (int j = 0; j < block.Interior.Count; j++)
+                //    {
+                //        var interiorBlock = block.Interior[j];
+
+                //        if (interiorBlock is RpyColour colour && colour.Value != null && colour.Value.Interpret() is string value)
+                //        {
+                //            colorValue = value;
+                //            break;
+                //        }
+                //    }
+                //}
             }
+
+            //bool colorValueExisted = !string.IsNullOrWhiteSpace(colorValue);
+            string defaultColour = string.Empty;
 
             switch (name)
             {
@@ -1441,11 +1504,14 @@ namespace ProjectMGG.Ingame
                         frame.With.Transition = new Dissolve(0.16f);
                         frame.With.Pause = false;
 
+                        //defaultColour = "#313131";
+                        defaultColour = "#b0a3c9";
+
                         RpyTransform t1 = new RpyTransform();
                         ATLBlock a1 = new ATLBlock();
                         t1.Name = "$nc_circle1_t";
                         t1.IsGlobal = true;
-                        a1.Interior.Add(new RpyColour("#313131"));
+                        a1.Interior.Add(new RpyColour(defaultColour));
                         a1.Interior.Add(new RpyZoom(0.12f));
                         a1.Interior.Add(new RpyCenter(0.428f, true));
                         a1.Interior.Add(new RpyCenter(0.5f, false));
@@ -1456,7 +1522,7 @@ namespace ProjectMGG.Ingame
                         ATLBlock a2 = new ATLBlock();
                         t2.Name = "$nc_circle2_t";
                         t2.IsGlobal = true;
-                        a2.Interior.Add(new RpyColour("#313131"));
+                        a2.Interior.Add(new RpyColour(defaultColour));
                         a2.Interior.Add(new RpyZoom(0.12f));
                         a2.Interior.Add(new RpyCenter(0.498f, true));
                         a2.Interior.Add(new RpyCenter(0.5f, false));
@@ -1467,7 +1533,7 @@ namespace ProjectMGG.Ingame
                         ATLBlock a3 = new ATLBlock();
                         t3.Name = "$nc_circle3_t";
                         t3.IsGlobal = true;
-                        a3.Interior.Add(new RpyColour("#313131"));
+                        a3.Interior.Add(new RpyColour(defaultColour));
                         a3.Interior.Add(new RpyZoom(0.12f));
                         a3.Interior.Add(new RpyCenter(0.568f, true));
                         a3.Interior.Add(new RpyCenter(0.5f, false));
@@ -1478,21 +1544,21 @@ namespace ProjectMGG.Ingame
                         circle1.Tag = "$nc_circle1";
                         circle1.At = "$nc_circle1_t";
                         circle1.With = new With(false);
-                        circle1.With.Transition = new Dissolve(0.275f);
+                        circle1.With.Transition = new Dissolve(0.3f);
                         circle1.With.Pause = false;
 
                         Show circle2 = new Show();
                         circle2.Tag = "$nc_circle2";
                         circle2.At = "$nc_circle2_t";
                         circle2.With = new With(false);
-                        circle2.With.Transition = new Dissolve(0.275f);
+                        circle2.With.Transition = new Dissolve(0.3f);
                         circle2.With.Pause = false;
 
                         Show circle3 = new Show();
                         circle3.Tag = "$nc_circle3";
                         circle3.At = "$nc_circle3_t";
                         circle3.With = new With(false);
-                        circle3.With.Transition = new Dissolve(0.275f);
+                        circle3.With.Transition = new Dissolve(0.3f);
                         circle3.With.Pause = false;
 
                         yield return LetsShow(frame, false);
@@ -1507,7 +1573,7 @@ namespace ProjectMGG.Ingame
                             yield return b;
 
                             circle1.With = new With(false);
-                            circle1.With.Transition = new Dissolve(0.275f);
+                            circle1.With.Transition = new Dissolve(0.3f);
                             circle1.With.Pause = false;
                             circle2.With = null;
                             Coroutine c = StartCoroutine(LetsHide(circle1, false));
@@ -1519,7 +1585,7 @@ namespace ProjectMGG.Ingame
                             yield return e;
 
                             circle2.With = new With(false);
-                            circle2.With.Transition = new Dissolve(0.275f);
+                            circle2.With.Transition = new Dissolve(0.3f);
                             circle2.With.Pause = false;
                             circle3.With = null;
                             Coroutine f = StartCoroutine(LetsHide(circle2, false));
@@ -1531,7 +1597,7 @@ namespace ProjectMGG.Ingame
                             yield return h;
 
                             circle3.With = new With(false);
-                            circle3.With.Transition = new Dissolve(0.275f);
+                            circle3.With.Transition = new Dissolve(0.3f);
                             circle3.With.Pause = false;
                             if (i != 1) StartCoroutine(LetsHide(circle3, false));
                             else yield return LetsHide(circle3, false);
@@ -1548,6 +1614,8 @@ namespace ProjectMGG.Ingame
                         ApplyInternalImage("$nc_circle2", "images/fx_circle.png");
                         ApplyInternalImage("$nc_circle3", "images/fx_circle.png");
 
+                        defaultColour = "#313131";
+
                         Show frame = new Show();
                         frame.Tag = "$nc_frame";
                         frame.At = at;
@@ -1559,7 +1627,7 @@ namespace ProjectMGG.Ingame
                         ATLBlock a1 = new ATLBlock();
                         t1.Name = "$nc_circle1_t";
                         t1.IsGlobal = true;
-                        a1.Interior.Add(new RpyColour("#313131"));
+                        a1.Interior.Add(new RpyColour(defaultColour));
                         a1.Interior.Add(new RpyZoom(0.12f));
                         a1.Interior.Add(new RpyCenter(0.428f, true));
                         a1.Interior.Add(new RpyCenter(0.5f, false));
@@ -1570,7 +1638,7 @@ namespace ProjectMGG.Ingame
                         ATLBlock a2 = new ATLBlock();
                         t2.Name = "$nc_circle2_t";
                         t2.IsGlobal = true;
-                        a2.Interior.Add(new RpyColour("#313131"));
+                        a2.Interior.Add(new RpyColour(defaultColour));
                         a2.Interior.Add(new RpyZoom(0.12f));
                         a2.Interior.Add(new RpyCenter(0.498f, true));
                         a2.Interior.Add(new RpyCenter(0.5f, false));
@@ -1581,7 +1649,7 @@ namespace ProjectMGG.Ingame
                         ATLBlock a3 = new ATLBlock();
                         t3.Name = "$nc_circle3_t";
                         t3.IsGlobal = true;
-                        a3.Interior.Add(new RpyColour("#313131"));
+                        a3.Interior.Add(new RpyColour(defaultColour));
                         a3.Interior.Add(new RpyZoom(0.12f));
                         a3.Interior.Add(new RpyCenter(0.568f, true));
                         a3.Interior.Add(new RpyCenter(0.5f, false));
@@ -1592,21 +1660,21 @@ namespace ProjectMGG.Ingame
                         circle1.Tag = "$nc_circle1";
                         circle1.At = "$nc_circle1_t";
                         circle1.With = new With(false);
-                        circle1.With.Transition = new Dissolve(0.275f);
+                        circle1.With.Transition = new Dissolve(0.3f);
                         circle1.With.Pause = false;
 
                         Show circle2 = new Show();
                         circle2.Tag = "$nc_circle2";
                         circle2.At = "$nc_circle2_t";
                         circle2.With = new With(false);
-                        circle2.With.Transition = new Dissolve(0.275f);
+                        circle2.With.Transition = new Dissolve(0.3f);
                         circle2.With.Pause = false;
 
                         Show circle3 = new Show();
                         circle3.Tag = "$nc_circle3";
                         circle3.At = "$nc_circle3_t";
                         circle3.With = new With(false);
-                        circle3.With.Transition = new Dissolve(0.275f);
+                        circle3.With.Transition = new Dissolve(0.3f);
                         circle3.With.Pause = false;
 
                         yield return LetsShow(frame, false);
@@ -1619,7 +1687,7 @@ namespace ProjectMGG.Ingame
                         yield return b;
 
                         circle1.With = new With(false);
-                        circle1.With.Transition = new Dissolve(0.275f);
+                        circle1.With.Transition = new Dissolve(0.3f);
                         circle1.With.Pause = false;
                         circle2.With = null;
                         Coroutine c = StartCoroutine(LetsHide(circle1, false));
@@ -1631,7 +1699,7 @@ namespace ProjectMGG.Ingame
                         yield return e;
 
                         circle2.With = new With(false);
-                        circle2.With.Transition = new Dissolve(0.275f);
+                        circle2.With.Transition = new Dissolve(0.3f);
                         circle2.With.Pause = false;
                         circle3.With = null;
                         Coroutine f = StartCoroutine(LetsHide(circle2, false));
@@ -1643,7 +1711,7 @@ namespace ProjectMGG.Ingame
                         yield return h;
 
                         circle3.With = new With(false);
-                        circle3.With.Transition = new Dissolve(0.275f);
+                        circle3.With.Transition = new Dissolve(0.3f);
                         circle3.With.Pause = false;
                         yield return LetsHide(circle3, false);
 
@@ -1662,11 +1730,14 @@ namespace ProjectMGG.Ingame
                         var circles = new RawImage[8];
                         var circleShows = new Show[8];
                         var status = new int[8];
-                        var colorTable1 = new string[8] { "#E9EAEB", "#D2D4D6", "#D2D3D4", "#A7A9AB", "#919395", "#7D7C7F", "#4E4E50", "#4E4E50" };
-                        var colorTable2 = new Color[8] {
-                            new Color(0.914f, 0.918f, 0.922f), new Color(0.824f, 0.831f, 0.839f), new Color(0.824f, 0.827f, 0.831f), new Color(0.655f, 0.663f, 0.671f),
-                            new Color(0.569f, 0.576f, 0.584f), new Color(0.49f, 0.486f, 0.498f), new Color(0.306f, 0.306f, 0.314f), new Color(0.306f, 0.306f, 0.314f)
-                        };
+                        var colorTable1 = new string[8] { "#DCD3EE", "#CAC0DD", "#C2B8D5", "#A196B5", "#9186A6", "#887D9C", "#554D63", "#554D63" };
+                        //var colorTable1 = new string[8] { "#E9EAEB", "#D2D4D6", "#D2D3D4", "#A7A9AB", "#919395", "#7D7C7F", "#4E4E50", "#4E4E50" };
+                        var colorTable2 = new Color[8];
+                        for (int i = 0; i < colorTable2.Length; i++)
+                        {
+                            RpyColour.ConvertHexToColor(colorTable1[i], out Color color);
+                            colorTable2[i] = color;
+                        }
 
                         Show parentShow = new Show();
                         parentShow.Tag = "$lc_blank";
@@ -1747,11 +1818,14 @@ namespace ProjectMGG.Ingame
                         var circles = new RawImage[8];
                         var circleShows = new Show[8];
                         var status = new int[8];
-                        var colorTable1 = new string[8] { "#E9EAEB", "#D2D4D6", "#D2D3D4", "#A7A9AB", "#919395", "#7D7C7F", "#4E4E50", "#4E4E50" };
-                        var colorTable2 = new Color[8] {
-                            new Color(0.914f, 0.918f, 0.922f), new Color(0.824f, 0.831f, 0.839f), new Color(0.824f, 0.827f, 0.831f), new Color(0.655f, 0.663f, 0.671f),
-                            new Color(0.569f, 0.576f, 0.584f), new Color(0.49f, 0.486f, 0.498f), new Color(0.306f, 0.306f, 0.314f), new Color(0.306f, 0.306f, 0.314f)
-                        };
+                        var colorTable1 = new string[8] { "#DCD3EE", "#CAC0DD", "#C2B8D5", "#A196B5", "#9186A6", "#887D9C", "#554D63", "#554D63" };
+                        //var colorTable1 = new string[8] { "#E9EAEB", "#D2D4D6", "#D2D3D4", "#A7A9AB", "#919395", "#7D7C7F", "#4E4E50", "#4E4E50" };
+                        var colorTable2 = new Color[8];
+                        for (int i = 0; i < colorTable2.Length; i++)
+                        {
+                            RpyColour.ConvertHexToColor(colorTable1[i], out Color color);
+                            colorTable2[i] = color;
+                        }
 
                         ApplyInternalImage("$lc_frame", "images/fx_nc_frame.png");
 
@@ -1867,9 +1941,10 @@ namespace ProjectMGG.Ingame
             Tween.Custom(fxBlurStart, 4f, duration, x => { FxBlur.focusDistance.value = x; }, ease)
                 .Group(Tween.Custom(fxColorGradingStart, -100f, duration, x => { FxColorGrading.saturation.value = x; }, ease));
 
-            Pause pause = Pause.GetInfinity(true);
-            //pause.ActionAfter = () => { _goToNext = false; };
-            PauseManager.Add(pause);
+            //Pause is commented because of overlapping GoToNext, so if this code isn't being used, delete it (deprecated)
+            //Pause pause = Pause.GetInfinity(true);
+            //pause.ActionAfter = () => { _goToNextPrevious = _goToNext; _goToNext = false; };
+            //PauseManager.Add(pause);
             Focused = false;
             GameStatus = GameUIStatus.Menu;
 
@@ -1881,9 +1956,15 @@ namespace ProjectMGG.Ingame
             CanvasMenu.SetActive(true);
 
             //Audio
-            var lowpass = MusicPlayer.GetComponent<AudioLowPassFilter>();
-            lowpass.enabled = true;
-            Tween.Custom(15000f, 300f, 0.5f, x => lowpass.cutoffFrequency = x, ease);
+            var lowpassMusic = MusicPlayer.GetComponent<AudioLowPassFilter>();
+            var lowpassSound = SoundPlayer.GetComponent<AudioLowPassFilter>();
+
+            lowpassMusic.enabled = true;
+            lowpassSound.enabled = true;
+            Tween.Custom(15000f, 300f, 0.5f, x => {
+                lowpassMusic.cutoffFrequency = x;
+                lowpassSound.cutoffFrequency = x;
+            }, ease);
         }
 
         public void MenuClose()
@@ -1901,9 +1982,9 @@ namespace ProjectMGG.Ingame
             Tween.Custom(fxBlurStart, 10f, duration, x => { FxBlur.focusDistance.value = x; }, ease)
                 .Group(Tween.Custom(fxColorGradingStart, 0f, duration, x => { FxColorGrading.saturation.value = x; }, ease));
 
-            Focused = true;
-            //_goToNext = false;
-            PauseManager.Remove(true);
+            //PauseManager.RemoveImmediate(true);
+            _goToNext = false;
+            Focused = true; //Focused variable needs to be late init because of PauseManager & _goToNext (about Pause ActionAfter Not working issue)
             GameStatus = GameUIStatus.Ingame;
 
             //Menu UI
@@ -1913,9 +1994,13 @@ namespace ProjectMGG.Ingame
                 //.OnComplete(() => { CanvasMenu.SetActive(false); }); //uncomment this if something went wrong about Menu UI (switch flickering issue)
 
             //Audio
-            var lowpass = MusicPlayer.GetComponent<AudioLowPassFilter>();
-            float lowpassStart = lowpass.cutoffFrequency; //default: 300f
-            Tween.Custom(lowpassStart, 15000f, 0.5f, x => lowpass.cutoffFrequency = x, Ease.InQuad).OnComplete(() => { lowpass.enabled = false; }); //Optimized Ease: InSine or InQuad
+            var lowpassMusic = MusicPlayer.GetComponent<AudioLowPassFilter>();
+            var lowpassSound = SoundPlayer.GetComponent<AudioLowPassFilter>();
+
+            float lowpassMusicStart = lowpassMusic.cutoffFrequency; //default: 300f
+            float lowpassSoundStart = lowpassSound.cutoffFrequency; //Optimized Ease: InSine or InQuad
+            Tween.Custom(lowpassMusicStart, 15000f, 0.5f, x => lowpassMusic.cutoffFrequency = x, Ease.InQuad).OnComplete(() => { lowpassMusic.enabled = false; });
+            Tween.Custom(lowpassSoundStart, 15000f, 0.5f, x => lowpassSound.cutoffFrequency = x, Ease.InQuad).OnComplete(() => { lowpassSound.enabled = false; });
         }
 
         public void Return()

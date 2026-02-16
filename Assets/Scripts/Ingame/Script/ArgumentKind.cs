@@ -59,6 +59,7 @@ namespace ProjectMGG.Ingame.Script
         [KindAttr("yanchor")] Yanchor,
         [KindAttr("zoom")] Zoom,
         [KindAttr("repeat")] Repeat,
+        [KindAttr("blur")] Blur,
         [KindAttr("colour", true)] Colour,
         // More at ParseTransform() in Parser.cs
 

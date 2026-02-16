@@ -699,6 +699,18 @@ namespace ProjectMGG.Ingame.Script
                             break;
                         }
 
+                    case ArgumentKind.Blur:
+                        {
+                            SkipCurrent();
+
+                            var atl = new RpyBlur();
+                            atl.Line = _tokens[_index].Line;
+                            atl.Value = ParseExpression();
+                            block.Interior.Add(atl);
+
+                            break;
+                        }
+
                     //Custom syntax
                     case ArgumentKind.Colour:
                         {

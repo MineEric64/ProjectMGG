@@ -40,7 +40,7 @@ label start:
     show haru default at half_size
     "테스트"
     stop music fadeout 3.0
-    fx LC_FRAME at nc_test
+    fx NC at nc_test
     
 
     "1aaaaaaaaaaaa{p}2bbbbbbbb{p}3ccccccccccc{p}4ddddddddd"

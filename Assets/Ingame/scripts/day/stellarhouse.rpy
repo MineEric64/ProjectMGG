@@ -71,27 +71,41 @@ image home day = "images/bg_home_day_demo.png"
 image home night = "images/bg_home_night_demo.png"
 
 # 위치
+transform woowang:
+    xpos 0
+    ypos 0
+    blur 10
+    easein 4.0 blur 0
+
 transform haeun_center:
     zoom 0.66
     xcenter 0.5
-    ycenter 0.53
+    ycenter 0.55
 
 transform haeun_atl_left_to_center:
     zoom 0.66
     xcenter 0.35
-    ycenter 0.53
+    ycenter 0.55
     ease 0.33 xcenter 0.5
 
 transform haeun_left:
     zoom 0.66
     xcenter 0.35
-    ycenter 0.53
+    ycenter 0.55
 
 transform haeun_atl_center_to_left:
     zoom 0.66
     xcenter 0.5
-    ycenter 0.53
+    ycenter 0.55
     easeout 0.3 xcenter 0.35
+
+transform haeun_atl_unboxing:
+    zoom 0.66
+    xcenter 0.5
+    ycenter 0.55
+    easeout 0.25 ycenter 0.67
+    pause 0.3
+    easeout 0.25 ycenter 0.55
 
 transform yunseo_center:
     zoom 0.8
@@ -110,6 +124,43 @@ transform yunseo_nc:
     xpos 0.42
     ypos 0.3
 
+transform yunseo_atl_ehehe:
+    zoom 0.8
+    xcenter 0.5
+    ycenter 0.6
+    easeout 0.25 ycenter 0.57
+    pause 0.15
+    easeout 0.25 ycenter 0.6
+
+transform yunseo_atl_center_to_right:
+    zoom 0.8
+    xcenter 0.5
+    ycenter 0.6
+    easeout 1.2 xcenter 0.55
+
+transform yunseo_atl_right_to_center:
+    zoom 0.8
+    xcenter 0.55
+    ycenter 0.6
+    ease 1.5 xcenter 0.5
+
+transform yunseo_atl_down:
+    zoom 0.8
+    xcenter 0.5
+    ycenter 0.6
+    ease 0.5 ycenter 0.605
+
+transform yunseo_down:
+    zoom 0.8
+    xcenter 0.5
+    ycenter 0.605
+
+transform yunseo_atl_down_to_center:
+    zoom 0.8
+    xcenter 0.5
+    ycenter 0.605
+    ease 0.5 ycenter 0.6
+
 label start:
     "셰어하우스란··· 대체 어떤 곳일까."
     "그런 생각이 든 이유는 갑작스레 자취방을 비우게 됐기 때문이다."
@@ -124,8 +175,8 @@ label start:
     window hide
     play sound "audio/sfx_doorlock"
     pause 3.0 hard
-    # 장소: 거실 / Camera Lens Blur FX + Lens Flare FX가 2초 동안 서서히 사라진다
-    scene home day with Dissolve(2.0)
+    scene home day with Dissolve(2.0) at woowang
+    pause 0.5 hard
     window show
     player "우와······."
     "생활용품들이 가지런히 정돈된 거실."
@@ -244,7 +295,6 @@ label start:
             "내 말을 듣곤 하은이는 한 치의 망설임도 없이 단호하게 말을 꺼냈다."
             haeun "그냥. 너라면 솔직하게 말해줄 것 같아서."
             # 경멸한 표정을 짓는 하은의 캐릭터 CG, 얀데레 특유 표정 like [얀데레 경멸]
-            # 경멸할 때, 시선이 아래를 향하는 것도 나쁘지 않다. 적용해 보고 이상하면 폐기
             show haeun disgust4 at haeun_center
             haeun "다른 사람들은, 다 거짓말만 했거든."
             player "다른 사람들?"
@@ -263,12 +313,14 @@ label start:
             show haeun default1 at haeun_center
             "내 말이 끝나자 단호하게 이야기하는 하은."
             # 경멸한 표정을 짓는 하은의 캐릭터 CG, 얀데레 특유 표정 like [얀데레 경멸]
+            #$speeddown
             show haeun disgust1 at haeun_center
             haeun "그런 건 왜 물어보는 거야?"
             player "으응?"
             "···그런 눈으로 바라보니 하은이가 조금 무서워졌다."
             # 무심하면서도 호기심 있게 바라보는 하은의 캐릭터 CG로 바뀐다
             show haeun default1 at haeun_center
+            #$speedup
 
     "그때, 하은이는 내 앞에 놓인 수많은 박스를 보고 말을 이어나간다."
     show haeun happy1 at haeun_center
@@ -311,13 +363,16 @@ label start:
     show haeun happy1 at haeun_center
     haeun "응! 알겠어."
     play sound "audio/sfx_unboxing"
-    show haeun default1 at haeun_center
+    show haeun default1 at haeun_atl_unboxing
     pause 1.1 + 1.1
     "······ 그렇게 서로 조용히 짐을 정리하던 중, 문득 내 고개를 들었을 때."
     show haeun curious at haeun_center
     "하은이는 유난히 호기심 있는 표정으로 상자를 바라보고 있었다."
-    "그 상자에는 뭐, {cps=*0.5}특별한 건 {/cps}{cps=*0.3}딱히{/cps}{cps=*0.06}··· {/cps}{cps=*0.8}{size=+25}어!?{/size}{/cps}"
-    # TODO?: Music Speed up
+    #$speedup
+    #^temporary custom syntax, TODO: add a official syntax like 'play music at transform_name'
+    "그 상자에는 뭐, {cps=*0.5}특별한 건 {/cps}{cps=*0.3}딱히{/cps}{cps=*0.06}···{nw}"
+    #$vpunch
+    "그 상자에는 뭐, 특별한 건 딱히··· {fast}{cps=*0.8}{size=+25}어!?{/size}{/cps}"
     "팬티가 들어있는 속옷이 들어가 있다는 걸 깜빡했다!!"
     "절대로 하은이에게 보여줘선 안 돼!!"
     player "하, 하은아!! 미안한데 이 상자 말고, 다른 상자 열어줄래?!"
@@ -355,7 +410,7 @@ label start:
 
     menu:
         "왜?":
-            # TODO?: Music Speed down
+            #$speeddown
             # 눈이 내려가 자기 목걸이를 보는 하은의 캐릭터 CG, 이상하면 폐기
             show haeun anxioussuper at haeun_center
             window hide
@@ -367,7 +422,7 @@ label start:
             haeun "유리라서 더욱 의미 있을 것 같기도 하고."
 
         "너 지금 목걸이 쓰고 있는 거 아니야?":
-            # TODO?: Music Speed down
+            #$speeddown
             # 눈이 내려가 자기 목걸이를 보는 하은의 캐릭터 CG, 이상하면 폐기
             show haeun anxioussuper at haeun_center
             haeun "아, 이거······."
@@ -423,7 +478,7 @@ label start:
     play sound "audio/sfx_simmer" volume 0.7 fadein 0.5
     pause 1.0
     # 입에 침이 고여있고 초롱초롱해진 눈으로 헤벌레 웃는 윤서의 캐릭터 CG
-    show yunseo a1 at yunseo_center
+    show yunseo a1 at yunseo_atl_ehehe
     pause 1.0
     window show
     "찌개를 휘저을 때마다··· 옆에서 자꾸만 인기척이 느껴진다."
@@ -454,11 +509,13 @@ label start:
     # 깜빡 잊고 있었다는 듯이 살짝 놀라는 윤서의 캐릭터 CG
     show yunseo embarrassed5 at yunseo_center
     yunseo "아! 으응."
-    show yunseo embarrassed8 at yunseo_center
+    show yunseo embarrassed8 at yunseo_atl_center_to_right
     "내 말을 듣곤 그제야 분주하게 움직이는 윤서."
     "···뭐 냄비받침이 바로 눈앞에 있어서 ‘분주하게’라고 말할 것까진 아니지만."
+    show yunseo embarrassed8 at yunseo_atl_right_to_center
+    pause 1.2
     play sound "audio/sfx_blunt"
-    pause 1.0
+    pause 0.3
     show yunseo embarrassed2 at yunseo_center
     "좋아, 윤서가 준 냄비받침에다 둔 뒤에 이제 먹으면······ 어라?"
     "정작 냄비를 뜰 수저가 없네."
@@ -468,8 +525,8 @@ label start:
     yunseo "으, 으응?"
     show yunseo embarrassed2 at yunseo_center
     window hide
-    # TODO?: SFX 구현할 때 N.C.도 SFX 넣는 게 어울릴지 고민해보기
-    # (+) N.C. 이후 ... 할 때 sfx_dazed2?
+    # SFX 구현할 때 N.C.도 SFX 넣는 게 어울릴지 고민해보기
+    # (+) N.C. 이후 ... 할 때 sfx_dazed2? => ㄴㄴ 안 어울림. (2026/2/16)
     fx NC at yunseo_nc
     pause 2.5 hard
     window show
@@ -536,29 +593,30 @@ label start:
     yunseo "오늘만큼은 교회 쉬는 날이거든."
     window hide
     pause 1.0
-    # TODO?: Music Speed down
+    #$speeddown
     # 생각 전에 말이 먼저 튀어나와 순간 당황한 윤서의 캐릭터 CG / 윤서 특유 불안 표정 + o_o
-    show yunseo a63 at yunseo_center
+    show yunseo a63 at yunseo_atl_ehehe
     window show
     "순간, 윤서의 하얀 얼굴이 붉게 달아오른다."
     player "응?"
     # 삐졌어요 그리고 놀랐어요 표정 / 소스라치게 놀라는 모습 참고 
-    show yunseo embarrassed54 at yunseo_center
+    show yunseo embarrassed54 at yunseo_atl_down
     yunseo "아, {sg=*0.93}그, 그ㅡ그게······.{/sg}"
-    show yunseo embarrassed55 at yunseo_center
+    show yunseo embarrassed55 at yunseo_down
     "윤서의 말끝이 흐려졌다."
     player "무슨 일이길래?" # or 뭐라고?
-    # 점차 차가워지는 조명, White Balance 조정하면 될 듯
-    show yunseo embarrassed3_blush3 at yunseo_center
+    show yunseo embarrassed3_blush3 at yunseo_down
     window hide
     fx LC_FRAME at yunseo_nc
     pause 2.2 hard
     window show
+    #$whitebalance_on
     yunseo "······."
     "아무래도 무슨 생각에 잠긴 듯한 모양이다."
     player "괜찮아, 천천히 이야기해도 돼."
-    show yunseo embarrassed1_blush at yunseo_center
+    show yunseo embarrassed1_blush at yunseo_atl_down_to_center
     "하지만 붉게 물든 윤서의 얼굴은 좀처럼 사라지지 않았다."
+    #$whitebalance_off
     "그런데 왜 나를 힐끔힐끔 보고 있는 걸까."
     "말로는 못 하겠지만 무언가 전하고 싶은 표정이었다."
     show yunseo embarrassed2_blush at yunseo_center
@@ -569,7 +627,7 @@ label start:
     "···그러다 국자에서 잠깐 손이 멈춘다."
     show yunseo embarrassed8 at yunseo_center
     "잠시 망설이는 게 느껴졌지만, 결심이 섰는지 결국 국자를 뜬다."
-    # 다시 천천히 따뜻해지는 조명
+    #$speedup
     show yunseo embarrassed2 at yunseo_center
     "그러곤 내 그릇에 김치찌개를··· 한가득 담아준다."
     show yunseo happy3 at yunseo_center
@@ -611,13 +669,13 @@ label start:
     "침대에서 일어나 곧장 거실로 발걸음을 옮겼다."
     window hide
     pause 1.5
-    scene home night with Dissolve(2.5) # TODO: 시간대가 새벽인 거실 배경
+    scene home night with Dissolve(2.5)
     pause 1.0
     window show
     "이렇게 어두운 거 보니 한창 새벽인 모양이야."
     # 이번엔 크게 나는 SFX, 4~8초마다 주기적으로 한 번씩 SFX 재생, 랜덤 이용
     "······그나저나 아까부터 이게 무슨 소리지?"
-    # 화면이 흔들리며, wiggle FX
+    #$vpunch
     "???" "으악!"
     "무언가 넘어지는 소리와 함께 짧은 비명이 났다."
     "아무래도 누가 다친 게 분명하다."
