@@ -20,6 +20,7 @@ namespace ProjectMGG
     {
         public TMP_InputField InputField;
         public UnityEvent<string> OnSubmit;
+        public GameObject CanvasSettings;
 
         private static CanvasGroup canvasGroup;
 
@@ -138,7 +139,7 @@ namespace ProjectMGG
 
         public void Settings()
         {
-            IngameManagerV2.Settings(null);
+            IngameManagerV2.Settings(CanvasSettings);
         }
 
         public void Exit()

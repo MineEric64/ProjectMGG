@@ -20,6 +20,7 @@ namespace ProjectMGG.Ingame.Script.Keywords
 
             if (Expression is Character character)
             {
+                character.VariableName = Name;
                 vars.Characters.Add(Name, character);
             }
             else

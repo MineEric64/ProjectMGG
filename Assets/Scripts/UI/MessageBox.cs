@@ -59,6 +59,8 @@ namespace ProjectMGG.UI
 
         private void ShowInternal(int image, string content, MessageButton button, string name, Guid uuid, UnityAction<MessageResult> onSubmit)
         {
+            if (Prefab == null) return; //not initialized yet
+
             Vector3 position = Prefab.transform.localPosition;
             var prefab = Instantiate(Prefab, transform);
             var text = prefab.transform.Find("Content").GetComponentInChildren<TextMeshProUGUI>();

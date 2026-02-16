@@ -1,7 +1,8 @@
 {
-    "ui": {
-        "cps": 25.0,
-        "text_ease": "Linear"
+    "ui":{
+        "fullscreen":true,
+        "cps":25,
+        "text_ease":"Linear"
     },
-    "debug": true
+    "debug":true
 }

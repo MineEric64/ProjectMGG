@@ -24,6 +24,7 @@ using ProjectMGG.Settings;
 
 using Path = System.IO.Path;
 using SizeF = System.Drawing.SizeF;
+using ProjectMGG.UI;
 
 namespace ProjectMGG.Ingame
 {
@@ -50,7 +51,7 @@ namespace ProjectMGG.Ingame
         public Interpreter Interpreter;
 
         public Dictionary<string, RawImage> ImageChild { get; private set; } = new Dictionary<string, RawImage>(); //key: gameobject's name, cached & using on show
-        public List<Tuple<string, string>> Histories = new List<Tuple<string, string>>(); //same as Text Log (first: character name, second: dialog text)
+        public List<Tuple<Character, string>> Histories = new List<Tuple<Character, string>>(); //same as Text Log (first: character, second: dialog text)
 
         private List<TextTag> _textTags = new List<TextTag>();
         [SerializeField] private List<string> _textTagsDebug;
@@ -78,10 +79,12 @@ namespace ProjectMGG.Ingame
 
         public GameObject CanvasDefault;
         public GameObject CanvasMenu; //Pause Menu
+        public GameObject CanvasSettings;
 
         public CanvasGroup CanvasDefaultGroup; ///Screen
         public CanvasGroup CanvasDialogUIGroup;
         public CanvasGroup CanvasHistoryGroup;
+        public CanvasGroup CanvasTheEnd;
         public CanvasGroup MenuUIGroup;
 
         public TextMeshProUGUI NameUI;
@@ -336,10 +339,20 @@ namespace ProjectMGG.Ingame
                         LetsPause(pause, true);
                     }
                 }
-                else
+                else //Story End
                 {
-                    //Story End
-                    Main();
+                    //Pause forever (for prevent overlapping execution)
+                    _goToNext = false;
+                    PauseManager.Add(Pause.GetInfinity(true));
+
+                    var chat1 = CanvasTheEnd.transform.Find("Background/chat1").GetComponent<TextMeshProUGUI>();
+                    chat1.text += PlayerName;
+                    CanvasTheEnd.gameObject.SetActive(true);
+                    Tween.Custom(0f, 1f, 3f, x => CanvasTheEnd.alpha = x, Ease.OutSine)
+                        .OnComplete(() => CanvasDefault.gameObject.SetActive(false));
+                    Tween.Custom(1f, 0f, 3f, x => CanvasTheEnd.alpha = x, Ease.OutSine, startDelay: 6f)
+                        .OnComplete(() => CanvasTheEnd.gameObject.SetActive(false));
+                    Tween.Delay(10f, Main);
                 }
             }
 
@@ -427,12 +440,12 @@ namespace ProjectMGG.Ingame
 
             CheckWindowAuto();
 
-            ProcessDialogName(chr);
+            ProcessDialogName(chr, NameUI, true);
             ContentUI.transform.localPosition = new Vector3(45.9257f, -22.304f, ContentUI.transform.position.z);
             ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 1349.591f);
             ContentUI.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 301.8214f);
 
-            StartCoroutine(ProcessText(content, NameUI.text));
+            StartCoroutine(ProcessText(content, chr));
 
             _goToNext = false;
         }
@@ -440,7 +453,7 @@ namespace ProjectMGG.Ingame
         /// <summary>
         /// Supports the Text Tag
         /// </summary>
-        private IEnumerator ProcessText(string text, string chrName = "")
+        private IEnumerator ProcessText(string text, Character chr = null)
         {
             bool completed = false;
             bool skipNext = false;
@@ -491,17 +504,19 @@ namespace ProjectMGG.Ingame
                 //GoTo
                 if (!completed) yield return null;
                 if (completed && _readAll) ContentUI.maxVisibleCharacters = _maxAllTextLength;
+                
+                //History, because of one frame issue
+                if (completed && !string.IsNullOrWhiteSpace(ContentUI.text)) AddDialogHistory(chr, ContentUI.text);
             }
 
             _readAll = true;
             ShowDownArrow(); //UI
-            if (!string.IsNullOrWhiteSpace(ContentUI.text)) AddDialogHistory(chrName, ContentUI.text); //History
         }
 
         /// <summary>
         /// without Text Typing effect
         /// </summary>
-        private void ProcessTextImmediate(string text, bool showDownArrow = true, string chrName = "")
+        private void ProcessTextImmediate(string text, bool showDownArrow = true, Character chr = null)
         {
             bool completed = false;
             TextTagOption option = new TextTagOption();
@@ -518,11 +533,11 @@ namespace ProjectMGG.Ingame
             ContentUI.maxVisibleCharacters = ContentUI.text.Length;
             _maxAllTextLength = text.Length;
             _readAll = true;
+            if (showDownArrow && !string.IsNullOrWhiteSpace(ContentUI.text)) AddDialogHistory(chr, ContentUI.text); //History
             if (showDownArrow) ShowDownArrow(); //UI
-            if (!string.IsNullOrWhiteSpace(ContentUI.text)) AddDialogHistory(chrName, ContentUI.text); //History
         }
 
-        private void ProcessDialogName(Character chr)
+        public void ProcessDialogName(Character chr, TextMeshProUGUI nameUI, bool isIngame)
         {
             string name = chr.Name.Interpret() as string;
             name = Script.Keywords.StringLiteral.ApplyVariable(name);
@@ -536,11 +551,11 @@ namespace ProjectMGG.Ingame
 
             while (!completed)
             {
-                LetsTextTag(NameUI, nameTextTags, ref nameTagIndex, out completed, option);
+                LetsTextTag(nameUI, nameTextTags, ref nameTagIndex, out completed, option);
             }
-            NameUI.maxVisibleCharacters = NameUI.text.Length;
-            NameUI.color = chr.Colour;
-            NameBackgroundUI.enabled = true;
+            nameUI.maxVisibleCharacters = nameUI.text.Length;
+            nameUI.color = chr.Colour;
+            if (isIngame) NameBackgroundUI.enabled = true;
         }
 
         /// <summary>
@@ -878,12 +893,17 @@ namespace ProjectMGG.Ingame
             }, Ease.InOutSine, -1, CycleMode.Yoyo);
         }
 
-        private void AddDialogHistory(string chrName, string text)
+        private void AddDialogHistory(Character chr, string text)
         {
-            Histories.Add(Tuple.Create(chrName, text));
+            //same dialog, but idk why happened dialog overlapping called! (this is just a temporary solution...)
+            if (Histories.Count > 0)
+            {
+                var last = Histories.Last();
+                if (last != null && last.Item1 == chr && last.Item2 == text) return;
+            }
 
-            //Apply to UI
-            HistoryManager.Add(chrName, text);
+            Histories.Add(Tuple.Create(chr, text));
+            HistoryManager.Add(chr, text);
         }
         #endregion
         #region Images
@@ -1881,13 +1901,16 @@ namespace ProjectMGG.Ingame
 
         public static void Settings(GameObject prefab)
         {
-            Instantiate(prefab);
+            var canvasSettings = Instantiate(prefab).GetComponent<CanvasGroup>();
+
+            Tween.Custom(0f, 1f, 0.3f, x => { canvasSettings.alpha = x; }, Ease.OutSine);
+            canvasSettings.gameObject.SetActive(true);
         }
 
         public void SettingsIngame()
         {
             MenuUIInputManager.OnMouseClick();
-            Settings(this.gameObject);
+            Settings(CanvasSettings);
         }
 
         public void Main()

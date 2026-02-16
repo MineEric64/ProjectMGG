@@ -1389,6 +1389,7 @@ MonoBehaviour:
   OnSubmit:
     m_PersistentCalls:
       m_Calls: []
+  CanvasSettings: {fileID: 1422583200378516848, guid: f427ce38fb90b614da415e33e7e2ec24, type: 3}
 --- !u!1 &2042324554
 GameObject:
   m_ObjectHideFlags: 0

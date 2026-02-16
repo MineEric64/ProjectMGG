@@ -83,9 +83,11 @@ namespace ProjectMGG
 
         public void OnMouseClick(int index = -1)
         {
-            int selectedIndex = index >= 0 && index < Count ? index : _selectedMenuNumber; //inference
+            //inference
+            int selectedIndex = index >= 0 && index < Count ? index : _selectedMenuNumber;
+            bool isBound = selectedIndex >= 0 && selectedIndex < _buttons.Count;
 
-            _buttons[selectedIndex].OnPointerExit(null); //comment this if something went wrong after click (I inserted this code because of after click)
+            if (isBound) _buttons[selectedIndex].OnPointerExit(null); //comment this if something went wrong after click (I inserted this code because of after click)
             Reset();
         }
 
