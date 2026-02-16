@@ -24,7 +24,6 @@ using ProjectMGG.Settings;
 
 using Path = System.IO.Path;
 using SizeF = System.Drawing.SizeF;
-using ProjectMGG.UI;
 
 namespace ProjectMGG.Ingame
 {
@@ -37,6 +36,8 @@ namespace ProjectMGG.Ingame
         public static string PlayerName2 { get; set; } //First name (이름, ex: 세아)
 
         public static Texture2D TextureDefault { get; private set; } = null;
+
+        public static GameUIStatus GameStatus { get; set; } = GameUIStatus.Main;
 
         #region Script & TextTag
         private List<Token> _tokens;
@@ -70,7 +71,8 @@ namespace ProjectMGG.Ingame
         private AudioReverbFilter _reverbFilter;
         private float _currentDecayTime = 0.1f;
 
-        public AudioSource SoundPlayer; //deprecated
+        //deprecated
+        public AudioSource SoundPlayer;
         #endregion
         #region UI
         //based on QHD (refers to issue #20)
@@ -101,6 +103,9 @@ namespace ProjectMGG.Ingame
 
         //History
         public DialogHistoryManager HistoryManager;
+
+        //Settings
+        private SettingsManager _canvasSettingsIngame; //GameObject 'CanvasSettings' In game, not a prefab
 
         #region FX
         public PostProcessVolume FxVolume;
@@ -154,6 +159,7 @@ namespace ProjectMGG.Ingame
             Global = new VariableCollection();
             DefaultEase = ParseEaseFromString(SettingsManager.Settings.UI.TextEase);
             Histories.Clear();
+            GameStatus = GameUIStatus.Ingame;
 
             //Script
             PauseManager.Clear();
@@ -260,8 +266,24 @@ namespace ProjectMGG.Ingame
             #region Hotkeys
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                if (Focused) ShowMenu();
-                else HideMenu();
+                if (Focused && GameStatus == GameUIStatus.Ingame) MenuShow();
+                else if (!Focused)
+                {
+                    switch (GameStatus)
+                    {
+                        case GameUIStatus.Menu:
+                            MenuClose();
+                            break;
+
+                        case GameUIStatus.History:
+                            HistoryClose();
+                            break;
+
+                        case GameUIStatus.Settings:
+                            SettingsIngameClose();
+                            break;
+                    }
+                }
             }
             else if (Input.GetKeyDown(KeyCode.Space)) downType = ClickType.Dialog;
             #endregion
@@ -1191,15 +1213,19 @@ namespace ProjectMGG.Ingame
         #region Audio
         public void LetsPlay(RpyAudio audio, string path, float fadein = 0f, float fadeout = 0f, float volume = 1f)
         {
+            float finalVolume = SettingsManager.Settings.Audio.MasterVolume * volume;
+
             switch (audio.Channel)
             {
                 case "music":
                     {
+                        finalVolume *= SettingsManager.Settings.Audio.MusicVolume;
+
                         if (CurrentMusic != null && CurrentMusic.GetFileName() == audio.GetFileName()) //reeverbed
                         {
                             _reverbFilter.enabled = false;
                             MusicPlayer.time = _preservedMusicTime;
-                            MusicPlayer.volume = volume;
+                            MusicPlayer.volume = finalVolume;
                             MusicPlayer.mute = false;
                         }
                         else
@@ -1211,11 +1237,11 @@ namespace ProjectMGG.Ingame
                                 if (fadein > 0f)
                                 {
                                     Ease ease = ParseEaseFromString(audio.fadeease);
-                                    Tween.AudioVolume(MusicPlayer, 0f, volume, fadein, ease);
+                                    Tween.AudioVolume(MusicPlayer, 0f, finalVolume, fadein, ease);
                                 }
                                 else
                                 {
-                                    MusicPlayer.volume = volume;
+                                    MusicPlayer.volume = finalVolume;
                                 }
 
                                 MusicPlayer.clip = clip;
@@ -1230,6 +1256,7 @@ namespace ProjectMGG.Ingame
                 case "sound": //DEPRECATED METHOD!! Let's renewal this code
                     {
                         AudioClip clip = LoadResource<AudioClip>(path, "audio");
+                        finalVolume *= SettingsManager.Settings.Audio.SoundVolume;
 
                         if (clip != null)
                         {
@@ -1299,6 +1326,15 @@ namespace ProjectMGG.Ingame
                     ExceptionManager.Throw("TODO: support channel on stop keyword", "IngameManagerV2", audio.Line);
                     break;
             }
+        }
+
+        public void ApplyAudioVolume()
+        {
+            if (MusicPlayer == null || SoundPlayer == null) return; //not initialized yet
+
+            float finalVolume = SettingsManager.Settings.Audio.MasterVolume * 1f; //1f: current volume (deprecated)
+            MusicPlayer.volume = finalVolume * SettingsManager.Settings.Audio.MusicVolume;
+            SoundPlayer.volume = finalVolume * SettingsManager.Settings.Audio.SoundVolume;
         }
         #endregion
         #region Etc
@@ -1816,7 +1852,7 @@ namespace ProjectMGG.Ingame
         }
         #endregion
         #region UI: Button Events
-        public void ShowMenu()
+        public void MenuShow()
         {
             float duration = 0.7f;
             Ease ease = Ease.OutExpo;
@@ -1835,6 +1871,7 @@ namespace ProjectMGG.Ingame
             //pause.ActionAfter = () => { _goToNext = false; };
             PauseManager.Add(pause);
             Focused = false;
+            GameStatus = GameUIStatus.Menu;
 
             //Menu UI
             Vector3 positionMenuStart = new Vector3(1150, 200);
@@ -1849,7 +1886,7 @@ namespace ProjectMGG.Ingame
             Tween.Custom(15000f, 300f, 0.5f, x => lowpass.cutoffFrequency = x, ease);
         }
 
-        public void HideMenu()
+        public void MenuClose()
         {
             float duration = 0.7f;
             Ease ease = Ease.OutExpo;
@@ -1867,6 +1904,7 @@ namespace ProjectMGG.Ingame
             Focused = true;
             //_goToNext = false;
             PauseManager.Remove(true);
+            GameStatus = GameUIStatus.Ingame;
 
             //Menu UI
             Vector3 positionMenu = new Vector3(1150, 200);
@@ -1883,13 +1921,14 @@ namespace ProjectMGG.Ingame
         public void Return()
         {
             MenuUIInputManager.OnMouseClick();
-            HideMenu();
+            MenuClose();
         }
 
         public void HistoryShow()
         {
             Tween.Custom(0f, 1f, 0.3f, x => { CanvasHistoryGroup.alpha = x; }, Ease.OutSine);
             CanvasHistoryGroup.gameObject.SetActive(true);
+            GameStatus = GameUIStatus.History;
             MenuUIInputManager.OnMouseClick();
         }
 
@@ -1897,20 +1936,32 @@ namespace ProjectMGG.Ingame
         {
             Tween.Custom(1f, 0f, 0.3f, x => { CanvasHistoryGroup.alpha = x; }, Ease.OutSine)
                 .OnComplete(() => { CanvasHistoryGroup.gameObject.SetActive(false); });
+            GameStatus = GameUIStatus.Menu;
         }
 
-        public static void Settings(GameObject prefab)
+        public static GameObject Settings(GameObject prefab, bool isIngame)
         {
             var canvasSettings = Instantiate(prefab).GetComponent<CanvasGroup>();
 
             Tween.Custom(0f, 1f, 0.3f, x => { canvasSettings.alpha = x; }, Ease.OutSine);
             canvasSettings.gameObject.SetActive(true);
+            SettingsManager.IsIngame = isIngame;
+
+            return canvasSettings.gameObject;
         }
 
         public void SettingsIngame()
         {
             MenuUIInputManager.OnMouseClick();
-            Settings(CanvasSettings);
+            var canvasSettings = Settings(CanvasSettings, true);
+            _canvasSettingsIngame = canvasSettings.GetComponent<SettingsManager>();
+            GameStatus = GameUIStatus.Settings;
+        }
+
+        public void SettingsIngameClose()
+        {
+            _canvasSettingsIngame.OnButtonCloseClick();
+            GameStatus = GameUIStatus.Menu;
         }
 
         public void Main()
@@ -2028,5 +2079,14 @@ namespace ProjectMGG.Ingame
         None = 0,
         Dialog = 1,
         Other = 2, //TODO
+    }
+
+    public enum GameUIStatus
+    {
+        Main = 0,
+        Ingame = 1,
+        Menu = 2,
+        History = 3,
+        Settings = 4
     }
 }

@@ -12,6 +12,9 @@ namespace ProjectMGG.Settings
         [Key("ui")]
         public SettingUI UI { get; set; } = new SettingUI();
 
+        [Key("audio")]
+        public SettingAudio Audio { get; set; } = new SettingAudio();
+
         [Key("debug")]
         public bool Debug { get; set; } = false;
     }

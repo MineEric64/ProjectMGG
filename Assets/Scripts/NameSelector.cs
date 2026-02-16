@@ -36,22 +36,8 @@ namespace ProjectMGG
             SettingsManager.ApplySettings();
             Smart.Default.AddExtensions(new KoreanFormatter(Smart.Default));
             PrimeTweenConfig.warnZeroDuration = false;
-            InputField.onSubmit.AddListener((text) =>
-            {
-                if (SettingsManager.Settings.Debug && text == "main")
-                {
-                    SceneManager.LoadScene("MainMenu");
-                    return;
-                }
-
-                string defaultName = SettingsManager.Settings.Debug ? "남주" : "이주용";
-
-                IngameManagerV2.PlayerName = string.IsNullOrWhiteSpace(text) ? defaultName : text;
-                IngameManagerV2.PlayerName = IngameManagerV2.PlayerName.Trim(); //excluding Whitespace
-                IngameManagerV2.PlayerName2 = GetPlayerName2Korean(IngameManagerV2.PlayerName);
-
-                if (!string.IsNullOrEmpty(IngameManagerV2.PlayerName2)) PlayGame();
-            });
+            IngameManagerV2.GameStatus = GameUIStatus.Main;
+            InputField.onSubmit.AddListener((text) => LetsStartTheGame(text));
         }
 
         public static string GetPlayerName2Korean(string playerName)
@@ -137,9 +123,38 @@ namespace ProjectMGG
             SceneManager.LoadScene("Ingame");
         }
 
+        public void LetsStartTheGame(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                MessageBox.Instance.Info("이름을 입력해주세요. (예: 이주용)");
+                return;
+            }
+
+            if (SettingsManager.Settings.Debug && name == "main")
+            {
+                SceneManager.LoadScene("MainMenu");
+                return;
+            }
+
+            string defaultName = SettingsManager.Settings.Debug ? "남주" : "이주용";
+
+            IngameManagerV2.PlayerName = string.IsNullOrWhiteSpace(name) ? defaultName : name;
+            IngameManagerV2.PlayerName = IngameManagerV2.PlayerName.Trim(); //excluding Whitespace
+            IngameManagerV2.PlayerName2 = GetPlayerName2Korean(IngameManagerV2.PlayerName);
+
+            if (!string.IsNullOrEmpty(IngameManagerV2.PlayerName2)) PlayGame();
+        }
+
+        public void GameStartButton()
+        {
+            string name = InputField.text;
+            LetsStartTheGame(name);
+        }
+
         public void Settings()
         {
-            IngameManagerV2.Settings(CanvasSettings);
+            IngameManagerV2.Settings(CanvasSettings, false);
         }
 
         public void Exit()

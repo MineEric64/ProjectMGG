@@ -4,5 +4,10 @@
         "cps":25,
         "text_ease":"Linear"
     },
+    "audio":{
+        "master_volume":1,
+        "music_volume":1,
+        "sound_volume":1
+    },
     "debug":true
 }

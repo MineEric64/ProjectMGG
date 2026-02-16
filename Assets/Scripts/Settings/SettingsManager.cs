@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,7 +11,6 @@ using MessagePack;
 using PrimeTween;
 
 using ProjectMGG.Ingame;
-using ProjectMGG.UI;
 
 namespace ProjectMGG.Settings
 {
@@ -23,9 +23,29 @@ namespace ProjectMGG.Settings
 
         public static SettingsObject Settings { get; set; } = new SettingsObject();
 
-        public Toggle Fullscreen;
-        public Slider CPS;
-        public TextMeshProUGUI CPSValue;
+        public static bool IsIngame { get; set; } = false;
+
+        public List<string> Resolutions = new List<string>()
+        {
+            "1280x720",
+            "1366x768",
+            "1600x900",
+            "1920x1080",
+            "2560x1440",
+            "3840x2160"
+        };
+
+        public Toggle UIFullscreen;
+        public TMP_Dropdown UIResolution;
+        public Slider UICPS;
+        public TextMeshProUGUI UICPSValue;
+
+        public Slider AudioMasterVolume;
+        public TextMeshProUGUI AudioMasterVolumeValue;
+        public Slider AudioMusicVolume;
+        public TextMeshProUGUI AudioMusicVolumeValue;
+        public Slider AudioSoundVolume;
+        public TextMeshProUGUI AudioSoundVolumeValue;
 
         public CanvasGroup CanvasSettingsGroup;
 
@@ -61,16 +81,29 @@ namespace ProjectMGG.Settings
         public void ApplyToUI()
         {
             //UI
-            Fullscreen.isOn = Settings.UI.FullScreen;
-            CPS.value = Settings.UI.CPS;
-            CPSValue.text = $": {Settings.UI.CPS:n1}";
+            UIFullscreen.isOn = Settings.UI.FullScreen;
+            UIResolution.value = Resolutions.FindIndex(x => Settings.UI.Resolution == x);
+            UICPS.value = Settings.UI.CPS;
+            UICPSValue.text = $": {Settings.UI.CPS:n1}";
+
+            //Audio
+            AudioMasterVolume.value = Settings.Audio.MasterVolume;
+            AudioMusicVolume.value = Settings.Audio.MusicVolume;
+            AudioSoundVolume.value = Settings.Audio.SoundVolume;
         }
 
         public void ApplySettingsFromUI()
         {
             //UI
-            Settings.UI.FullScreen = Fullscreen.isOn;
-            Settings.UI.CPS = Mathf.Round(CPS.value * 10) / 10; //rounding to 1 decimal place
+            Settings.UI.FullScreen = UIFullscreen.isOn;
+            Settings.UI.Resolution = Resolutions[UIResolution.value];
+            Settings.UI.CPS = Mathf.Round(UICPS.value * 10) / 10; //rounding to 1 decimal place
+
+            //Audio
+            Settings.Audio.MasterVolume = Mathf.Round(AudioMasterVolume.value * 1000) / 1000; //rounding to 3 decimal places
+            Settings.Audio.MusicVolume = Mathf.Round(AudioMusicVolume.value * 1000) / 1000;
+            Settings.Audio.SoundVolume = Mathf.Round(AudioSoundVolume.value * 1000) / 1000;
+            if (IsIngame && IngameManagerV2.Instance != null) IngameManagerV2.Instance.ApplyAudioVolume();
         }
 
         // Start is called before the first frame update
@@ -78,6 +111,19 @@ namespace ProjectMGG.Settings
         {
             ApplySettings();
             ApplyToUI();
+
+            //UI: Resolution
+            string currentResolution = $"{Screen.width}x{Screen.height}";
+
+            if (!Resolutions.Contains(currentResolution))
+            {
+                Resolutions.Add(currentResolution);
+                Resolutions = Resolutions.OrderBy(x => x).ToList();
+            }
+
+            UIResolution.ClearOptions();
+            UIResolution.AddOptions(Resolutions);
+            UIResolution.value = Resolutions.FindIndex(x => currentResolution == x);
         }
 
         // Update is called once per frame
@@ -100,15 +146,58 @@ namespace ProjectMGG.Settings
                 .OnComplete(() => { Destroy(this.gameObject); });
         }
 
-        public void FullscreenOnValueChanged()
+        //TODO: Apply the value immediately!!!
+        public void UIFullscreenOnValueChanged()
         {
-            if (Fullscreen.isOn) Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+            if (UIFullscreen.isOn) Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
             else Screen.fullScreenMode = FullScreenMode.Windowed;
         }
 
-        public void CPSOnValueChanged()
+        public void UIResolutionOnValueChanged()
         {
-            CPSValue.text = $": {CPS.value:n1}";
+            if (UIResolution.value < 0 || UIResolution.value >= Resolutions.Count) return; //out of bounds
+
+            string resolution = Resolutions[UIResolution.value];
+            string[] temp = resolution.Split('x');
+
+            if (temp.Length < 2) return; //out of bounds, something went wrong about resolution format
+
+            int width = int.Parse(temp[0]);
+            int height = int.Parse(temp[1]);
+
+            Screen.SetResolution(width, height, UIFullscreen.isOn);
+        }
+
+        public void UICPSOnValueChanged()
+        {
+            UICPSValue.text = $": {UICPS.value:n1}";
+        }
+
+        public void AudioMasterVolumeOnValueChanged()
+        {
+            int percent = Mathf.RoundToInt(AudioMasterVolume.value * 100);
+            AudioMasterVolumeValue.text = $": {percent}%";
+
+            Settings.Audio.MasterVolume = Mathf.Round(AudioMasterVolume.value * 1000) / 1000; //rounding to 3 decimal places
+            if (IsIngame && IngameManagerV2.Instance != null) IngameManagerV2.Instance.ApplyAudioVolume();
+        }
+
+        public void AudioMusicVolumeOnValueChanged()
+        {
+            int percent = Mathf.RoundToInt(AudioMusicVolume.value * 100);
+            AudioMusicVolumeValue.text = $": {percent}%";
+
+            Settings.Audio.MusicVolume = Mathf.Round(AudioMusicVolume.value * 1000) / 1000;
+            if (IsIngame && IngameManagerV2.Instance != null) IngameManagerV2.Instance.ApplyAudioVolume();
+        }
+
+        public void AudioSoundVolumeOnValueChanged()
+        {
+            int percent = Mathf.RoundToInt(AudioSoundVolume.value * 100);
+            AudioSoundVolumeValue.text = $": {percent}%";
+
+            Settings.Audio.SoundVolume = Mathf.Round(AudioSoundVolume.value * 1000) / 1000;
+            if (IsIngame && IngameManagerV2.Instance != null) IngameManagerV2.Instance.ApplyAudioVolume();
         }
     }
 }
