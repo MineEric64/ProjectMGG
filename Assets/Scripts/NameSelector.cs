@@ -103,7 +103,7 @@ namespace ProjectMGG
             Tween.Custom(1f, 0f, 3f, x => canvasGroup.alpha = x, Ease.OutQuad).OnComplete(() =>
             {
                 GoDayInternal(@$"{Application.dataPath}/Ingame/scripts/day/stellarhouse.rpy");
-                //GoDayFromUrl("https://raw.githubusercontent.com/MineEric64/ProjectMGG/refs/heads/main/Assets/Ingame/scripts/day/stellarhouse.rpy");
+                //GoDayFromUrl("https://raw.githubusercontent.com/MineEric64/ProjectMGG/245fa0189b6666d3a27e30c83e11640028a53fd4/Assets/Ingame/scripts/day/stellarhouse.rpy");
             });
             //TODO: Blur?
 
