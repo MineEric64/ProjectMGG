@@ -1,30 +1,16 @@
 /*
-* JSON_Beautify.cs (https://github.com/joedf/JSON_BnU)
+* code based on JSON_Beautify.cs (https://github.com/joedf/JSON_BnU)
 * by Joe DF
 * 
+* Modified by MineEric64
 */
-using System.IO;
-using System.Text;
 using System;
+using System.Text;
 
 namespace ProjectMGG.Settings
 {
-
-    /* Example
-	class Program
-	{
-		static void Main(string[] args)
-		{
-			string raw = File.ReadAllText("example.json");
-			Console.WriteLine(JSON.Beautify(raw,"4"));
-			Console.ReadKey();
-		}
-	}
-	*/
-
     public class JSONBeautifier
     {
-
         public static string Uglify(string JSON)
         {
             JSON = JSON.Trim();
@@ -32,7 +18,7 @@ namespace ProjectMGG.Settings
             if (len == 0)
                 return "";
             StringBuilder j = new StringBuilder(JSON);
-            j.Replace(System.Environment.NewLine, string.Empty);
+            j.Replace(Environment.NewLine, string.Empty);
             j.Replace("\n", string.Empty);
             j.Replace("\r", string.Empty);
             j.Replace("\t", string.Empty);
@@ -69,6 +55,7 @@ namespace ProjectMGG.Settings
 
             string indent = string.Empty;
 
+            //gap string parse to int
             int _gap = 0;
             if (int.TryParse(gap, out _gap) == true)
             {
@@ -84,25 +71,26 @@ namespace ProjectMGG.Settings
                 indent = gap;
             }
 
+            //json beautify
             string _JSON = string.Empty;
             bool in_str = false;
-            int k = 0;
+            int k = 0; //the number of current depth(indent)
             int c;
             int x;
             string _s = string.Empty;
             char ch = '\0';
-            char l_char = '\0';
+            char l_char = '\0'; //previous ch
             int len = JSON.Length;
-            string nl = System.Environment.NewLine;
+            string nl = Environment.NewLine;
 
             for (c = 0; c < len; c++)
             {
                 ch = JSON[c];
+
                 if (!in_str)
                 {
                     if ((ch == '{') || (ch == '['))
                     {
-
                         _s = string.Empty;
                         ++k;
                         for (x = 1; x < (k) + 1; x++)
@@ -113,7 +101,6 @@ namespace ProjectMGG.Settings
                     }
                     else if ((ch == '}') || (ch == ']'))
                     {
-
                         _s = string.Empty;
                         --k;
                         for (x = 1; x < (k) + 1; x++)
@@ -124,7 +111,6 @@ namespace ProjectMGG.Settings
                     }
                     else if ((ch == ','))
                     {
-
                         _s = string.Empty;
                         for (x = 1; x < (k) + 1; x++)
                             _s += indent;
@@ -132,16 +118,20 @@ namespace ProjectMGG.Settings
                         _JSON += ch.ToString() + nl + _s;
                         continue;
                     }
+                    else if (ch == ':') //optional for prettier print
+                    {
+                        _JSON += ch.ToString() + ' ';
+                        continue;
+                    }
                 }
-                if ((ch == '\"') && (l_char != '\\'))
-                    in_str = (!in_str);
+
+                if ((ch == '\"') && (l_char != '\\')) in_str = (!in_str);
+
                 l_char = ch;
                 _JSON += ch.ToString();
             }
             _JSON = _JSON.Replace(@"\1", "\\\\");  // convert '\1' back to '\\'
             return _JSON;
         }
-
     }
-
 }
